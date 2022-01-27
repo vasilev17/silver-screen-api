@@ -8,9 +8,6 @@ namespace SliverScreen.Controllers
 {
     public class IMDbAPIController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        
     }
 }

@@ -12,9 +12,15 @@ namespace SliverScreen.Controllers
     {
         [HttpGet]
         [Route("TestNotification")]
-        public ActionResult<string> TestNotification()
+        public string GetTestNotification()
         {
-            return "Hello world!";
+            return "Get method";
+        }
+        [HttpDelete]
+        [Route("TestNotification")]
+        public string DeleteTestNotification()
+        {
+            return "Delete method";
         }
     }
 }
