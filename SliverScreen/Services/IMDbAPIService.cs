@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SliverScreen.Services
 {
-    public class IMDbService
+    public class IMDbAPIService
     {
     }
 }
