@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SliverScreen
+namespace SilverScreen
 {
     public class Startup
     {
@@ -30,7 +30,7 @@ namespace SliverScreen
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SliverScreen", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SilverScreen", Version = "v1" });
             });
         }
 
@@ -41,7 +41,7 @@ namespace SliverScreen
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SliverScreen v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SilverScreen v1"));
             }
 
             //app.UseHttpsRedirection();

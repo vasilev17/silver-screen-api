@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SliverScreen": {
+    "SilverScreen": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

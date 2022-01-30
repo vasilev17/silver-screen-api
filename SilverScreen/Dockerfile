@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["SliverScreen/SliverScreen.csproj", "SliverScreen/"]
-RUN dotnet restore "SliverScreen/SliverScreen.csproj"
+COPY ["SilverScreen/SilverScreen.csproj", "SilverScreen/"]
+RUN dotnet restore "SilverScreen/SilverScreen.csproj"
 COPY . .
-WORKDIR "/src/SliverScreen"
-RUN dotnet build "SliverScreen.csproj" -c Release -o /app/build
+WORKDIR "/src/SilverScreen"
+RUN dotnet build "SilverScreen.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "SliverScreen.csproj" -c Release -o /app/publish
+RUN dotnet publish "SilverScreen.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SliverScreen.dll"]
+ENTRYPOINT ["dotnet", "SilverScreen.dll"]

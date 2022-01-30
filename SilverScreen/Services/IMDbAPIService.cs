@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SliverScreen.Services
+namespace SilverScreen.Services
 {
     public class IMDbAPIService
     {

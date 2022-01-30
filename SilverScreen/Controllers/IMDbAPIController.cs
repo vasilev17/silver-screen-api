@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SliverScreen.Controllers
+namespace SilverScreen.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class NotificationManagementController : Controller
+    public class IMDbAPIController : Controller
     {
         [HttpGet]
         [Route("TestNotification")]
@@ -21,6 +19,18 @@ namespace SliverScreen.Controllers
         public string DeleteTestNotification()
         {
             return "Delete method";
+        }
+        [HttpPut]
+        [Route("TestNotification")]
+        public string PutTestNotification()
+        {
+            return "Put method";
+        }
+        [HttpPost]
+        [Route("TestNotification")]
+        public string PostTestNotification()
+        {
+            return "Post method";
         }
     }
 }
