@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class MovieInfoController : Controller
     {
         [HttpGet]
