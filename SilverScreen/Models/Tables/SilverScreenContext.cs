@@ -9,6 +9,7 @@ namespace SilverScreen.Models.Tables
 {
     public partial class SilverScreenContext : DbContext
     {
+
         private readonly IConfiguration Configuration;
 
         public SilverScreenContext(IConfiguration configuration)
@@ -22,6 +23,7 @@ namespace SilverScreen.Models.Tables
         }
 
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
         public virtual DbSet<FriendList> FriendLists { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<Movie> Movies { get; set; }
@@ -71,6 +73,20 @@ namespace SilverScreen.Models.Tables
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("CUserID");
+            });
+
+            modelBuilder.Entity<EfmigrationsHistory>(entity =>
+            {
+                entity.HasKey(e => e.MigrationId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("__EFMigrationsHistory");
+
+                entity.Property(e => e.MigrationId).HasMaxLength(150);
+
+                entity.Property(e => e.ProductVersion)
+                    .IsRequired()
+                    .HasMaxLength(32);
             });
 
             modelBuilder.Entity<FriendList>(entity =>
