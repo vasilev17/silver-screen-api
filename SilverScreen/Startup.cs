@@ -11,7 +11,9 @@ using Microsoft.OpenApi.Models;
 using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SilverScreen
@@ -39,10 +41,42 @@ namespace SilverScreen
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("[!] Running migrations. Please wait...");
-            SilverScreenContext context = new SilverScreenContext(Configuration);
-            context.Database.Migrate();
+            try
+            {
+                SilverScreenContext context = new SilverScreenContext(Configuration);
+                context.Database.Migrate();
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex) //In case DB has been modified externally it throws an exception
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[!] There was an error while running migration. Please wait while we fix the error...");
+
+                SilverScreenContext context = new SilverScreenContext(Configuration);
+                context.EfmigrationsHistories.RemoveRange(context.EfmigrationsHistories); //Remove previous versions
+
+                string[] migrationsDirectory = Directory.GetFiles(@"Migrations\", "*.cs"); //Get all migrations
+
+                for (int i = 0; i < migrationsDirectory.Length; i++)
+                {
+                    migrationsDirectory[i] = migrationsDirectory[i].Remove(0, 11); //Remove directory from string
+                }
+
+                foreach (var migration in migrationsDirectory)
+                {
+                    //Regex to exclude the files that are not migrations  
+                    if (Regex.IsMatch(migration, "^((?!((SilverScreenContextModelSnapshot.cs)|(Designer.cs))).)*$"))
+                    {
+                        context.EfmigrationsHistories.Add(new EfmigrationsHistory
+                        {
+                            ProductVersion = "5.0.13", //Current version that could change
+                            MigrationId = migration.Remove(migration.Length - 3) //Removes .cs since we dont need it
+                        }); ;
+                    }
+                }
+                context.SaveChanges();
+            }
             Console.ForegroundColor = ConsoleColor.White;
             Console.Clear();
 
