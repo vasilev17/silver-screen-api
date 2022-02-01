@@ -38,7 +38,6 @@ namespace SilverScreen.Models.Tables
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //optionsBuilder.UseMySQL("datasource=localhost;port=3306;database=SilverScreen;username=root;password=5w%q@IiwWQc8");
                 optionsBuilder.UseMySQL(Configuration["MySQLConnectionString"]);
             }
         }
