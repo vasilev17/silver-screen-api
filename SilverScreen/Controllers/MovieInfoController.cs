@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using SilverScreen.Models.Tables;
+using SilverScreen.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,32 +13,26 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class MovieInfoController : Controller
     {
+
+        private IConfiguration configuration;
+
+
+        public MovieInfoController(IConfiguration config) {
+            configuration = config;
+        }
+  
+
+
         [HttpGet]
-        [Route("TestNotification")]
-        public string GetTestNotification()
+        [Route("MovieGetRequest")]
+        public Movie GetMovieDetails()
         {
-            return "MovieInfo Get method";
+            MovieInfoService service = new MovieInfoService(configuration);
+            return service.GetMovieByID(1);
         }
 
-        [HttpDelete]
-        [Route("TestNotification")]
-        public string DeleteTestNotification()
-        {
-            return "MovieInfo Delete method";
-        }
 
-        [HttpPut]
-        [Route("TestNotification")]
-        public string PutTestNotification()
-        {
-            return "MovieInfo Put method";
-        }
 
-        [HttpPost]
-        [Route("TestNotification")]
-        public string PostTestNotification()
-        {
-            return "MovieInfo Post method";
-        }
+
     }
 }
