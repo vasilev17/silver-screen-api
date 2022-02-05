@@ -347,6 +347,12 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.IsAdmin)
+                    .HasDefaultValue(false);
+
+                entity.Property(e => e.IsDeleted)
+                    .HasDefaultValue(false);
             });
 
             modelBuilder.Entity<WatchedMovie>(entity =>
