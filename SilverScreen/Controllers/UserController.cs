@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using SilverScreen.Models;
+using SilverScreen.Models.Tables;
+using SilverScreen.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +15,55 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
+        public UserController(IConfiguration config)
+        {
+            Config = config;
+        }
+        private IConfiguration Config;
+
         [HttpGet]
-        [Route("UserManagement")]
-        public string GetTestUser()
+        [Route("UserGetRequest")]
+        [Authorize]
+        public User GetUserDetails(int userID)
         {
-            return "Get method";
+            UserService userService = new UserService(Config);
+            return userService.GetUserByID(userID);
         }
-        [HttpDelete]
-        [Route("UserManagement")]
-        public string DeleteTestUser()
-        {
-            return "Delete method";
-        }
+
+        [AllowAnonymous]
         [HttpPost]
-        [Route("UserManagement")]
-        public string PostTestUser()
+        [Route("Login")]
+        public IActionResult Login([FromBody] Login login)
         {
-            return "Post method";
+            UserService userService = new UserService(Config);
+            IActionResult response = Unauthorized();
+            var user = userService.AuthenticateUser(login);
+
+            if (user != null)
+            {
+                var tokenString = userService.GenerateJSONWebToken(login);
+                response = Ok(new { token = tokenString });
+            }
+
+            return response;
         }
-        [HttpPut]
-        [Route("UserManagement")]
-        public string PutTestUser()
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("Register")]
+        public IActionResult Register([FromBody] Login login)
         {
-            return "Put method";
+            UserService userService = new UserService(Config);
+            var user = userService.RegisterUser(login);
+
+            if (user != null)
+            {
+                var tokenString = userService.GenerateJSONWebToken(login);
+                return Ok(new { token = tokenString });
+            }
+            return Ok(new { ErrorMessage = "Error" });
+            //return 500
         }
+
     }
 }
