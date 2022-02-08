@@ -29,6 +29,32 @@ namespace SilverScreen.Controllers
         }
 
         [HttpPost]
+        [Route("SetFilmReleaseNotification")]
+        public JsonResult SetFilmReleaseNotification(int userId, int movieID, bool status) //by status I mean delete if true, create if false 
+        {
+            NotificationService notificationService = new NotificationService(Configuration);
+            try
+            {
+                switch (notificationService.SetFilmReleaseNotification(userId, movieID, status))
+                {
+                    case 0:
+                        return Json(new { code = 0 });
+                    case 404:
+                        return Json(new { code = 404, errorMsg = "Notification not found!" });
+                    case -1:
+                        return Json(new { code = -1, errorMsg = "Notification was already set before!" });
+                    default:
+                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                }
+            }
+            catch(Exception)
+            {
+                return Json(new { code = 500, errorMsg = "Something went wrong!" });
+            }
+            
+        }
+
+        [HttpPost]
         [Route("RespondToFriendRequest")]
         public JsonResult RespondToFriendRequest(int notificationId) 
         {
@@ -40,7 +66,7 @@ namespace SilverScreen.Controllers
                 case -1:
                     return Json(new { code = 404, errorMsg = "Notification not found!" });
                 default:
-                    return Json(new { code = -1, errorMsg = "Something went wrong!" });
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
             }
         }
 
@@ -56,7 +82,7 @@ namespace SilverScreen.Controllers
                 case -1:
                     return Json(new { code = 404, errorMsg = "Notification not found!" });
                 default:
-                    return Json(new { code = -1, errorMsg = "Something went wrong!" });
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
             }
         }
 
@@ -72,7 +98,7 @@ namespace SilverScreen.Controllers
                 case -1:
                     return Json(new { code = 404, errorMsg = "Notification not found!" });
                 default:
-                    return Json(new { code = -1, errorMsg = "Something went wrong!" });
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
             }
         }
     }

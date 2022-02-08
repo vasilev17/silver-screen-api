@@ -1,8 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using SilverScreen.Models;
 using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SilverScreen.Services
@@ -33,6 +37,67 @@ namespace SilverScreen.Services
                 }
             }
         }
+
+        public User AuthenticateUser(Login login)
+        {
+            User user = null;
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            AuthenticationService authentication = new AuthenticationService();
+            if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
+            {
+                if (context.Users.Where(s => s.Password.Equals(authentication.Encrypt(login.Password))).Any())
+                {
+                    user = context.Users.Where(s => s.Email.Equals(login.Email)).FirstOrDefault();
+                }
+            }
+
+            return user;
+        }
+
+        public string GenerateJSONWebToken(Login userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
+              configuration["Jwt:Issuer"],
+              null,
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+        public User RegisterUser(Login login)
+        {
+            User user = null;
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            AuthenticationService authentication = new AuthenticationService();
+            if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
+            {
+                if (!context.Users.Where(s => s.Username.Equals(login.Username)).Any())
+                {
+
+
+                    User registeredUser = new User()
+                    {
+                        Username = login.Username,
+                        Password = authentication.Encrypt(login.Password),
+                        Email = login.Email,
+                        Avatar = "sdsadsass",
+                        IsAdmin = false,
+                        IsDeleted = false,
+                        Banned = null
+                    };
+                    context.Add(registeredUser);
+                    context.SaveChanges();
+                    user = registeredUser;
+                }
+            }
+            return user;
+        }
+
     }
 }
 
