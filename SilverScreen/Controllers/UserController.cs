@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using SilverScreen.Models.Tables;
+using SilverScreen.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +13,19 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
+        public UserController(IConfiguration config)
+        {
+            Config = config;
+        }
+        private IConfiguration Config;
+
         [HttpGet]
-        [Route("UserManagement")]
-        public string GetTestUser()
+        [Route("UserGetRequest")]
+        public User GetUserDetails(int userID)
         {
-            return "Get method";
+            UserService userService = new UserService(Config);
+            return userService.GetUserByID(userID);
         }
-        [HttpDelete]
-        [Route("UserManagement")]
-        public string DeleteTestUser()
-        {
-            return "Delete method";
-        }
-        [HttpPost]
-        [Route("UserManagement")]
-        public string PostTestUser()
-        {
-            return "Post method";
-        }
-        [HttpPut]
-        [Route("UserManagement")]
-        public string PutTestUser()
-        {
-            return "Put method";
-        }
+      
     }
 }
