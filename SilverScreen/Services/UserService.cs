@@ -131,6 +131,27 @@ namespace SilverScreen.Services
             return user;
         }
 
+
+        public int AddFriend(int userID, int friendID)
+        {
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            if (!context.FriendLists.Where(x => (x.UserId == userID && x.UserId1 == friendID) || (x.UserId == friendID && x.UserId1 == userID)).Any())
+            {
+                FriendList frList1 = new FriendList {
+                    UserId = userID,
+                    UserId1 = friendID
+                };
+                FriendList frList2 = new FriendList {
+                    UserId = friendID,
+                    UserId1 = userID
+                };
+                context.Add(frList1);
+                context.Add(frList2);
+                context.SaveChanges();
+                return 0;
+            }
+            return -1; 
+        }
     }
 }
 

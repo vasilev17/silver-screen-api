@@ -83,5 +83,25 @@ namespace SilverScreen.Controllers
 
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("SendFriendRequest")]
+        public IActionResult SendFriendRequest(int friendID, string message)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                NotificationService notificationService = new NotificationService(Config);
+                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), friendID,  message);
+                return Ok(new { Message = "Sent request" });
+            }
+
+
+            return Ok(new { ErrorMessage = "Error" });
+
+        }
+
+
     }
 }
