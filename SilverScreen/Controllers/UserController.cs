@@ -41,7 +41,7 @@ namespace SilverScreen.Controllers
 
             if (user != null)
             {
-                var tokenString = userService.GenerateJSONWebToken(login);
+                var tokenString = userService.GenerateJSONWebToken(user);
                 response = Ok(new { token = tokenString });
             }
 
@@ -58,11 +58,29 @@ namespace SilverScreen.Controllers
 
             if (user != null)
             {
-                var tokenString = userService.GenerateJSONWebToken(login);
+                var tokenString = userService.GenerateJSONWebToken(user);
                 return Ok(new { token = tokenString });
             }
             return Ok(new { ErrorMessage = "Error" });
             //return 500
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("UploadAvatar")]
+        public IActionResult UploadAvatar([FromBody] Login login)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+               UserService userService = new UserService(Config);
+               // userService.UploadAvatar();            
+            }
+
+           
+            return Ok(new { ErrorMessage = "Error" });
+
         }
 
     }
