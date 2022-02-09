@@ -9,9 +9,7 @@ namespace SilverScreen.Models.Tables
 {
     public partial class SilverScreenContext : DbContext
     {
-
         private readonly IConfiguration Configuration;
-
         public SilverScreenContext(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,7 +31,6 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<MovieStaff> MovieStaffs { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<WatchedMovie> WatchedMovies { get; set; }
         public virtual DbSet<staff> staff { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -120,22 +117,12 @@ namespace SilverScreen.Models.Tables
             {
                 entity.ToTable("Genre");
 
-                entity.HasIndex(e => e.MovieId, "GMovieFK");
-
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Genre1)
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasColumnName("Genre");
-
-                entity.Property(e => e.MovieId).HasColumnName("MovieID");
-
-                entity.HasOne(d => d.Movie)
-                    .WithMany(p => p.Genres)
-                    .HasForeignKey(d => d.MovieId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("GMovieFK");
             });
 
             modelBuilder.Entity<Movie>(entity =>
@@ -347,50 +334,13 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.IsAdmin)
-                    .HasDefaultValue(false);
-
-                entity.Property(e => e.IsDeleted)
-                    .HasDefaultValue(false);
-            });
-
-            modelBuilder.Entity<WatchedMovie>(entity =>
-            {
-                entity.ToTable("WatchedMovie");
-
-                entity.HasIndex(e => e.MovieId, "WMovieFK");
-
-                entity.HasIndex(e => e.UserId, "WUserFK");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.MovieId).HasColumnName("MovieID");
-
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.Movie)
-                    .WithMany(p => p.WatchedMovies)
-                    .HasForeignKey(d => d.MovieId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("WMovieFK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.WatchedMovies)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("WUserFK");
             });
 
             modelBuilder.Entity<staff>(entity =>
             {
                 entity.ToTable("Staff");
 
-                entity.HasIndex(e => e.MovieId, "StaffMovieFK");
-
                 entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.MovieId).HasColumnName("MovieID");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -399,12 +349,6 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Position)
                     .IsRequired()
                     .HasColumnType("enum('Writer','Director','Actor','')");
-
-                entity.HasOne(d => d.Movie)
-                    .WithMany(p => p.staff)
-                    .HasForeignKey(d => d.MovieId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("StaffMovieFK");
             });
 
             OnModelCreatingPartial(modelBuilder);
