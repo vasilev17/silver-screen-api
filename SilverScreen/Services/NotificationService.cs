@@ -113,7 +113,6 @@ namespace SilverScreen.Services
         public int SendFriendNotification(int userId, int friendId, string message)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
-            //Check if they are already friends, but again not my part ;)
 
             //Check if similar notification already exists. Refuse the request if something like this happens
             if((context.Notifications.Where(x => x.UserId == userId && 
@@ -223,20 +222,28 @@ namespace SilverScreen.Services
             var friendRequest = context.Notifications.Where(x => x.Id == notificationId).Include(x => x.User);
             if(friendRequest.Any())
             {
-                //Connect to user service and add record with the two users (cant do that because its not my job)
-                Notification newNotification = new Notification()
+                UserService userService = new UserService(Configuration);
+                switch(userService.AddFriend(friendRequest.FirstOrDefault().AuthorId, friendRequest.FirstOrDefault().UserId))
                 {
-                    Type = "TextOnly",
-                    Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
-                    AuthorId = friendRequest.FirstOrDefault().UserId,
-                    UserId = friendRequest.FirstOrDefault().AuthorId,
-                    Active = true
-                };
-                context.Add(newNotification);                
-                context.Remove(friendRequest.FirstOrDefault());
-                context.SaveChanges();
-                context.Dispose();
-                return 0;
+                    case 0:
+                        Notification newNotification = new Notification()
+                        {
+                            Type = "TextOnly",
+                            Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
+                            AuthorId = friendRequest.FirstOrDefault().UserId,
+                            UserId = friendRequest.FirstOrDefault().AuthorId,
+                            Active = true
+                        };
+                        context.Add(newNotification);
+                        context.Remove(friendRequest.FirstOrDefault());
+                        context.SaveChanges();
+                        context.Dispose();
+                        return 0;
+                    default:
+                        context.Dispose();
+                        return -1;
+                }
+                
             }
             context.Dispose();
             return -1;
