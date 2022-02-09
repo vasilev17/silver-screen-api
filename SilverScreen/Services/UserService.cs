@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,14 +55,17 @@ namespace SilverScreen.Services
             return user;
         }
 
-        public string GenerateJSONWebToken(Login userInfo)
+        public string GenerateJSONWebToken(User userInfo)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
+            var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Username),
+                new Claim("userID", userInfo.Id.ToString())
+            };
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
               configuration["Jwt:Issuer"],
-              null,
+              claims,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
 
@@ -91,6 +95,35 @@ namespace SilverScreen.Services
                         Banned = null
                     };
                     context.Add(registeredUser);
+                    context.SaveChanges();
+                    user = registeredUser;
+                }
+            }
+            return user;
+        }
+
+        public User UploadAvatar(Login login)
+        {
+            User user = null;
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            AuthenticationService authentication = new AuthenticationService();
+            if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
+            {
+                if (context.Users.Where(s => s.Password.Equals(login.Password)).Any())
+                {
+
+
+                    User registeredUser = new User()
+                    {
+                        Username = user.Username,
+                        Password = authentication.Encrypt(user.Password),
+                        Email = user.Email,
+                        //Avatar = login.Avatar,
+                        IsAdmin = false,
+                        IsDeleted = false,
+                        Banned = null
+                    };
+                    context.Update(registeredUser);
                     context.SaveChanges();
                     user = registeredUser;
                 }
