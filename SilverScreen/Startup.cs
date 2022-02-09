@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SilverScreen.Models.Tables;
+using SilverScreen.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -147,6 +148,7 @@ namespace SilverScreen
             {
                 endpoints.MapControllers();
             });
+            IMDbAPIService.LoadMovieIntoDB("The Revenant");
         }
     }
 }
