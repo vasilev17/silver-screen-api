@@ -16,7 +16,6 @@ namespace SilverScreen.Models.Tables
             MovieRatings = new HashSet<MovieRating>();
             NotificationAuthors = new HashSet<Notification>();
             NotificationUsers = new HashSet<Notification>();
-            WatchedMovies = new HashSet<WatchedMovie>();
         }
 
         public int Id { get; set; }
@@ -35,6 +34,5 @@ namespace SilverScreen.Models.Tables
         public virtual ICollection<MovieRating> MovieRatings { get; set; }
         public virtual ICollection<Notification> NotificationAuthors { get; set; }
         public virtual ICollection<Notification> NotificationUsers { get; set; }
-        public virtual ICollection<WatchedMovie> WatchedMovies { get; set; }
     }
 }
