@@ -75,11 +75,44 @@ namespace SilverScreen.Services
             return notifications.ToArray();
         }
 
+        public MovieNotification[] GetAllMovieNotificationsForUser(int userId)
+        {
+            SilverScreenContext context = new SilverScreenContext(Configuration);
+            var notificationsRaw = context.MovieNotifications
+                .Where(x => x.UserId == userId)
+                .Include(x => x.Movie)
+                .ToArray();
+
+            List<MovieNotification> notifications = new List<MovieNotification>();
+
+            foreach (var notification in notificationsRaw)
+            {
+                if(notification.Date < DateTime.UtcNow)
+                {
+                    notifications.Add(new MovieNotification
+                    {
+                        Id = notification.Id,
+                        Movie = new Movie
+                        {
+                            Id = notification.Movie.Id,
+                            Title = notification.Movie.Title
+                        },
+                        Date = notification.Date,
+                        UserId = notification.UserId,
+                        MovieId = notification.MovieId,
+                    });
+                }
+            }
+
+            context.Dispose();
+            return notifications.ToArray();
+        }
+
+
         //Response codes: Duplicate/Error(-1), OK(0)
         public int SendFriendNotification(int userId, int friendId, string message)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
-            //Check if they are already friends, but again not my part ;)
 
             //Check if similar notification already exists. Refuse the request if something like this happens
             if((context.Notifications.Where(x => x.UserId == userId && 
@@ -105,6 +138,43 @@ namespace SilverScreen.Services
                 context.SaveChanges();
                 context.Dispose();
                 return 0;
+            }
+        }
+
+        public int RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
+        {
+            SilverScreenContext context = new SilverScreenContext(Configuration);
+
+            //Check if similar notification already exists. If it exists, replace the notification
+            try
+            {
+                if (context.Notifications.Where(x => x.AuthorId == userId && x.UserId == friendId && x.MovieId == movieId).Any())
+                {
+                    context.Notifications.Where(x => x.UserId == friendId && x.MovieId == movieId).FirstOrDefault().Content = message;
+                    context.SaveChanges();
+                    context.Dispose();
+                    return 0;
+                }
+                else
+                {
+                    Notification notification = new Notification()
+                    {
+                        Active = true,
+                        AuthorId = userId,
+                        UserId = friendId,
+                        Content = message,
+                        MovieId = movieId,
+                        Type = "TextOnly"
+                    };
+                    context.Add(notification);
+                    context.SaveChanges();
+                    context.Dispose();
+                    return 0;
+                }
+            }
+            catch (Exception)
+            {
+                return -1;
             }
         }
 
@@ -152,20 +222,28 @@ namespace SilverScreen.Services
             var friendRequest = context.Notifications.Where(x => x.Id == notificationId).Include(x => x.User);
             if(friendRequest.Any())
             {
-                //Connect to user service and add record with the two users (cant do that because its not my job)
-                Notification newNotification = new Notification()
+                UserService userService = new UserService(Configuration);
+                switch(userService.AddFriend(friendRequest.FirstOrDefault().AuthorId, friendRequest.FirstOrDefault().UserId))
                 {
-                    Type = "TextOnly",
-                    Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
-                    AuthorId = friendRequest.FirstOrDefault().UserId,
-                    UserId = friendRequest.FirstOrDefault().AuthorId,
-                    Active = true
-                };
-                context.Add(newNotification);                
-                context.Remove(friendRequest.FirstOrDefault());
-                context.SaveChanges();
-                context.Dispose();
-                return 0;
+                    case 0:
+                        Notification newNotification = new Notification()
+                        {
+                            Type = "TextOnly",
+                            Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
+                            AuthorId = friendRequest.FirstOrDefault().UserId,
+                            UserId = friendRequest.FirstOrDefault().AuthorId,
+                            Active = true
+                        };
+                        context.Add(newNotification);
+                        context.Remove(friendRequest.FirstOrDefault());
+                        context.SaveChanges();
+                        context.Dispose();
+                        return 0;
+                    default:
+                        context.Dispose();
+                        return -1;
+                }
+                
             }
             context.Dispose();
             return -1;

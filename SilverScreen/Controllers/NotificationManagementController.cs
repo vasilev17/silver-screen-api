@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SilverScreen.Models.Tables;
 using SilverScreen.Services;
@@ -21,6 +22,7 @@ namespace SilverScreen.Controllers
 
         [HttpGet]
         [Route("GetNotifications")]
+        [Authorize]
         public Notification[] GetNotifications(int userId) //should have authentication later (not responsible for that part)
         {
             NotificationService notificationService = new NotificationService(Configuration);
@@ -28,8 +30,19 @@ namespace SilverScreen.Controllers
             return notifications; //It returns complex structure. Should I make another model for this?
         }
 
+        [HttpGet]
+        [Route("GetMovieNotifications")]
+        [Authorize]
+        public MovieNotification[] GetMovieNotifications(int userId) //should have authentication later (not responsible for that part)
+        {
+            NotificationService notificationService = new NotificationService(Configuration);
+            var notifications = notificationService.GetAllMovieNotificationsForUser(userId);
+            return notifications; //It returns complex structure. Should I make another model for this?
+        }
+
         [HttpPost]
         [Route("SetFilmReleaseNotification")]
+        [Authorize]
         public JsonResult SetFilmReleaseNotification(int userId, int movieID, bool status) //by status I mean delete if true, create if false 
         {
             NotificationService notificationService = new NotificationService(Configuration);
@@ -56,7 +69,8 @@ namespace SilverScreen.Controllers
 
         [HttpPost]
         [Route("RespondToFriendRequest")]
-        public JsonResult RespondToFriendRequest(int notificationId) 
+        [Authorize]
+        public JsonResult RespondToFriendRequest(int notificationId)
         {
             NotificationService notificationService = new NotificationService(Configuration);
             switch (notificationService.RespondToFriendRequest(notificationId)) 
@@ -70,8 +84,24 @@ namespace SilverScreen.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("RecommendMovieToAFriend")]
+        [Authorize]
+        public JsonResult RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
+        {
+            NotificationService notificationService = new NotificationService(Configuration);
+            switch (notificationService.RecommendMovieToAFriend(userId, friendId, movieId, message))
+            {
+                case 0:
+                    return Json(new { code = 0 });
+                default:
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+            }
+        }
+
         [HttpPatch]
         [Route("ToggleNotificationActivity")]
+        [Authorize]
         public JsonResult ToggleNotificationActivity(int notificationId)
         {
             NotificationService notificationService = new NotificationService(Configuration);
@@ -88,6 +118,7 @@ namespace SilverScreen.Controllers
 
         [HttpDelete]
         [Route("DeleteNotification")]
+        [Authorize]
         public JsonResult DeleteNotifications(int notificationId)
         {
             NotificationService notificationService = new NotificationService(Configuration);
