@@ -28,6 +28,15 @@ namespace SilverScreen.Controllers
             return notifications; //It returns complex structure. Should I make another model for this?
         }
 
+        [HttpGet]
+        [Route("GetMovieNotifications")]
+        public MovieNotification[] GetMovieNotifications(int userId) //should have authentication later (not responsible for that part)
+        {
+            NotificationService notificationService = new NotificationService(Configuration);
+            var notifications = notificationService.GetAllMovieNotificationsForUser(userId);
+            return notifications; //It returns complex structure. Should I make another model for this?
+        }
+
         [HttpPost]
         [Route("SetFilmReleaseNotification")]
         public JsonResult SetFilmReleaseNotification(int userId, int movieID, bool status) //by status I mean delete if true, create if false 
@@ -65,6 +74,20 @@ namespace SilverScreen.Controllers
                     return Json(new { code = 0 });
                 case -1:
                     return Json(new { code = 404, errorMsg = "Notification not found!" });
+                default:
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+            }
+        }
+
+        [HttpPost]
+        [Route("RecommendMovieToAFriend")]
+        public JsonResult RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
+        {
+            NotificationService notificationService = new NotificationService(Configuration);
+            switch (notificationService.RecommendMovieToAFriend(userId, friendId, movieId, message))
+            {
+                case 0:
+                    return Json(new { code = 0 });
                 default:
                     return Json(new { code = 500, errorMsg = "Something went wrong!" });
             }
