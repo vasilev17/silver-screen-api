@@ -23,54 +23,70 @@ namespace SilverScreen.Controllers
         [HttpGet]
         [Route("GetNotifications")]
         [Authorize]
-        public Notification[] GetNotifications(int userId) //should have authentication later (not responsible for that part)
+        public Notification[] GetNotifications() 
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            var notifications = notificationService.GetAllNotificationsForUser(userId);
+            var user = HttpContext.User;
+            Notification[] notifications = null;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                NotificationService notificationService = new NotificationService(Configuration);
+                notifications = notificationService.GetAllNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
+            }   
             return notifications; //It returns complex structure. Should I make another model for this?
         }
 
         [HttpGet]
         [Route("GetMovieNotifications")]
         [Authorize]
-        public MovieNotification[] GetMovieNotifications(int userId) //should have authentication later (not responsible for that part)
+        public MovieNotification[] GetMovieNotifications()
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            var notifications = notificationService.GetAllMovieNotificationsForUser(userId);
+            var user = HttpContext.User;
+            MovieNotification[] notifications = null;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                NotificationService notificationService = new NotificationService(Configuration);
+                notifications = notificationService.GetAllMovieNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
+            }
             return notifications; //It returns complex structure. Should I make another model for this?
         }
 
         [HttpPost]
         [Route("SetFilmReleaseNotification")]
         [Authorize]
-        public JsonResult SetFilmReleaseNotification(int userId, int movieID, bool status) //by status I mean delete if true, create if false 
+        public IActionResult SetFilmReleaseNotification(int movieID, bool status) //by status I mean delete if true, create if false 
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            try
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-                switch (notificationService.SetFilmReleaseNotification(userId, movieID, status))
+                NotificationService notificationService = new NotificationService(Configuration);
+                try
                 {
-                    case 0:
-                        return Json(new { code = 0 });
-                    case 404:
-                        return Json(new { code = 404, errorMsg = "Notification not found!" });
-                    case -1:
-                        return Json(new { code = -1, errorMsg = "Notification was already set before!" });
-                    default:
-                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                    switch (notificationService.SetFilmReleaseNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, status))
+                    {
+                        case 0:
+                            return Json(new { code = 0 });
+                        case 404:
+                            return Json(new { code = 404, errorMsg = "Notification not found!" });
+                        case -1:
+                            return Json(new { code = -1, errorMsg = "Notification was already set before!" });
+                        default:
+                            return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                    }
+                }
+                catch (Exception)
+                {
+                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
                 }
             }
-            catch(Exception)
-            {
-                return Json(new { code = 500, errorMsg = "Something went wrong!" });
-            }
-            
+            return Unauthorized();
         }
 
         [HttpPost]
         [Route("RespondToFriendRequest")]
         [Authorize]
-        public JsonResult RespondToFriendRequest(int notificationId)
+        public JsonResult RespondToFriendRequest(int notificationId) //Needs extra checks for security
         {
             NotificationService notificationService = new NotificationService(Configuration);
             switch (notificationService.RespondToFriendRequest(notificationId)) 
@@ -87,22 +103,28 @@ namespace SilverScreen.Controllers
         [HttpPost]
         [Route("RecommendMovieToAFriend")]
         [Authorize]
-        public JsonResult RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
+        public IActionResult RecommendMovieToAFriend(int friendId, int movieId, string message)
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            switch (notificationService.RecommendMovieToAFriend(userId, friendId, movieId, message))
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-                case 0:
-                    return Json(new { code = 0 });
-                default:
-                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                NotificationService notificationService = new NotificationService(Configuration);
+                Console.WriteLine(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), friendId, movieId, message))
+                {
+                    case 0:
+                        return Json(new { code = 0 });
+                    default:
+                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                }
             }
+            return Unauthorized();
         }
 
         [HttpPatch]
         [Route("ToggleNotificationActivity")]
         [Authorize]
-        public JsonResult ToggleNotificationActivity(int notificationId)
+        public JsonResult ToggleNotificationActivity(int notificationId) //Needs extra checks for security
         {
             NotificationService notificationService = new NotificationService(Configuration);
             switch (notificationService.ToggleNotificationActivity(notificationId))
@@ -119,7 +141,7 @@ namespace SilverScreen.Controllers
         [HttpDelete]
         [Route("DeleteNotification")]
         [Authorize]
-        public JsonResult DeleteNotifications(int notificationId)
+        public JsonResult DeleteNotifications(int notificationId) //Needs extra checks for security
         {
             NotificationService notificationService = new NotificationService(Configuration);
             switch (notificationService.DeleteNotification(notificationId))

@@ -150,7 +150,7 @@ namespace SilverScreen.Services
             {
                 if (context.Notifications.Where(x => x.AuthorId == userId && x.UserId == friendId && x.MovieId == movieId).Any())
                 {
-                    context.Notifications.Where(x => x.UserId == friendId && x.MovieId == movieId).FirstOrDefault().Content = message;
+                    context.Notifications.Where(x => x.UserId == friendId && x.MovieId == movieId && x.AuthorId == userId).FirstOrDefault().Content = message;
                     context.SaveChanges();
                     context.Dispose();
                     return 0;
