@@ -20,7 +20,7 @@ namespace SilverScreen.Controllers
         public MovieInfoController(IConfiguration config) {
             configuration = config;
         }
-  
+        
 
 
         [HttpGet]
@@ -31,8 +31,21 @@ namespace SilverScreen.Controllers
             return service.GetMovieByID(1);
         }
 
+        [HttpGet]
+        [Route("CommentsGetRequest")]
+        public List<Comment>  GetComments()
+        {
+            MovieInfoService service = new MovieInfoService(configuration);
+            return service.GetCommentsByMovieID(1);
+        }
 
-
+        [HttpGet]
+        [Route("FriendRatingGetRequest")]
+        public double GetFriendRating()
+        {
+            MovieInfoService service = new MovieInfoService(configuration);
+            return service.GetFriendRating(1,1);
+        }
 
     }
 }
