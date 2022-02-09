@@ -127,11 +127,19 @@ namespace SilverScreen.Models.Tables
 
             modelBuilder.Entity<Movie>(entity =>
             {
+                entity.HasIndex(e => e.ImdbId, "IMDB_U")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(800);
+
+                entity.Property(e => e.ImdbId)
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .HasColumnName("IMDB_ID");
 
                 entity.Property(e => e.MaturityRating)
                     .IsRequired()
