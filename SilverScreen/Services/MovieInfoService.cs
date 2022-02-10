@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace SilverScreen.Services
 {
     public class MovieInfoService
@@ -50,7 +51,7 @@ namespace SilverScreen.Services
 
         }
 
-        public double GetFriendRating(int userID, int movieID)
+        public double GetFriendRatingByUser(int userID, int movieID)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
             List<FriendList> friends = new List<FriendList>();
@@ -78,6 +79,90 @@ namespace SilverScreen.Services
             }
             
         }
+
+        public int ToggleMovieInMyList(int userID, int movieID, bool watched)
+        {
+            SilverScreenContext context = new SilverScreenContext(configuration);
+
+            var movie = new MyList()
+            {
+                UserId = userID,
+                MovieId = movieID,
+                Watched = watched,
+            };
+
+            using (context)
+            {
+
+                var checkIfExists = context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID);
+                try
+                {
+                    if (checkIfExists.Any())
+                    {
+                        context.MyLists.Remove(checkIfExists.FirstOrDefault());
+                        context.SaveChanges();
+                        return 0;
+                    }
+                    else
+                    {
+                        context.MyLists.Add(movie);
+                        context.SaveChanges();
+                        return 1;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    return -1;
+                }
+            }
+        }
+
+        public int GiveMovieRating(int userID, int movieID, double rating)
+        {
+            SilverScreenContext context = new SilverScreenContext(configuration);
+
+            var movieRating = new MovieRating()
+            {
+                UserId = userID,
+                MovieId = movieID,
+                Rating = rating,
+            };
+
+            using (context)
+            {
+
+                var checkIfRatingExists = context.MovieRatings.Where(s => s.UserId == userID && s.MovieId == movieID && s.Rating == rating);
+                var checkIfDifferentRatingExists = context.MovieRatings.Where(s => s.UserId == userID && s.MovieId == movieID);
+                try
+                {
+                    if (checkIfRatingExists.Any())
+                    {
+                        context.MovieRatings.Remove(checkIfRatingExists.FirstOrDefault());
+                        context.SaveChanges();
+                        return 0;
+                    }
+                    else if(checkIfDifferentRatingExists.Any())
+                    {
+                        checkIfDifferentRatingExists.FirstOrDefault().Rating = rating;
+                        context.SaveChanges();
+                        return 2;
+                    }
+                    else
+                    {
+                        context.MovieRatings.Add(movieRating);
+                        context.SaveChanges();
+                        return 1;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    return -1;
+                }
+            }
+        }
+
 
     }
 }
