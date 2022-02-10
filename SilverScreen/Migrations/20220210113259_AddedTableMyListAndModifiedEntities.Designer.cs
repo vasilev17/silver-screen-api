@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SilverScreen.Models.Tables;
 
 namespace SilverScreen.Migrations
 {
     [DbContext(typeof(SilverScreenContext))]
-    partial class SilverScreenContextModelSnapshot : ModelSnapshot
+    [Migration("20220210113259_AddedTableMyListAndModifiedEntities")]
+    partial class AddedTableMyListAndModifiedEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,10 +144,8 @@ namespace SilverScreen.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double");
 
-                    b.Property<string>("ReleaseDate")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("varchar(15)");
+                    b.Property<short>("ReleaseDate")
+                        .HasColumnType("year");
 
                     b.Property<string>("Thumbnail")
                         .IsRequired()
@@ -247,14 +247,14 @@ namespace SilverScreen.Migrations
                         .HasColumnType("int")
                         .HasColumnName("StaffID");
 
-                    b.Property<int>("MovieId")
+                    b.Property<int>("MoveId")
                         .HasColumnType("int")
-                        .HasColumnName("MovieID");
+                        .HasColumnName("MoveID");
 
-                    b.HasKey("StaffId", "MovieId")
+                    b.HasKey("StaffId", "MoveId")
                         .HasName("PRIMARY");
 
-                    b.HasIndex(new[] { "MovieId" }, "SMovieFK");
+                    b.HasIndex(new[] { "MoveId" }, "SMovieFK");
 
                     b.ToTable("MovieStaff");
                 });
@@ -495,9 +495,9 @@ namespace SilverScreen.Migrations
 
             modelBuilder.Entity("SilverScreen.Models.Tables.MovieStaff", b =>
                 {
-                    b.HasOne("SilverScreen.Models.Tables.Movie", "Movie")
+                    b.HasOne("SilverScreen.Models.Tables.Movie", "Move")
                         .WithMany("MovieStaffs")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("MoveId")
                         .HasConstraintName("SMovieFK")
                         .IsRequired();
 
@@ -507,7 +507,7 @@ namespace SilverScreen.Migrations
                         .HasConstraintName("MStaffFK")
                         .IsRequired();
 
-                    b.Navigation("Movie");
+                    b.Navigation("Move");
 
                     b.Navigation("Staff");
                 });

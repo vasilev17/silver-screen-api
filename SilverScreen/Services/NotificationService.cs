@@ -216,10 +216,10 @@ namespace SilverScreen.Services
             }
         }
 
-        public int RespondToFriendRequest(int notificationId)
+        public int RespondToFriendRequest(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
-            var friendRequest = context.Notifications.Where(x => x.Id == notificationId).Include(x => x.User);
+            var friendRequest = context.Notifications.Where(x => x.Id == notificationId && x.UserId == userID).Include(x => x.User);
             if(friendRequest.Any())
             {
                 UserService userService = new UserService(Configuration);
@@ -249,38 +249,54 @@ namespace SilverScreen.Services
             return -1;
         }
 
-        public int ToggleNotificationActivity(int notificationId)
+        public int ToggleNotificationActivity(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
             var notification = context.Notifications.Find(notificationId);
             if(notification != null)
             {
-                if(notification.Active.Value)
+                if (notification.UserId == userID)
                 {
-                    notification.Active = false;
+                    if (notification.Active.Value)
+                    {
+                        notification.Active = false;
+                    }
+                    else
+                    {
+                        notification.Active = true;
+                    }
+                    context.SaveChanges();
+                    context.Dispose();
+                    return 0;
                 }
                 else
                 {
-                    notification.Active = true;
+                    context.Dispose();
+                    return 401;
                 }
-                context.SaveChanges();
-                context.Dispose();
-                return 0;
             }
             context.Dispose();
             return -1;
         }
 
-        public int DeleteNotification(int notificationId)
+        public int DeleteNotification(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
             var notification = context.Notifications.Find(notificationId);
             if (notification != null)
             {
-                context.Remove(notification);
-                context.SaveChanges();
-                context.Dispose();
-                return 0;
+                if (notification.UserId == userID)
+                {
+                    context.Remove(notification);
+                    context.SaveChanges();
+                    context.Dispose();
+                    return 0;
+                }
+                else
+                {
+                    context.Dispose();
+                    return 401;
+                }
             }
             context.Dispose();
             return -1;

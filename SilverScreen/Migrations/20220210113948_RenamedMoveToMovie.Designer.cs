@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SilverScreen.Models.Tables;
 
 namespace SilverScreen.Migrations
 {
     [DbContext(typeof(SilverScreenContext))]
-    partial class SilverScreenContextModelSnapshot : ModelSnapshot
+    [Migration("20220210113948_RenamedMoveToMovie")]
+    partial class RenamedMoveToMovie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,10 +144,8 @@ namespace SilverScreen.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("double");
 
-                    b.Property<string>("ReleaseDate")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("varchar(15)");
+                    b.Property<short>("ReleaseDate")
+                        .HasColumnType("year");
 
                     b.Property<string>("Thumbnail")
                         .IsRequired()
@@ -249,7 +249,7 @@ namespace SilverScreen.Migrations
 
                     b.Property<int>("MovieId")
                         .HasColumnType("int")
-                        .HasColumnName("MovieID");
+                        .HasColumnName("MoveID");
 
                     b.HasKey("StaffId", "MovieId")
                         .HasName("PRIMARY");

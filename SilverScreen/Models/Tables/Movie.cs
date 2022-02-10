@@ -14,6 +14,7 @@ namespace SilverScreen.Models.Tables
             MovieNotifications = new HashSet<MovieNotification>();
             MovieRatings = new HashSet<MovieRating>();
             MovieStaffs = new HashSet<MovieStaff>();
+            MyLists = new HashSet<MyList>();
             Notifications = new HashSet<Notification>();
         }
 
@@ -25,7 +26,8 @@ namespace SilverScreen.Models.Tables
         public string Trailer { get; set; }
         public double Rating { get; set; }
         public string NetflixUrl { get; set; }
-        public short ReleaseDate { get; set; }
+        public string ReleaseDate { get; set; }
+        public bool IsSeries { get; set; }
         public int Duration { get; set; }
         public string MaturityRating { get; set; }
 
@@ -34,6 +36,7 @@ namespace SilverScreen.Models.Tables
         public virtual ICollection<MovieNotification> MovieNotifications { get; set; }
         public virtual ICollection<MovieRating> MovieRatings { get; set; }
         public virtual ICollection<MovieStaff> MovieStaffs { get; set; }
+        public virtual ICollection<MyList> MyLists { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
     }
 }
