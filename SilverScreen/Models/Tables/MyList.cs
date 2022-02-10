@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SilverScreen.Models.Tables
 {
-    public partial class WatchedMovie
+    public partial class MyList
     {
         public int Id { get; set; }
         public int UserId { get; set; }

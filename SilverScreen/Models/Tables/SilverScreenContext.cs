@@ -29,6 +29,7 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<MovieNotification> MovieNotifications { get; set; }
         public virtual DbSet<MovieRating> MovieRatings { get; set; }
         public virtual DbSet<MovieStaff> MovieStaffs { get; set; }
+        public virtual DbSet<MyList> MyLists { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<staff> staff { get; set; }
@@ -267,6 +268,33 @@ namespace SilverScreen.Models.Tables
                     .HasForeignKey(d => d.StaffId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("MStaffFK");
+            });
+
+            modelBuilder.Entity<MyList>(entity =>
+            {
+                entity.ToTable("MyList");
+
+                entity.HasIndex(e => e.MovieId, "MLMovieFK");
+
+                entity.HasIndex(e => e.UserId, "MLUserFK");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.MovieId).HasColumnName("MovieID");
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.HasOne(d => d.Movie)
+                    .WithMany(p => p.MyLists)
+                    .HasForeignKey(d => d.MovieId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("MLMovieFK");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.MyLists)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("MLUserFK");
             });
 
             modelBuilder.Entity<Notification>(entity =>
