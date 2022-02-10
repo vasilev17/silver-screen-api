@@ -148,7 +148,8 @@ namespace SilverScreen
             {
                 endpoints.MapControllers();
             });
-            IMDbAPIService.LoadMovieIntoDB("The Revenant");
+            //IMDbAPIService.LoadMovieIntoDB("The Revenant");
+
         }
     }
 }

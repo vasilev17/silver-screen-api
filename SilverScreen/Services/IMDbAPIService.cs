@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using RestSharp;
 using SilverScreen.Models;
+using SilverScreen.Models.Tables;
 
 namespace SilverScreen.Services
 {
@@ -20,8 +21,10 @@ namespace SilverScreen.Services
             configuration = config;
         }
 
-        public static void LoadMovieIntoDB(string title)
+        public void LoadMovieIntoDB(string title)
         {
+            SilverScreenContext context = new SilverScreenContext(configuration); 
+
             string url = "https://imdb-api.com/API/AdvancedSearch/k_faxyw40f";
             var client = new RestClient(url);
             var request = new RestRequest();
@@ -36,10 +39,37 @@ namespace SilverScreen.Services
             var responseTrailer = clientTrailer.Get(requestTrailer);
             var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
             //Console.WriteLine(response.Content.ToString());
-            Console.WriteLine(extractedTrailer.linkEmbed);
-            
+            //Console.WriteLine(extractedFilm.results[0].id);
+            //Console.WriteLine(extractedFilm.results[0].description);
+            //Console.WriteLine(extractedFilm.results[0].genres);
+            //Console.WriteLine(extractedFilm.results[0].image);
+            //Console.WriteLine(extractedFilm.results[0].imDbRating);
+            //Console.WriteLine(extractedFilm.results[0].plot);
+            //Console.WriteLine(extractedFilm.results[0].runtimeStr);
+            //Console.WriteLine(extractedFilm.results[0].stars);
+            //Console.WriteLine(extractedFilm.results[0].contentRating);
+
+
+            var movie = new Movie()
+            {
+                ImdbId = extractedFilm.results[0].id,
+                Title = extractedFilm.results[0].title,
+                Description = extractedFilm.results[0].plot,
+                Thumbnail = extractedFilm.results[0].image,
+                Rating = Double.Parse(extractedFilm.results[0].imDbRating),
+                Duration = int.Parse(extractedFilm.results[0].runtimeStr.Split(' ')[0]),
+                MaturityRating = extractedFilm.results[0].contentRating,
+                Trailer = extractedTrailer.linkEmbed,
+                //ReleaseDate = 2020
+            };
+            using (context)
+            {
+                context.Movies.Add(movie);
+                context.SaveChanges();
+            }
 
         }
         
-        }
+
+    }
 }
