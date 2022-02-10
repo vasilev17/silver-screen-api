@@ -86,18 +86,23 @@ namespace SilverScreen.Controllers
         [HttpPost]
         [Route("RespondToFriendRequest")]
         [Authorize]
-        public JsonResult RespondToFriendRequest(int notificationId) //Needs extra checks for security
+        public IActionResult RespondToFriendRequest(int notificationId) //For test
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            switch (notificationService.RespondToFriendRequest(notificationId)) 
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-                case 0:
-                    return Json(new { code = 0 });
-                case -1:
-                    return Json(new { code = 404, errorMsg = "Notification not found!" });
-                default:
-                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                NotificationService notificationService = new NotificationService(Configuration);
+                switch (notificationService.RespondToFriendRequest(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), notificationId))
+                {
+                    case 0:
+                        return Json(new { code = 0 });
+                    case -1:
+                        return Json(new { code = 404, errorMsg = "Notification not found!" });
+                    default:
+                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                }
             }
+            return Unauthorized();
         }
 
         [HttpPost]
@@ -124,35 +129,49 @@ namespace SilverScreen.Controllers
         [HttpPatch]
         [Route("ToggleNotificationActivity")]
         [Authorize]
-        public JsonResult ToggleNotificationActivity(int notificationId) //Needs extra checks for security
+        public IActionResult ToggleNotificationActivity(int notificationId) //For test
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            switch (notificationService.ToggleNotificationActivity(notificationId))
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-                case 0:
-                    return Json(new { code = 0 });
-                case -1:
-                    return Json(new { code = 404, errorMsg = "Notification not found!" });
-                default:
-                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                NotificationService notificationService = new NotificationService(Configuration);
+                switch (notificationService.ToggleNotificationActivity(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), notificationId))
+                {
+                    case 0:
+                        return Json(new { code = 0 });
+                    case -1:
+                        return Json(new { code = 404, errorMsg = "Notification not found!" });
+                    case 401:
+                        return Unauthorized();
+                    default:
+                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                }
             }
+            return Unauthorized();
         }
 
         [HttpDelete]
         [Route("DeleteNotification")]
         [Authorize]
-        public JsonResult DeleteNotifications(int notificationId) //Needs extra checks for security
+        public IActionResult DeleteNotifications(int notificationId) //For test
         {
-            NotificationService notificationService = new NotificationService(Configuration);
-            switch (notificationService.DeleteNotification(notificationId))
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-                case 0:
-                    return Json(new { code = 0 });
-                case -1:
-                    return Json(new { code = 404, errorMsg = "Notification not found!" });
-                default:
-                    return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                NotificationService notificationService = new NotificationService(Configuration);
+                switch (notificationService.DeleteNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), notificationId))
+                {
+                    case 0:
+                        return Json(new { code = 0 });
+                    case -1:
+                        return Json(new { code = 404, errorMsg = "Notification not found!" });
+                    case 401:
+                        return Unauthorized();
+                    default:
+                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                }
             }
+            return Unauthorized();
         }
     }
 }
