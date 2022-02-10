@@ -10,7 +10,6 @@ namespace SilverScreen.Models.Tables
     public partial class SilverScreenContext : DbContext
     {
         private readonly IConfiguration Configuration;
-
         public SilverScreenContext(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,7 +29,6 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<MovieNotification> MovieNotifications { get; set; }
         public virtual DbSet<MovieRating> MovieRatings { get; set; }
         public virtual DbSet<MovieStaff> MovieStaffs { get; set; }
-        public virtual DbSet<MyList> MyLists { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<staff> staff { get; set; }
@@ -247,20 +245,20 @@ namespace SilverScreen.Models.Tables
 
             modelBuilder.Entity<MovieStaff>(entity =>
             {
-                entity.HasKey(e => new { e.StaffId, e.MovieId })
+                entity.HasKey(e => new { e.StaffId, e.MoveId })
                     .HasName("PRIMARY");
 
                 entity.ToTable("MovieStaff");
 
-                entity.HasIndex(e => e.MovieId, "SMovieFK");
+                entity.HasIndex(e => e.MoveId, "SMovieFK");
 
                 entity.Property(e => e.StaffId).HasColumnName("StaffID");
 
-                entity.Property(e => e.MovieId).HasColumnName("MovieID");
+                entity.Property(e => e.MoveId).HasColumnName("MoveID");
 
-                entity.HasOne(d => d.Movie)
+                entity.HasOne(d => d.Move)
                     .WithMany(p => p.MovieStaffs)
-                    .HasForeignKey(d => d.MovieId)
+                    .HasForeignKey(d => d.MoveId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("SMovieFK");
 
@@ -269,33 +267,6 @@ namespace SilverScreen.Models.Tables
                     .HasForeignKey(d => d.StaffId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("MStaffFK");
-            });
-
-            modelBuilder.Entity<MyList>(entity =>
-            {
-                entity.ToTable("MyList");
-
-                entity.HasIndex(e => e.MovieId, "WMMovieFK");
-
-                entity.HasIndex(e => e.UserId, "WMUserFK");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.MovieId).HasColumnName("MovieID");
-
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.HasOne(d => d.Movie)
-                    .WithMany(p => p.MyLists)
-                    .HasForeignKey(d => d.MovieId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("WMMovieFK");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.MyLists)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("WMUserFK");
             });
 
             modelBuilder.Entity<Notification>(entity =>

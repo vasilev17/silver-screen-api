@@ -126,9 +126,6 @@ namespace SilverScreen.Migrations
                         .HasColumnType("varchar(15)")
                         .HasColumnName("IMDB_ID");
 
-                    b.Property<bool>("IsSeries")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("MaturityRating")
                         .IsRequired()
                         .HasColumnType("enum('G','PG','PG-13','R','NC-17','NULL')")
@@ -245,43 +242,16 @@ namespace SilverScreen.Migrations
                         .HasColumnType("int")
                         .HasColumnName("StaffID");
 
-                    b.Property<int>("MovieId")
+                    b.Property<int>("MoveId")
                         .HasColumnType("int")
-                        .HasColumnName("MovieID");
+                        .HasColumnName("MoveID");
 
-                    b.HasKey("StaffId", "MovieId")
+                    b.HasKey("StaffId", "MoveId")
                         .HasName("PRIMARY");
 
-                    b.HasIndex(new[] { "MovieId" }, "SMovieFK");
+                    b.HasIndex(new[] { "MoveId" }, "SMovieFK");
 
                     b.ToTable("MovieStaff");
-                });
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.MyList", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int")
-                        .HasColumnName("MovieID");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    b.Property<bool>("Watched")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "MovieId" }, "WMMovieFK");
-
-                    b.HasIndex(new[] { "UserId" }, "WMUserFK");
-
-                    b.ToTable("MyList");
                 });
 
             modelBuilder.Entity("SilverScreen.Models.Tables.Notification", b =>
@@ -493,9 +463,9 @@ namespace SilverScreen.Migrations
 
             modelBuilder.Entity("SilverScreen.Models.Tables.MovieStaff", b =>
                 {
-                    b.HasOne("SilverScreen.Models.Tables.Movie", "Movie")
+                    b.HasOne("SilverScreen.Models.Tables.Movie", "Move")
                         .WithMany("MovieStaffs")
-                        .HasForeignKey("MovieId")
+                        .HasForeignKey("MoveId")
                         .HasConstraintName("SMovieFK")
                         .IsRequired();
 
@@ -505,28 +475,9 @@ namespace SilverScreen.Migrations
                         .HasConstraintName("MStaffFK")
                         .IsRequired();
 
-                    b.Navigation("Movie");
+                    b.Navigation("Move");
 
                     b.Navigation("Staff");
-                });
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.MyList", b =>
-                {
-                    b.HasOne("SilverScreen.Models.Tables.Movie", "Movie")
-                        .WithMany("MyLists")
-                        .HasForeignKey("MovieId")
-                        .HasConstraintName("WMMovieFK")
-                        .IsRequired();
-
-                    b.HasOne("SilverScreen.Models.Tables.User", "User")
-                        .WithMany("MyLists")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("WMUserFK")
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SilverScreen.Models.Tables.Notification", b =>
@@ -572,8 +523,6 @@ namespace SilverScreen.Migrations
 
                     b.Navigation("MovieStaffs");
 
-                    b.Navigation("MyLists");
-
                     b.Navigation("Notifications");
                 });
 
@@ -588,8 +537,6 @@ namespace SilverScreen.Migrations
                     b.Navigation("MovieNotifications");
 
                     b.Navigation("MovieRatings");
-
-                    b.Navigation("MyLists");
 
                     b.Navigation("NotificationAuthors");
 

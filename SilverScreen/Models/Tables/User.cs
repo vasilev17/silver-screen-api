@@ -14,7 +14,6 @@ namespace SilverScreen.Models.Tables
             FriendListUsers = new HashSet<FriendList>();
             MovieNotifications = new HashSet<MovieNotification>();
             MovieRatings = new HashSet<MovieRating>();
-            MyLists = new HashSet<MyList>();
             NotificationAuthors = new HashSet<Notification>();
             NotificationUsers = new HashSet<Notification>();
         }
@@ -33,7 +32,6 @@ namespace SilverScreen.Models.Tables
         public virtual ICollection<FriendList> FriendListUsers { get; set; }
         public virtual ICollection<MovieNotification> MovieNotifications { get; set; }
         public virtual ICollection<MovieRating> MovieRatings { get; set; }
-        public virtual ICollection<MyList> MyLists { get; set; }
         public virtual ICollection<Notification> NotificationAuthors { get; set; }
         public virtual ICollection<Notification> NotificationUsers { get; set; }
     }
