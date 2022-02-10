@@ -60,7 +60,7 @@ namespace SilverScreen.Services
                 Duration = int.Parse(extractedFilm.results[0].runtimeStr.Split(' ')[0]),
                 MaturityRating = extractedFilm.results[0].contentRating,
                 Trailer = extractedTrailer.linkEmbed,
-                //ReleaseDate = 2020
+                ReleaseDate = extractedFilm.results[0].description
             };
             using (context)
             {
