@@ -26,7 +26,7 @@ namespace SilverScreen.Models.Tables
         public string Trailer { get; set; }
         public double Rating { get; set; }
         public string NetflixUrl { get; set; }
-        public short ReleaseDate { get; set; }
+        public string ReleaseDate { get; set; }
         public bool IsSeries { get; set; }
         public int Duration { get; set; }
         public string MaturityRating { get; set; }
