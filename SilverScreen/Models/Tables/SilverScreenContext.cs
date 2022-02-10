@@ -151,7 +151,9 @@ namespace SilverScreen.Models.Tables
                     .HasMaxLength(100)
                     .HasColumnName("NetflixURL");
 
-                entity.Property(e => e.ReleaseDate).HasColumnType("year");
+                entity.Property(e => e.ReleaseDate)
+                    .IsRequired()
+                    .HasMaxLength(15);
 
                 entity.Property(e => e.Thumbnail)
                     .IsRequired()
@@ -255,7 +257,7 @@ namespace SilverScreen.Models.Tables
 
                 entity.Property(e => e.StaffId).HasColumnName("StaffID");
 
-                entity.Property(e => e.MovieId).HasColumnName("MoveID");
+                entity.Property(e => e.MovieId).HasColumnName("MovieID");
 
                 entity.HasOne(d => d.Movie)
                     .WithMany(p => p.MovieStaffs)

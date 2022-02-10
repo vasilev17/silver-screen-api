@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using SilverScreen.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,12 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class IMDbAPIController : Controller
     {
+        private IConfiguration configuration;
+
+        public IMDbAPIController(IConfiguration config)
+        {
+            configuration = config;
+        }
         [HttpGet]
         [Route("TestNotification")]
         public string GetTestNotification()
@@ -29,10 +37,18 @@ namespace SilverScreen.Controllers
             return "Put method";
         }
         [HttpPost]
-        [Route("TestNotification")]
-        public string PostTestNotification()
+        [Route("AddMovieToDB")]
+        public void AddMovieToDB(string title)
         {
-            return "Post method";
+            try
+            {
+                IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
+                iMDbAPIService.LoadMovieIntoDB(title);
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }
