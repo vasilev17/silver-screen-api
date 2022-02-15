@@ -50,6 +50,14 @@ namespace SilverScreen.Services
                 {
                     user = context.Users.Where(s => s.Email.Equals(login.Email)).FirstOrDefault();
                 }
+                else
+                {
+                    throw new Exception("Wrong Password");
+                }
+            }
+            else
+            {
+                throw new Exception("This Email doesn't exist");
             }
 
             return user;
@@ -80,25 +88,55 @@ namespace SilverScreen.Services
             AuthenticationService authentication = new AuthenticationService();
             if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
             {
+
                 if (!context.Users.Where(s => s.Username.Equals(login.Username)).Any())
                 {
-
-
-                    User registeredUser = new User()
+                    if (login.Password.Length >= 6 && login.Password.Length <= 25)
                     {
-                        Username = login.Username,
-                        Password = authentication.Encrypt(login.Password),
-                        Email = login.Email,
-                        Avatar = "sdsadsass",
-                        IsAdmin = false,
-                        IsDeleted = false,
-                        Banned = null
-                    };
-                    context.Add(registeredUser);
-                    context.SaveChanges();
-                    user = registeredUser;
+                        if (login.Password.Any(char.IsUpper))
+                        {
+                            if (!login.Password.Contains(" "))
+                            {
+                                User registeredUser = new User()
+                                {
+                                    Username = login.Username,
+                                    Password = authentication.Encrypt(login.Password),
+                                    Email = login.Email,
+                                    Avatar = "https://i.ibb.co/zVd6Vnv/defautprifilepic.png",
+                                    IsAdmin = false,
+                                    IsDeleted = false,
+                                    Banned = null
+                                };
+                                context.Add(registeredUser);
+                                context.SaveChanges();
+                                user = registeredUser;
+                            }
+                            else
+                            {
+                                throw new Exception("No white space!");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("At least one upper case");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("The password requires more than 6 and less than 25 characters");
+                    }
                 }
+                else
+                {
+                    throw new Exception("This username is already used");
+                }
+
             }
+            else
+            {
+                throw new Exception("This Email is already used");
+            }
+
             return user;
         }
 
@@ -137,11 +175,13 @@ namespace SilverScreen.Services
             SilverScreenContext context = new SilverScreenContext(configuration);
             if (!context.FriendLists.Where(x => (x.UserId == userID && x.UserId1 == friendID) || (x.UserId == friendID && x.UserId1 == userID)).Any())
             {
-                FriendList frList1 = new FriendList {
+                FriendList frList1 = new FriendList
+                {
                     UserId = userID,
                     UserId1 = friendID
                 };
-                FriendList frList2 = new FriendList {
+                FriendList frList2 = new FriendList
+                {
                     UserId = friendID,
                     UserId1 = userID
                 };
@@ -150,7 +190,7 @@ namespace SilverScreen.Services
                 context.SaveChanges();
                 return 0;
             }
-            return -1; 
+            return -1;
         }
     }
 }

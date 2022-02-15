@@ -36,16 +36,24 @@ namespace SilverScreen.Controllers
         public IActionResult Login([FromBody] Login login)
         {
             UserService userService = new UserService(Config);
-            IActionResult response = Unauthorized();
-            var user = userService.AuthenticateUser(login);
-
-            if (user != null)
+            try
             {
-                var tokenString = userService.GenerateJSONWebToken(user);
-                response = Ok(new { token = tokenString });
-            }
+                IActionResult response = Unauthorized();
+                var user = userService.AuthenticateUser(login);
 
-            return response;
+                if (user != null)
+                {
+                    var tokenString = userService.GenerateJSONWebToken(user);
+                    response = Ok(new { token = tokenString });
+                }
+
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { ErrorMessage = ex.Message });
+            }
         }
 
         [AllowAnonymous]
@@ -54,14 +62,27 @@ namespace SilverScreen.Controllers
         public IActionResult Register([FromBody] Login login)
         {
             UserService userService = new UserService(Config);
-            var user = userService.RegisterUser(login);
-
-            if (user != null)
+            try
             {
-                var tokenString = userService.GenerateJSONWebToken(user);
-                return Ok(new { token = tokenString });
+                var user = userService.RegisterUser(login);
+                if (user != null)
+                {
+                    var tokenString = userService.GenerateJSONWebToken(user);
+                    return Ok(new { token = tokenString });
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
-            return Ok(new { ErrorMessage = "Error" });
+            catch(Exception ex)
+            {
+                return Ok(new { ErrorMessage = ex.Message });
+            }
+            
+
+            
+            
             //return 500
         }
 

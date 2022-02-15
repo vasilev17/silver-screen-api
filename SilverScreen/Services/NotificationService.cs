@@ -17,6 +17,12 @@ namespace SilverScreen.Services
             Configuration = configuration;
         }
         
+
+        /// <summary>
+        /// Gets all notification for a corresponding user by id.
+        /// </summary>
+        /// <param name="userId">User identifier.</param>
+        /// <returns>A list that is full or empty, based on how social is the corresponding user.</returns>
         public Notification[] GetAllNotificationsForUser(int userId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -75,6 +81,11 @@ namespace SilverScreen.Services
             return notifications.ToArray();
         }
 
+        /// <summary>
+        /// Gets all upcoming movie notifications for a corresponding user by id.
+        /// </summary>
+        /// <param name="userId">User identifier.</param>
+        /// <returns>A list that is full or empty, based on what's the interest for the corresponding user on upcoming films.</returns>
         public MovieNotification[] GetAllMovieNotificationsForUser(int userId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -87,7 +98,7 @@ namespace SilverScreen.Services
 
             foreach (var notification in notificationsRaw)
             {
-                if(notification.Date < DateTime.UtcNow)
+                if (notification.Date < DateTime.UtcNow)
                 {
                     notifications.Add(new MovieNotification
                     {
@@ -108,8 +119,13 @@ namespace SilverScreen.Services
             return notifications.ToArray();
         }
 
-
-        //Response codes: Duplicate/Error(-1), OK(0)
+        /// <summary>
+        /// Send friend request via the notification system.
+        /// </summary>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="friendId">User identifier of the targeted friend.</param>
+        /// <param name="message">User stating why he wants the targeted friend in the friend list.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for finding a duplicate.</returns>
         public int SendFriendNotification(int userId, int friendId, string message)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -141,6 +157,14 @@ namespace SilverScreen.Services
             }
         }
 
+        /// <summary>
+        /// Recommend a movie to a user. There are currently no checks if the user and the another user are friends.
+        /// </summary>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="friendId">User identifier of the targeted friend.</param>
+        /// <param name="movieId">Movie identifier.</param>
+        /// <param name="message">User stating why he wants the another user to watch the corresponding film.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for throwing an exception.</returns>
         public int RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -178,6 +202,13 @@ namespace SilverScreen.Services
             }
         }
 
+        /// <summary>
+        /// Sets notification for upcoming film for a user.
+        /// </summary>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="movieID">Movie identifier.</param>
+        /// <param name="status">If true, delete the notification, but if false, add a notification.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, 404 for not found, -1 if the record exists.</returns>
         public int SetFilmReleaseNotification(int userId, int movieID, bool status)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -216,6 +247,12 @@ namespace SilverScreen.Services
             }
         }
 
+        /// <summary>
+        /// Accepts friend request for the target user.
+        /// </summary>
+        /// <param name="userID">User identifier.</param>
+        /// <param name="notificationId">Notification identifier that matches the friend request.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found</returns>
         public int RespondToFriendRequest(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -249,6 +286,12 @@ namespace SilverScreen.Services
             return -1;
         }
 
+        /// <summary>
+        /// Toggle the read status of the notification for a targeted user.
+        /// </summary>
+        /// <param name="userID">User identifier.</param>
+        /// <param name="notificationId">Notification identifier.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found, 401 for unauthorized.</returns>
         public int ToggleNotificationActivity(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
@@ -279,6 +322,12 @@ namespace SilverScreen.Services
             return -1;
         }
 
+        /// <summary>
+        /// Deletes a notification for targeted user.
+        /// </summary>
+        /// <param name="userID">User identifier.</param>
+        /// <param name="notificationId">Notification identifier.</param>
+        /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found, 401 for unauthorized.</returns>
         public int DeleteNotification(int userID, int notificationId)
         {
             SilverScreenContext context = new SilverScreenContext(Configuration);
