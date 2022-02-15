@@ -17,24 +17,26 @@ namespace SilverScreen.Services
             configuration = config;
         }
         
-
+        /// <summary>
+        /// Gets the movie that corresponds to a perticular ID
+        /// </summary>
+        /// <param name="movieID">The ID, based on which the movie is retrieved</param>
+        /// <returns>Returns the movie object that has the entered ID</returns>
         public Movie GetMovieByID(int movieID)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
             using (context)
             {
                 var movie = context.Movies.Where(s => s.Id == movieID);
-                if (movie.Any())
-                {
                     return movie.FirstOrDefault();
-                }
-                else
-                {
-                    return null;
-                }
             }
         }
 
+        /// <summary>
+        /// Gets all the comments that a certain movie has.
+        /// </summary>
+        /// <param name="movieID">The ID, based on which the comments for the right movie are retrieved.</param>
+        /// <returns>Returns a list containing all of the comments a movie has</returns>
         public List<Comment> GetCommentsByMovieID(int movieID)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
@@ -51,6 +53,12 @@ namespace SilverScreen.Services
 
         }
 
+        /// <summary>
+        /// Gets all the ratings that friends have given to a certain movie and calculates the average
+        /// </summary>
+        /// <param name="userID">The ID of the user, based on which the right group of friends is selected.</param>
+        /// <param name="movieID">The ID of the movie, whose friend rating is wanted</param>
+        /// <returns>Returns a number of type double, which represents the average of all friend ratings given to that movie</returns>
         public double GetFriendRatingByUser(int userID, int movieID)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
@@ -80,6 +88,13 @@ namespace SilverScreen.Services
             
         }
 
+        /// <summary>
+        /// Adds or removes a perticular movie to a list of watched or desired movies (MyList), based on wether it already exists in the list for the user
+        /// </summary>
+        /// <param name="userID">The ID of the user, based on which the movie is added to the right "MyList"</param>
+        /// <param name="movieID">The ID of the movie, which should be added to "MyList"</param>
+        /// <param name="watched">A boolean, which shows whether the movie should be added as already watched or desired</param>
+        /// <returns>Returns an integer number, that shows whether the movie was successfully added (1) / removed (0) or an error occurred (-1)</returns>
         public int ToggleMovieInMyList(int userID, int movieID, bool watched)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
@@ -118,6 +133,14 @@ namespace SilverScreen.Services
             }
         }
 
+        /// <summary>
+        /// Saves/Deletes or modifies a rating a user gives to a movie
+        /// </summary>
+        /// <param name="userID">The ID of the user that is giving/deleting or modifying the rating.</param>
+        /// <param name="movieID">The ID of the movie that corresponds to the rating given/removed/changed</param>
+        /// <param name="rating">A number of type double that represents the rating that the user selects.</param>
+        /// <returns>Returns an integer number, that shows whether a new rating was successfully added (1) / an old rating was removed (0) /
+        /// an old rating was modified (2) or an error occurred (-1)</returns>
         public int GiveMovieRating(int userID, int movieID, double rating)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
