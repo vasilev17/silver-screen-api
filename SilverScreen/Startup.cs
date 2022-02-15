@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -51,10 +52,7 @@ namespace SilverScreen
            };
        });
 
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
-            );
+            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
@@ -85,6 +83,9 @@ namespace SilverScreen
 
                 c.AddSecurityDefinition("bearerAuth", securityScheme);
                 c.AddSecurityRequirement(securityRequirement);
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
         }
 

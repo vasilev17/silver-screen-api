@@ -20,6 +20,10 @@ namespace SilverScreen.Controllers
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// Gets all notifications to the corresponding user. Needs token to authenticate.
+        /// </summary>
+        /// <returns>Unauthorized or a list with notifications.</returns>
         [HttpGet]
         [Route("GetNotifications")]
         [Authorize]
@@ -33,9 +37,13 @@ namespace SilverScreen.Controllers
                 NotificationService notificationService = new NotificationService(Configuration);
                 notifications = notificationService.GetAllNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
             }   
-            return notifications; //It returns complex structure. Should I make another model for this?
+            return notifications;
         }
 
+        /// <summary>
+        /// Gets all notifications for upcoming movies based to the corresponding user. Needs token to authenticate.
+        /// </summary>
+        /// <returns>Unauthorized or a list with notifications.</returns>
         [HttpGet]
         [Route("GetMovieNotifications")]
         [Authorize]
@@ -49,13 +57,19 @@ namespace SilverScreen.Controllers
                 NotificationService notificationService = new NotificationService(Configuration);
                 notifications = notificationService.GetAllMovieNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
             }
-            return notifications; //It returns complex structure. Should I make another model for this?
+            return notifications;
         }
 
+        /// <summary>
+        /// Sets notifications for upcoming movie. Needs token to authenticate.
+        /// </summary>
+        /// <param name="movieID">Movie identifier.</param>
+        /// <param name="status">If true, delete the notification. If false, add a notification.</param>
+        /// <returns>Returns code, based on outcome. Return code 0 is the best outcome.</returns>
         [HttpPost]
         [Route("SetFilmReleaseNotification")]
         [Authorize]
-        public IActionResult SetFilmReleaseNotification(int movieID, bool status) //by status I mean delete if true, create if false 
+        public IActionResult SetFilmReleaseNotification(int movieID, bool status)
         {
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
@@ -83,6 +97,11 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Accepts friend request by calling the User Service via the Notification Service. Token authentication required. 
+        /// </summary>
+        /// <param name="notificationId">Notification identifier that matches that friend request.</param>
+        /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
         [HttpPost]
         [Route("RespondToFriendRequest")]
         [Authorize]
@@ -105,6 +124,13 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Recomend a movie to another user. Currently there are no checks if that user is his friend or not. Token authentication required.
+        /// </summary>
+        /// <param name="friendId">User identifier of the another user.</param>
+        /// <param name="movieId">Movie identifier.</param>
+        /// <param name="message">The message that the user wants to send to the another user.</param>
+        /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
         [HttpPost]
         [Route("RecommendMovieToAFriend")]
         [Authorize]
@@ -126,6 +152,12 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+
+        /// <summary>
+        /// Used for when the user read the notification. If the method is called again, then the notification is marked as unread. Needs authentication token.
+        /// </summary>
+        /// <param name="notificationId">Notification identifier.</param>
+        /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
         [HttpPatch]
         [Route("ToggleNotificationActivity")]
         [Authorize]
@@ -150,6 +182,11 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Deletes the notification from the database, which corresponds to the currenly logged in user. Token authentication required.
+        /// </summary>
+        /// <param name="notificationId">Notification identifier.</param>
+        /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
         [HttpDelete]
         [Route("DeleteNotification")]
         [Authorize]
