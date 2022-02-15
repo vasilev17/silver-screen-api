@@ -149,7 +149,7 @@ namespace SilverScreen
             {
                 endpoints.MapControllers();
             });
-            //IMDbAPIService.LoadMovieIntoDB("The Revenant"); It slows down program startup by 2 seconds
+            
         }
     }
 }
