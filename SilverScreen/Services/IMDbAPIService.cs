@@ -57,20 +57,33 @@ namespace SilverScreen.Services
 
             NumberFormatInfo nfi = new NumberFormatInfo();
             nfi.NumberDecimalSeparator = ".";
+            var movie = new Movie();
+          
+                movie.ImdbId = extractedFilm.results[0].id;
+                movie.Title = extractedFilm.results[0].title;
+                if (extractedFilm.results[0].plot == null)
+                {
+                    movie.Description = "You caught us! We don't have the description yet.";
+                }
+                else
+                {
+                    movie.Description = extractedFilm.results[0].plot;
+                }
 
-            var movie = new Movie()
-            {
-                ImdbId = extractedFilm.results[0].id,
-                Title = extractedFilm.results[0].title,
-                Description = extractedFilm.results[0].plot,
-                Thumbnail = extractedFilm.results[0].image,
-                Rating = Double.Parse(extractedFilm.results[0].imDbRating, nfi),
-                Duration = int.Parse(extractedFilm.results[0].runtimeStr.Split(' ')[0]), 
-                MaturityRating = extractedFilm.results[0].contentRating,
-                Trailer = extractedTrailer.linkEmbed,
-                ReleaseDate = extractedFilm.results[0].description
-            };
-            
+                if (extractedFilm.results[0].image == null)
+                {
+                    movie.Thumbnail = "https://iili.io/0pLhOX.png";
+                }
+                else
+                {
+                    movie.Thumbnail = extractedFilm.results[0].image;
+                }
+                movie.Rating = Double.Parse(extractedFilm.results[0].imDbRating, nfi);
+                movie.Duration = int.Parse(extractedFilm.results[0].runtimeStr.Split(' ')[0]);
+                movie.MaturityRating = extractedFilm.results[0].contentRating;
+                movie.Trailer = extractedTrailer.linkEmbed;
+                movie.ReleaseDate = extractedFilm.results[0].description;
+  
             context.Add(movie);
             context.SaveChanges();
 

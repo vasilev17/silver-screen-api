@@ -15,10 +15,10 @@ namespace SilverScreen.Models
         public string title { get; set; }
         public string description { get; set; }
         public string image { get; set; }
-        public string runtimeStr { get; set; }
-        public string imDbRating { get; set; }
-        public string plot { get; set; }
-        public string contentRating { get; set; }
+        public string runtimeStr { get; set; } 
+        public string imDbRating { get; set; } 
+        public string plot { get; set; } 
+        public string contentRating { get; set; } 
 
         public List<IMDBGenres> genreList { get; set; }
     }

@@ -51,7 +51,7 @@ namespace SilverScreen.Controllers
             }
             catch(MySql.Data.MySqlClient.MySqlException)
             {
-
+                
             }
         }
     }
