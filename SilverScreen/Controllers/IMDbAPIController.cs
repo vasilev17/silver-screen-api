@@ -45,7 +45,7 @@ namespace SilverScreen.Controllers
                 IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
                 iMDbAPIService.LoadMovieIntoDB(title);
             }
-            catch (Exception)
+            catch(MySql.Data.MySqlClient.MySqlException)
             {
 
             }

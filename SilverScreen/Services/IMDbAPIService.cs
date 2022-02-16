@@ -9,6 +9,7 @@ using System.Text;
 using RestSharp;
 using SilverScreen.Models;
 using SilverScreen.Models.Tables;
+using System.Globalization;
 
 namespace SilverScreen.Services
 {
@@ -23,9 +24,10 @@ namespace SilverScreen.Services
 
         public void LoadMovieIntoDB(string title)
         {
+            string API_KEY = "k_44lmaclu";
             SilverScreenContext context = new SilverScreenContext(configuration); 
 
-            string url = "https://imdb-api.com/API/AdvancedSearch/k_faxyw40f";
+            string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
             var client = new RestClient(url);
             var request = new RestRequest();
             request.AddParameter("title", title);
@@ -33,32 +35,38 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
+            Console.WriteLine(response.Content);
+
             string imdbId = extractedFilm.results[0].id;
-            string urlTrailer = $"https://imdb-api.com/en/API/Trailer/k_faxyw40f/" + imdbId;
+            string urlTrailer = $"https://imdb-api.com/en/API/Trailer/"+ API_KEY + "/" + imdbId;
             var clientTrailer = new RestClient(urlTrailer);
             var requestTrailer = new RestRequest();
             var responseTrailer = clientTrailer.Get(requestTrailer);
             var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
 
-            string urlCast = "https://imdb-api.com/en/API/FullCast/k_faxyw40f/"+ imdbId;
+            string urlCast = "https://imdb-api.com/en/API/FullCast/" + API_KEY + "/" + imdbId;
             var clientCast = new RestClient(urlCast);
             var requestCast = new RestRequest();
             var responseCast = clientCast.Get(requestCast);
             var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+
+            NumberFormatInfo nfi = new NumberFormatInfo();
+            nfi.NumberDecimalSeparator = ".";
+
             var movie = new Movie()
             {
                 ImdbId = extractedFilm.results[0].id,
                 Title = extractedFilm.results[0].title,
                 Description = extractedFilm.results[0].plot,
                 Thumbnail = extractedFilm.results[0].image,
-                Rating = Double.Parse(extractedFilm.results[0].imDbRating),
+                Rating = Double.Parse(extractedFilm.results[0].imDbRating, nfi),
                 Duration = int.Parse(extractedFilm.results[0].runtimeStr.Split(' ')[0]), 
                 MaturityRating = extractedFilm.results[0].contentRating,
                 Trailer = extractedTrailer.linkEmbed,
                 ReleaseDate = extractedFilm.results[0].description
             };
             
-            context.Movies.Add(movie);
+            context.Add(movie);
             context.SaveChanges();
 
             var genresCount = 3;
@@ -77,7 +85,7 @@ namespace SilverScreen.Services
                         GenreId = genres.FirstOrDefault().Id
 
                     };
-                    context.MovieGenres.Add(movieGenre);
+                    context.Add(movieGenre);
                 }
                 else
                 {
@@ -86,7 +94,7 @@ namespace SilverScreen.Services
                         Genre1 = extractedFilm.results[0].genreList[i].value
                        
                     };
-                    context.Genres.Add(genre);
+                    context.Add(genre);
                     context.SaveChanges();
                     genres = context.Genres.Where(x => x.Genre1.Equals(extractedFilm.results[0].genreList[i].value));
                     var movieGenre = new MovieGenre
@@ -95,7 +103,7 @@ namespace SilverScreen.Services
                         GenreId = genres.FirstOrDefault().Id
 
                     };
-                    context.MovieGenres.Add(movieGenre);
+                    context.Add(movieGenre);
                 }
             }
             var directorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.directors.items[0].name) && x.Position.Equals(extractedCast.directors.job));
@@ -106,7 +114,7 @@ namespace SilverScreen.Services
                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                     StaffId = directorsCast.FirstOrDefault().Id
                 };
-                context.MovieStaffs.Add(movieStaff);
+                context.Add(movieStaff);
                 
             }
             else
@@ -116,7 +124,7 @@ namespace SilverScreen.Services
                     Name = extractedCast.directors.items[0].name,
                     Position = "Director"
                 };
-                context.staff.Add(director);
+                context.Add(director);
                 context.SaveChanges();
                 directorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.directors.items[0].name) && x.Position.Equals(extractedCast.directors.job));
                 var movieStaff = new MovieStaff
@@ -124,7 +132,7 @@ namespace SilverScreen.Services
                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                     StaffId = directorsCast.FirstOrDefault().Id
                 };
-                context.MovieStaffs.Add(movieStaff);
+                context.Add(movieStaff);
             }
             
             var writersCast = context.staff.Where(x => x.Name.Equals(extractedCast.writers.items[0].name) && x.Position.Equals(extractedCast.writers.job));
@@ -135,7 +143,7 @@ namespace SilverScreen.Services
                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                     StaffId = writersCast.FirstOrDefault().Id
                 };
-                context.MovieStaffs.Add(movieStaff);
+                context.Add(movieStaff);
             }
             else
             {
@@ -144,7 +152,7 @@ namespace SilverScreen.Services
                     Name = extractedCast.writers.items[0].name,
                     Position = "Writer"
                 };
-                context.staff.Add(writer);
+                context.Add(writer);
                 context.SaveChanges();
                 writersCast = context.staff.Where(x => x.Name.Equals(extractedCast.writers.items[0].name) && x.Position.Equals(extractedCast.writers.job));
                 var movieStaff = new MovieStaff
@@ -152,7 +160,7 @@ namespace SilverScreen.Services
                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                     StaffId = writersCast.FirstOrDefault().Id
                 };
-                context.MovieStaffs.Add(movieStaff);
+                context.Add(movieStaff);
             }
             for (int i = 0; i < 3; i++)
             {
@@ -164,7 +172,7 @@ namespace SilverScreen.Services
                         MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                         StaffId = actorsCast.FirstOrDefault().Id
                     };
-                    context.MovieStaffs.Add(movieStaff);
+                    context.Add(movieStaff);
                 }
                 else
                 {
@@ -181,15 +189,10 @@ namespace SilverScreen.Services
                         MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
                         StaffId = actorsCast.FirstOrDefault().Id
                     };
-                    context.MovieStaffs.Add(movieStaff);
+                    context.Add(movieStaff);
                 }
             }
             context.SaveChanges();
-            
-            
-            
-        }
-        
-
+        } 
     }
 }
