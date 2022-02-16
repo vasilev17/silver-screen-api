@@ -89,10 +89,10 @@ namespace SilverScreen.Controllers
                     switch (result)
                     {
                         case 1:
-                            return Json(new { errorMsg = "Movie successfully ADDED to MyList!" });
+                            return Json(new { msg = "Movie successfully ADDED to MyList!" });
                             break;
                         case 0:
-                            return Json(new { errorMsg = "Movie successfully REMOVED from MyList!" });
+                            return Json(new { msg = "Movie successfully REMOVED from MyList!" });
                             break;
                         case -1:
                             return Json(new { errorMsg = "Something went wrong!" });
@@ -125,13 +125,13 @@ namespace SilverScreen.Controllers
                 switch (result)
                 {
                     case 1:
-                        return Json(new { errorMsg = "Movie rating successful!" });
+                        return Json(new { msg = "Movie rating successful!" });
                         break;
                     case 0:
-                        return Json(new { errorMsg = "Successfully REMOVED a rating!" });
+                        return Json(new { msg = "Successfully REMOVED a rating!" });
                         break;
                     case 2:
-                        return Json(new { errorMsg = "Successfully CHANGED a rating!" });
+                        return Json(new { msg = "Successfully CHANGED a rating!" });
                         break;
                     case -1:
                         return Json(new { errorMsg = "Something went wrong!" });
