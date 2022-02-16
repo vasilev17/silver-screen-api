@@ -73,8 +73,9 @@ namespace SilverScreen.Services
 
                 foreach (var friend in friends)
                 {
-                    ratings.Add(context.MovieRatings.Where(s => s.UserId == friend.UserId1 && s.MovieId == movieID).FirstOrDefault().Rating);
-                }
+                    if (context.MovieRatings.Where(s => s.UserId == friend.UserId1 && s.MovieId == movieID).Any())
+                        ratings.Add(context.MovieRatings.Where(s => s.UserId == friend.UserId1 && s.MovieId == movieID).FirstOrDefault().Rating);
+                    }
             }
             try
             {
@@ -83,7 +84,7 @@ namespace SilverScreen.Services
             }
             catch (Exception)
             {
-                return 0.0;
+                return 0;
             }
             
         }
