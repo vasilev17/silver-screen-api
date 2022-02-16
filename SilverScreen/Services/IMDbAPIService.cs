@@ -21,7 +21,12 @@ namespace SilverScreen.Services
         {
             configuration = config;
         }
-
+        /// <summary>
+        /// This method sends a get request to the imdb-api using rest sharp to get a movie from it's title
+        /// with the movie data from the first request, it uses the imdbId to send two more get requests to get the trailer and the actors
+        /// then it sends the data gathered to the database using entity framework
+        /// </summary>
+        /// <param name="title">The method uses this string to send a get request for the particular movie we want to add to the database</param>
         public void LoadMovieIntoDB(string title)
         {
             string API_KEY = "k_44lmaclu";

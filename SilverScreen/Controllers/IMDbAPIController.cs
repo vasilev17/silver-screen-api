@@ -36,6 +36,10 @@ namespace SilverScreen.Controllers
         {
             return "Put method";
         }
+        /// <summary>
+        /// A GET request that calls the "LoadMovieIntoDB" method from the "IMDbAPIService" service in order to save a movie into the database based on its title
+        /// </summary>
+        /// <param name="title">The method uses this string to send a get request for the particular movie we want to add to the database</param>
         [HttpPost]
         [Route("AddMovieToDB")]
         public void AddMovieToDB(string title)
