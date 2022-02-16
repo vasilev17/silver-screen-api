@@ -52,7 +52,10 @@ namespace SilverScreen
            };
        });
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
+            );
 
             services.AddSwaggerGen(c =>
             {

@@ -230,7 +230,7 @@ namespace SilverScreen.Services
                 {
                     MovieNotification movieNotification = new MovieNotification()
                     {
-                        Date = DateTime.UtcNow.AddDays(10), //Replace with movie's release date
+                        Date = DateTime.UtcNow.AddDays(-10), //Replace with movie's release date
                         MovieId = movieID,
                         UserId = userId
                     };
