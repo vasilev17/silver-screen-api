@@ -183,7 +183,7 @@ namespace SilverScreen.Controllers
         }
 
         /// <summary>
-        /// Deletes the notification from the database, which corresponds to the currenly logged in user. Token authentication required.
+        /// Deletes the notification from the database, which corresponds to the currently logged in user. Token authentication required.
         /// </summary>
         /// <param name="notificationId">Notification identifier.</param>
         /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
