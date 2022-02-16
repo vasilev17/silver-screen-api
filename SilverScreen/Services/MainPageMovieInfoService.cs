@@ -33,5 +33,23 @@ namespace SilverScreen.Services
             }
 
         }
+
+        public List<Movie> GetMyListMovies(int userID, bool watched)
+        {
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            List<MyList> myListMovies = new List<MyList>();
+            List<Movie> movies = new List<Movie>();
+            using (context)
+            {
+                myListMovies = context.MyLists.Where(s => s.UserId == userID && s.Watched == watched).ToList();
+                foreach (var myListMovie in myListMovies)
+                {
+                    movies.Add(context.Movies.Where(s => s.Id == myListMovie.MovieId).FirstOrDefault());
+                }                  
+                return movies;
+
+            }
+
+        }
     }
 }

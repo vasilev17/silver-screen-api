@@ -158,7 +158,7 @@ namespace SilverScreen.Controllers
         /// </summary>
         /// <param name="notificationId">Notification identifier.</param>
         /// <returns>Return code, based on outcome. Return code 0 is the best outcome.</returns>
-        [HttpPatch]
+        [HttpPut]
         [Route("ToggleNotificationActivity")]
         [Authorize]
         public IActionResult ToggleNotificationActivity(int notificationId) //For test
