@@ -40,15 +40,20 @@ namespace SilverScreen.Controllers
         /// <summary>
         /// A Delete request that calls the "GetUserByID" method from the "UserService" service in order to delete the user and his information based on his ID
         /// </summary>
-        /// <param name = "userID" >The ID of the user, whose info should be retrieved</param>
+        // <param name = "userID" >The ID of the user, whose info should be retrieved</param>
         [AllowAnonymous]
         [HttpDelete]
         [Route("UserDeleteRequest")]
         [Authorize]
-        public void DeleteUserDetails(int userID)
+        public void DeleteUserDetails()
         {
-            UserService userService = new UserService(Config);
-            userService.DeleteUserByID(userID);
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                UserService userService = new UserService(Config);
+                userService.DeleteUserByID(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
+            }
             
         }
 
