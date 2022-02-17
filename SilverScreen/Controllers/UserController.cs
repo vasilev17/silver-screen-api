@@ -144,21 +144,21 @@ namespace SilverScreen.Controllers
 
         /// <summary>
         /// A POST request that calls the "SendFriendNotification" method from the "NotificationService" service in order to send a notification (friend request)
-        /// </summary>
-        /// <param name="friendID">The ID of the friend you are sending the request to</param>
-        /// <param name="message">The message displayed if the request is sent </param>
+        /// </summary>      
         /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
+        // <param name="friendID">The ID of the friend you are sending the request to</param>
+        // <param name="message">The message displayed if the request is sent </param>
         [Authorize]
         [HttpPost]
         [Route("SendFriendRequest")]
-        public IActionResult SendFriendRequest(int friendID, string message)
+        public IActionResult SendFriendRequest(AddFriendRequest request)
         {
             var user = HttpContext.User;
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService(Config);
-                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), friendID,  message);
+                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendID, request.message);
                 return Ok(new { Message = "Sent request" });
             }
 
