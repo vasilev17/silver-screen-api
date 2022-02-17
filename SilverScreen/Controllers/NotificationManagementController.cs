@@ -137,9 +137,6 @@ namespace SilverScreen.Controllers
         [Authorize]
         public IActionResult RecommendMovieToAFriend(RecommendMovieToUserRequest request)
         {
-            Console.WriteLine(request.friendId);
-            Console.WriteLine(request.movieId);
-            Console.WriteLine(request.message);
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
