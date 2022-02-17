@@ -57,6 +57,8 @@ namespace SilverScreen
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
             );
 
+            services.AddCors(options => options.AddPolicy("AllowOrigin", builder => builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SilverScreen", Version = "v1" });
@@ -146,7 +148,7 @@ namespace SilverScreen
             app.UseRouting();
             app.UseAuthorization();
 
-            
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
