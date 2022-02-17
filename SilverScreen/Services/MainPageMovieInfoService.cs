@@ -15,6 +15,11 @@ namespace SilverScreen.Services
         {
             configuration = config;
         }
+        /// <summary>
+        /// This metod takes all movies based on a specific genre.
+        /// </summary>
+        /// <param name="genre">Take movies based on the genre you have chosen.</param>
+        /// <returns>Returns list of movies by genre.</returns>
         public List<Movie> GetMoviesByGenre(int genre)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
@@ -33,7 +38,12 @@ namespace SilverScreen.Services
             }
 
         }
-
+        /// <summary>
+        /// This method takes a user's movies and put them in list to see if they have been watched or are for watching.
+        /// </summary>
+        /// <param name="userID">Takes a user id.</param>
+        /// <param name="watched">Takes by true or false with movie is watched.</param>
+        /// <returns>Returns list of movies based on with have been watched or are for watching.</returns>
         public List<Movie> GetMyListMovies(int userID, bool watched)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
@@ -50,6 +60,21 @@ namespace SilverScreen.Services
 
             }
 
+        }
+        /// <summary>
+        /// This metod takes the movies and search them by title.
+        /// </summary>
+        /// <param name="searchString">The string based on which the searh is performed.</param>
+        /// <returns>Returns a list that contains all movies with that title.</returns>
+        public List<Movie> SearchMovieByTitle(string searchString)
+        {
+            SilverScreenContext context = new SilverScreenContext(configuration);
+            List<Movie> searchMovies = new List<Movie>();
+            using (context)
+            {
+                searchMovies = context.Movies.Where(s => s.Title.Contains(searchString)).ToList();
+            }
+            return searchMovies;
         }
     }
 }
