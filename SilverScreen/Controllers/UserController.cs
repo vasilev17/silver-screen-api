@@ -45,7 +45,7 @@ namespace SilverScreen.Controllers
         [HttpDelete]
         [Route("UserDeleteRequest")]
         [Authorize]
-        public void DeleteUserDetails()
+        public IActionResult DeleteUserDetails()
         {
             var user = HttpContext.User;
 
@@ -53,8 +53,9 @@ namespace SilverScreen.Controllers
             {
                 UserService userService = new UserService(Config);
                 userService.DeleteUserByID(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
+                return Ok();
             }
-            
+            return Unauthorized();
         }
 
         /// <summary>

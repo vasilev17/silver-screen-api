@@ -58,12 +58,45 @@ namespace SilverScreen.Services
                 var user = context.Users.Where(s => s.Id == userID);
                 if (user.Any())
                 {
+                    var userComments = context.Comments.Where(x => x.UserId == userID);
+                    if(userComments.Any())
+                    {
+                        context.RemoveRange(userComments);
+                    }
+
+                    var userFriendList = context.FriendLists.Where(x => x.UserId == userID || x.UserId1 == userID);
+                    if (userFriendList.Any())
+                    {
+                        context.RemoveRange(userFriendList);
+                    }
+
+                    var userMovieNotifications = context.MovieNotifications.Where(x => x.UserId == userID);
+                    if (userMovieNotifications.Any())
+                    {
+                        context.RemoveRange(userMovieNotifications);
+                    }
+
+                    var userMovieRatings = context.MovieRatings.Where(x => x.UserId == userID);
+                    if (userMovieRatings.Any())
+                    {
+                        context.RemoveRange(userMovieRatings);
+                    }
+
+                    var userMyList = context.MyLists.Where(x => x.UserId == userID);
+                    if (userMyList.Any())
+                    {
+                        context.RemoveRange(userMyList);
+                    }
+
+                    var userNotifications = context.Notifications.Where(x => x.UserId == userID || x.AuthorId == userID);
+                    if (userNotifications.Any())
+                    {
+                        context.RemoveRange(userNotifications);
+                    }
 
                     context.Remove(user.FirstOrDefault());
                     context.SaveChanges();
-                   
                 }
-
             }
         }
         /// <summary>
