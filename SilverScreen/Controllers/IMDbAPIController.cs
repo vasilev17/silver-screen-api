@@ -46,12 +46,26 @@ namespace SilverScreen.Controllers
         {
             try
             {
-                IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
-                iMDbAPIService.LoadMovieIntoDB(title);
+              IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
+              iMDbAPIService.LoadMovieIntoDB(title);
             }
             catch(MySql.Data.MySqlClient.MySqlException)
             {
-                
+              
+            }
+        }
+        [HttpPost]
+        [Route("AddMoviesToDB")]
+        public void Add25MoviesToDB(string title)
+        {
+            try
+            {
+                IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
+                iMDbAPIService.Load25MoviesIntoDB(title);
+            }
+            catch (MySql.Data.MySqlClient.MySqlException)
+            {
+
             }
         }
     }
