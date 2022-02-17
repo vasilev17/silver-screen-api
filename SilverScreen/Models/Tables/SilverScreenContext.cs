@@ -142,10 +142,7 @@ namespace SilverScreen.Models.Tables
                     .HasMaxLength(15)
                     .HasColumnName("IMDB_ID");
 
-                entity.Property(e => e.MaturityRating)
-                    .IsRequired()
-                    .HasColumnType("enum('G','PG','PG-13','R','NC-17','NULL')")
-                    .HasDefaultValueSql("'NULL'");
+                entity.Property(e => e.MaturityRating).HasMaxLength(5);
 
                 entity.Property(e => e.NetflixUrl)
                     .HasMaxLength(100)

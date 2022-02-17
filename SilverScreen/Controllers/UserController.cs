@@ -21,6 +21,13 @@ namespace SilverScreen.Controllers
         }
         private IConfiguration Config;
 
+
+        /// <summary>
+        /// A GET request that calls the "GetUserByID" method from the "UserService" service in order to get the user information based on his ID
+        /// </summary>
+        /// <param name = "userID" >The ID of the user, whose info should be retrieved</param>
+        /// <returns>Returns a call to a method that provides a user object that has the entered ID</returns>
+        [AllowAnonymous]
         [HttpGet]
         [Route("UserGetRequest")]
         [Authorize]
@@ -30,6 +37,32 @@ namespace SilverScreen.Controllers
             return userService.GetUserByID(userID);
         }
 
+        /// <summary>
+        /// A Delete request that calls the "GetUserByID" method from the "UserService" service in order to delete the user and his information based on his ID
+        /// </summary>
+        // <param name = "userID" >The ID of the user, whose info should be retrieved</param>
+        [AllowAnonymous]
+        [HttpDelete]
+        [Route("UserDeleteRequest")]
+        [Authorize]
+        public IActionResult DeleteUserDetails()
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                UserService userService = new UserService(Config);
+                userService.DeleteUserByID(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
+                return Ok();
+            }
+            return Unauthorized();
+        }
+
+        /// <summary>
+        /// A POST request that calls the "AuthenticateUser" method from the "UserService" service in order to validate the user credentials
+        /// </summary>
+        /// <param name="login">Object from the Login class. It contains (Email, Password, Username)</param>
+        /// <returns>returns a new token for the specific user (using the GenerateJSONWebToken method) or (if the credentials are not identical) shows an exception message</returns>
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
@@ -56,6 +89,11 @@ namespace SilverScreen.Controllers
             }
         }
 
+        /// <summary>
+        /// A POST request that calls the "RegisterUser" method from the "UserService" service in order to create a new user (register)
+        /// </summary>
+        /// <param name="login">Object from the Login class. It contains (Email, Password, Username)</param>
+        /// <returns>returns a new token for the specific user (using the GenerateJSONWebToken method) or (if the credentials are already used) shows an exception message</returns>
         [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
@@ -104,17 +142,23 @@ namespace SilverScreen.Controllers
 
         }
 
+        /// <summary>
+        /// A POST request that calls the "SendFriendNotification" method from the "NotificationService" service in order to send a notification (friend request)
+        /// </summary>      
+        /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
+        // <param name="friendID">The ID of the friend you are sending the request to</param>
+        // <param name="message">The message displayed if the request is sent </param>
         [Authorize]
         [HttpPost]
         [Route("SendFriendRequest")]
-        public IActionResult SendFriendRequest(int friendID, string message)
+        public IActionResult SendFriendRequest(AddFriendRequest request)
         {
             var user = HttpContext.User;
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService(Config);
-                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), friendID,  message);
+                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendID, request.message);
                 return Ok(new { Message = "Sent request" });
             }
 

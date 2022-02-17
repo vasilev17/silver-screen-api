@@ -52,7 +52,10 @@ namespace SilverScreen
            };
        });
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
+            );
 
             services.AddSwaggerGen(c =>
             {
@@ -99,7 +102,7 @@ namespace SilverScreen
                 SilverScreenContext context = new SilverScreenContext(Configuration);
                 context.Database.Migrate();
             }
-            catch (MySql.Data.MySqlClient.MySqlException ex) //In case DB has been modified externally it throws an exception
+            catch (MySql.Data.MySqlClient.MySqlException) //In case DB has been modified externally it throws an exception
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("[!] There was an error while running migration. Please wait while we fix the error...");
