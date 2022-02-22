@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
+using SilverScreen.Services;
 
 #nullable disable
 
@@ -9,10 +10,8 @@ namespace SilverScreen.Models.Tables
 {
     public partial class SilverScreenContext : DbContext
     {
-        private readonly IConfiguration Configuration;
-        public SilverScreenContext(IConfiguration configuration)
+        public SilverScreenContext()
         {
-            Configuration = configuration;
         }
 
         public SilverScreenContext(DbContextOptions<SilverScreenContext> options)
@@ -38,7 +37,7 @@ namespace SilverScreen.Models.Tables
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL(Configuration["MySQLConnectionString"]);
+                optionsBuilder.UseMySQL("datasource=" + GetLocalIPService.GetLocalIPAddress() + "; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));
             }
         }
 

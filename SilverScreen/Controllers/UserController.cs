@@ -15,13 +15,6 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-        public UserController(IConfiguration config)
-        {
-            Config = config;
-        }
-        private IConfiguration Config;
-
-
         /// <summary>
         /// A GET request that calls the "GetUserByID" method from the "UserService" service in order to get the user information based on his ID
         /// </summary>
@@ -33,7 +26,7 @@ namespace SilverScreen.Controllers
         [Authorize]
         public User GetUserDetails(int userID)
         {
-            UserService userService = new UserService(Config);
+            UserService userService = new UserService();
             return userService.GetUserByID(userID);
         }
 
@@ -51,7 +44,7 @@ namespace SilverScreen.Controllers
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                UserService userService = new UserService(Config);
+                UserService userService = new UserService();
                 userService.DeleteUserByID(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
                 return Ok();
             }
@@ -68,7 +61,7 @@ namespace SilverScreen.Controllers
         [Route("Login")]
         public IActionResult Login([FromBody] Login login)
         {
-            UserService userService = new UserService(Config);
+            UserService userService = new UserService();
             try
             {
                 IActionResult response = Unauthorized();
@@ -99,7 +92,7 @@ namespace SilverScreen.Controllers
         [Route("Register")]
         public IActionResult Register([FromBody] Login login)
         {
-            UserService userService = new UserService(Config);
+            UserService userService = new UserService();
             try
             {
                 var user = userService.RegisterUser(login);
@@ -133,7 +126,7 @@ namespace SilverScreen.Controllers
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-               UserService userService = new UserService(Config);
+               UserService userService = new UserService();
                // userService.UploadAvatar();            
             }
 
@@ -157,7 +150,7 @@ namespace SilverScreen.Controllers
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Config);
+                NotificationService notificationService = new NotificationService();
                 notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendID, request.message);
                 return Ok(new { Message = "Sent request" });
             }

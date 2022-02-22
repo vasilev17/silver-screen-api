@@ -16,7 +16,7 @@ namespace SilverScreen.Services
     public class AuthenticationService
     {
 
-        private string EncryptionKey = "GGYP2Ph8L9NdP*dqc=cTQjPLGVYSDjW9!Uq9T^@v-UD*@Q$mY8YpZuvtL9rz2@xNW+Jk5BZtUsCR4zp5cm%%hUg%&p=qW69s4FaDDgb^g9SJnr_s4VpR3t-dFaVYN#7EMvhE%X=8-JpwUBgSH_aVQawtZTu$cLse+9P73rVuj9*+eV3&LQ27K!jTScH!nZNUfnEFXg@&$#fcmKVu*=Q@V$vBWzP!7eePv@3GfS4*bHfH3zpMPg$Xa^?X6DWWBE8R";
+        private string EncryptionKey = Environment.GetEnvironmentVariable("SSPassEncrypt");
 
         public string Encrypt(string clearText)
         {

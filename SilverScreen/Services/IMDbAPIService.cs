@@ -15,12 +15,6 @@ namespace SilverScreen.Services
 {
     public class IMDbAPIService
     {
-        private IConfiguration configuration;
-
-        public IMDbAPIService(IConfiguration config)
-        {
-            configuration = config;
-        }
         /// <summary>
         /// This method sends a get request to the imdb-api using rest sharp to get a movie from it's title
         /// with the movie data from the first request, it uses the imdbId to send two more get requests to get the trailer and the actors
@@ -30,7 +24,7 @@ namespace SilverScreen.Services
         public void LoadMovieIntoDB(string title)
         {
             string API_KEY = "k_44lmaclu";
-            SilverScreenContext context = new SilverScreenContext(configuration); 
+            SilverScreenContext context = new SilverScreenContext(); 
 
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
             var client = new RestClient(url);
@@ -213,7 +207,7 @@ namespace SilverScreen.Services
         public void Load25MoviesIntoDB(string title)
         {
             string API_KEY = "k_44lmaclu";
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
             var client = new RestClient(url);

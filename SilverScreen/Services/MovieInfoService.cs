@@ -9,14 +9,7 @@ using System.Threading.Tasks;
 namespace SilverScreen.Services
 {
     public class MovieInfoService
-    {
-        private IConfiguration configuration;
-
-        public MovieInfoService(IConfiguration config)
-        {
-            configuration = config;
-        }
-        
+    { 
         /// <summary>
         /// Gets the movie that corresponds to a perticular ID
         /// </summary>
@@ -24,7 +17,7 @@ namespace SilverScreen.Services
         /// <returns>Returns the movie object that has the entered ID</returns>
         public Movie GetMovieByID(int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             using (context)
             {
                 var movie = context.Movies.Where(s => s.Id == movieID);
@@ -39,7 +32,7 @@ namespace SilverScreen.Services
         /// <returns>Returns a list containing all of the comments a movie has</returns>
         public List<Comment> GetCommentsByMovieID(int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<Comment> comments = new List<Comment>();
 
             using (context)
@@ -61,7 +54,7 @@ namespace SilverScreen.Services
         /// <returns>Returns a number of type double, which represents the average of all friend ratings given to that movie</returns>
         public double GetFriendRatingByUser(int userID, int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<FriendList> friends = new List<FriendList>();
             List<double> ratings = new List<double>();
             double friendRating;
@@ -98,7 +91,7 @@ namespace SilverScreen.Services
         /// <returns>Returns an integer number, that shows whether the movie was successfully added (1) / removed (0) or an error occurred (-1)</returns>
         public int ToggleMovieInMyList(int userID, int movieID, bool watched)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             var movie = new MyList()
             {
@@ -144,7 +137,7 @@ namespace SilverScreen.Services
         /// an old rating was modified (2) or an error occurred (-1)</returns>
         public int GiveMovieRating(int userID, int movieID, double rating)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             var movieRating = new MovieRating()
             {

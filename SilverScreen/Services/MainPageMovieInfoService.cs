@@ -9,15 +9,9 @@ namespace SilverScreen.Services
 {
     public class MainPageMovieInfoService
     {
-        private IConfiguration configuration;
-
-        public MainPageMovieInfoService(IConfiguration config)
-        {
-            configuration = config;
-        }
         public List<Movie> GetMoviesByGenre(int genre)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<MovieGenre> movieGenres = new List<MovieGenre>();
             List<Movie> movies = new List<Movie>();
             using (context)
@@ -36,7 +30,7 @@ namespace SilverScreen.Services
 
         public List<Movie> GetMyListMovies(int userID, bool watched)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<MyList> myListMovies = new List<MyList>();
             List<Movie> movies = new List<Movie>();
             using (context)

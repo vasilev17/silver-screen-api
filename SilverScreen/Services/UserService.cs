@@ -14,13 +14,6 @@ namespace SilverScreen.Services
 {
     public class UserService
     {
-        private IConfiguration configuration;
-
-        public UserService(IConfiguration config)
-        {
-            configuration = config;
-        }
-
         /// <summary>
         /// Gets the User that corresponds to a perticular ID
         /// </summary>
@@ -28,7 +21,7 @@ namespace SilverScreen.Services
         /// <returns>Returns the user object that has the entered ID</returns>
         public User GetUserByID(int userID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             using (context)
             {
                 var user = context.Users.Where(s => s.Id == userID);
@@ -52,7 +45,7 @@ namespace SilverScreen.Services
         /// <param name="userID">The ID, based on which the user is retrieved</param>
         public void DeleteUserByID(int userID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             using (context)
             {
                 var user = context.Users.Where(s => s.Id == userID);
@@ -107,7 +100,7 @@ namespace SilverScreen.Services
         public User AuthenticateUser(Login login)
         {
             User user = null;
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
             if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
             {
@@ -134,14 +127,14 @@ namespace SilverScreen.Services
         /// <returns>Returns a Token containing your information</returns>
         public string GenerateJSONWebToken(User userInfo)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SSJWTKey")));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.Username),
                 new Claim("userID", userInfo.Id.ToString())
             };
-            var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
-              configuration["Jwt:Issuer"],
+            var token = new JwtSecurityToken("silverscreenbg",
+              "silverscreenbg",
               claims,
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials);
@@ -157,7 +150,7 @@ namespace SilverScreen.Services
         public User RegisterUser(Login login)
         {
             User user = null;
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
             if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
             {
@@ -216,7 +209,7 @@ namespace SilverScreen.Services
         public User UploadAvatar(Login login)
         {
             User user = null;
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
             if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
             {
@@ -250,7 +243,7 @@ namespace SilverScreen.Services
         /// <returns>Returns if they are friends now or they were already</returns>
         public int AddFriend(int userID, int friendID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             if (!context.FriendLists.Where(x => (x.UserId == userID && x.UserId1 == friendID) || (x.UserId == friendID && x.UserId1 == userID)).Any())
             {
                 FriendList frList1 = new FriendList

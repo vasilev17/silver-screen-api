@@ -14,14 +14,6 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class MovieInfoController : Controller
     {
-
-        private IConfiguration configuration;
-
-
-        public MovieInfoController(IConfiguration config) {
-            configuration = config;
-        }
-
         /// <summary>
         /// A GET request that calls the "GetMovieByID" method from the "MovieInfoService" service in order to get a movie based on its ID
         /// </summary>
@@ -31,7 +23,7 @@ namespace SilverScreen.Controllers
         [Route("MovieGetRequest")]
         public Movie GetMovieDetails(int movieID)
         {
-            MovieInfoService service = new MovieInfoService(configuration);
+            MovieInfoService service = new MovieInfoService();
             return service.GetMovieByID(movieID);
         }
 
@@ -44,7 +36,7 @@ namespace SilverScreen.Controllers
         [Route("CommentsGetRequest")]
         public List<Comment> GetComments(int movieID)
         {
-            MovieInfoService service = new MovieInfoService(configuration);
+            MovieInfoService service = new MovieInfoService();
             return service.GetCommentsByMovieID(movieID);
         }
 
@@ -61,7 +53,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                MovieInfoService service = new MovieInfoService(configuration);
+                MovieInfoService service = new MovieInfoService();
                 return Json( service.GetFriendRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
             }
             return Unauthorized();
@@ -81,7 +73,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                    MovieInfoService service = new MovieInfoService(configuration);
+                    MovieInfoService service = new MovieInfoService();
 
 
                     int result = service.ToggleMovieInMyList(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, watched);
@@ -114,7 +106,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                MovieInfoService service = new MovieInfoService(configuration);
+                MovieInfoService service = new MovieInfoService();
 
 
                 int result = service.GiveMovieRating(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, rating);
