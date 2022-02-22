@@ -216,7 +216,12 @@ namespace SilverScreen.Services
             request.AddParameter("count", "25");
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
-            for (int j = 0; j < 25; j++)
+            var movieCount = 25;
+            if (extractedFilm.results.Count < 25)
+            {
+                movieCount = extractedFilm.results.Count;
+            }
+            for (int j = 0; j < movieCount; j++)
             {
                 string imdbId = extractedFilm.results[j].id;
                 string urlTrailer = $"https://imdb-api.com/en/API/Trailer/" + API_KEY + "/" + imdbId;
@@ -243,7 +248,7 @@ namespace SilverScreen.Services
                 }
                 else
                 {
-                    movie.Description = extractedFilm.results[0].plot;
+                    movie.Description = extractedFilm.results[j].plot;
                 }
 
                 if (extractedFilm.results[j].image == null)
@@ -254,9 +259,26 @@ namespace SilverScreen.Services
                 {
                     movie.Thumbnail = extractedFilm.results[j].image;
                 }
+                if (extractedFilm.results[j].contentRating==null)
+                {
+                        movie.MaturityRating = extractedFilm.results[j].contentRating;
+                }
+                else
+                {
+                    if (extractedFilm.results[j].contentRating.Length > 5)
+                    {
+                        movie.MaturityRating = null;
+                    }
+                    else
+                    {
+                        movie.MaturityRating = extractedFilm.results[j].contentRating;
+
+                    }
+                }
+                
                 movie.Rating = Double.Parse(extractedFilm.results[j].imDbRating, nfi);
                 movie.Duration = int.Parse(extractedFilm.results[j].runtimeStr.Split(' ')[0]);
-                movie.MaturityRating = extractedFilm.results[j].contentRating;
+                
                 movie.Trailer = extractedTrailer.linkEmbed;
                 movie.ReleaseDate = extractedFilm.results[j].description;
 

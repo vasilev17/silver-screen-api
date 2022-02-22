@@ -13,10 +13,10 @@ namespace SilverScreen.Controllers
     public class MainPageMovieInfoController : Controller
     {
         /// <summary>
-        /// This metod select all movies based on a specific genre.
+        /// A get request that calls "GetMyListMovies" to get movies by specific genre.
         /// </summary>
         /// <param name="genreID">The genre based on witch movies are retrieved.</param>
-        /// <returns>Returns a list of movies by genre.</returns>
+        /// <returns>Returns a call to "GetMoviesByGenre".</returns>
         [HttpGet]
         [Route("GetMoviesForMainPage")]
         public List<Movie> GetMoviesByGenreForMainPage(int genreID)
@@ -24,7 +24,11 @@ namespace SilverScreen.Controllers
             MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.GetMoviesByGenre(genreID);
         }
-
+        /// <summary>
+        /// A get request that calls "GetMyListMovies" to get watched movies.
+        /// </summary>
+        /// <param name="watched">The watched is based on with movie is completed or not.</param>
+        /// <returns>Returns a call to "GetMyListMovies".</returns>
         [HttpGet]
         [Route("GetMoviesForMyList")]
         [Authorize]
@@ -38,6 +42,18 @@ namespace SilverScreen.Controllers
 
             }
             return Unauthorized();
+        }
+        /// <summary>
+        /// A get request that calls "SearchMovieByTitle" to get searched movies.
+        /// </summary>
+        /// <param name="searchString">The string based on which the searh is performed.</param>
+        /// <returns>Returns a call to "SearchMovieByTitle".</returns>
+        [HttpGet]
+        [Route("GetMoviesBySearch")]
+        public List<Movie> GetMoviesBySearchForMainPage(string searchString)
+        {
+            MainPageMovieInfoService service = new MainPageMovieInfoService();
+            return service.SearchMovieByTitle(searchString);
         }
     }
 }
