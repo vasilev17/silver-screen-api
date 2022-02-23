@@ -50,12 +50,12 @@ namespace SilverScreen.Controllers
         }
         [HttpPost]
         [Route("AddMoviesToDB")]
-        public void Add25MoviesToDB(string title)
+        public void AddMoviesToDB(string title,  int count)
         {
             try
             {
                 IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                iMDbAPIService.Load25MoviesIntoDB(title);
+                iMDbAPIService.LoadMoviesIntoDB(title, count);
             }
             catch (MySql.Data.MySqlClient.MySqlException)
             {
