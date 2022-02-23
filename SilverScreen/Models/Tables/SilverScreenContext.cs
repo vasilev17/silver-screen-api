@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
-using SilverScreen.Services;
-
 #nullable disable
 
 namespace SilverScreen.Models.Tables
@@ -37,7 +35,7 @@ namespace SilverScreen.Models.Tables
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("datasource=" + GetLocalIPService.GetLocalIPAddress() + "; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));
+                optionsBuilder.UseMySQL($"datasource={Environment.GetEnvironmentVariable("MYSQL_DATABASE_IP") ?? "localhost"}; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));
             }
         }
 
