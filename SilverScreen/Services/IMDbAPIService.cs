@@ -204,20 +204,20 @@ namespace SilverScreen.Services
             }
             context.SaveChanges();
         }
-        public void Load25MoviesIntoDB(string title)
+        public void LoadMoviesIntoDB(string title ,int count)
         {
-            string API_KEY = "k_44lmaclu";
+            string API_KEY = "k_44lmaclu"; //k_faxyw40f //k_mfd5skue
             SilverScreenContext context = new SilverScreenContext();
 
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
             var client = new RestClient(url);
             var request = new RestRequest();
             request.AddParameter("title", title);
-            request.AddParameter("count", "25");
+            request.AddParameter("count", count);
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
-            var movieCount = 25;
-            if (extractedFilm.results.Count < 25)
+            var movieCount = count;
+            if (extractedFilm.results.Count < count)
             {
                 movieCount = extractedFilm.results.Count;
             }
@@ -236,19 +236,26 @@ namespace SilverScreen.Services
                 var responseCast = clientCast.Get(requestCast);
                 var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
 
+                string urlDescription = "https://imdb-api.com/en/API/Title/" + API_KEY + "/" + imdbId;
+                var clientDescription = new RestClient(urlDescription);
+                var requestDescription = new RestRequest();
+                var responseDescription = clientDescription.Get(requestDescription);
+                var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+
                 NumberFormatInfo nfi = new NumberFormatInfo();
                 nfi.NumberDecimalSeparator = ".";
                 var movie = new Movie();
+                Console.WriteLine(extractedDescription.plot + 1);
 
                 movie.ImdbId = extractedFilm.results[j].id;
                 movie.Title = extractedFilm.results[j].title;
-                if (extractedFilm.results[j].plot == null)
+                if (extractedDescription.plot == null)
                 {
                     movie.Description = "You caught us! We don't have the description yet.";
                 }
                 else
                 {
-                    movie.Description = extractedFilm.results[j].plot;
+                    movie.Description = extractedDescription.plot;
                 }
 
                 if (extractedFilm.results[j].image == null)
