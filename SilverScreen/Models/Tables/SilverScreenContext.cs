@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
+
 #nullable disable
 
 namespace SilverScreen.Models.Tables
@@ -130,6 +130,8 @@ namespace SilverScreen.Models.Tables
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.ContentType).HasMaxLength(10);
+
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(800);
@@ -137,7 +139,8 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.ImdbId)
                     .IsRequired()
                     .HasMaxLength(15)
-                    .HasColumnName("IMDB_ID");
+                    .HasColumnName("IMDB_ID")
+                    .HasDefaultValueSql("''");
 
                 entity.Property(e => e.MaturityRating).HasMaxLength(5);
 
