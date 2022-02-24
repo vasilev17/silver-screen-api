@@ -257,10 +257,15 @@ namespace SilverScreen.Services
                 switch(userService.AddFriend(friendRequest.FirstOrDefault().AuthorId, friendRequest.FirstOrDefault().UserId))
                 {
                     case 0:
+                        var username = friendRequest.FirstOrDefault().User.Username;
+                        if(username.Length > 23)
+                        {
+                            username = username.Substring(0, 23) + "...";
+                        }
                         Notification newNotification = new Notification()
                         {
                             Type = "TextOnly",
-                            Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
+                            Content = username + " accepted your friend request.",
                             AuthorId = friendRequest.FirstOrDefault().UserId,
                             UserId = friendRequest.FirstOrDefault().AuthorId,
                             Active = true
