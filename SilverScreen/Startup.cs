@@ -27,13 +27,6 @@ namespace SilverScreen
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -46,9 +39,9 @@ namespace SilverScreen
                ValidateAudience = true,
                ValidateLifetime = true,
                ValidateIssuerSigningKey = true,
-               ValidIssuer = Configuration["Jwt:Issuer"],
-               ValidAudience = Configuration["Jwt:Issuer"],
-               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+               ValidIssuer = "silverscreenbg",
+               ValidAudience = "silverscreenbg",
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SSJWTKey")))
            };
        });
 
@@ -101,7 +94,7 @@ namespace SilverScreen
             Console.WriteLine("[!] Running migrations. Please wait...");
             try
             {
-                SilverScreenContext context = new SilverScreenContext(Configuration);
+                SilverScreenContext context = new SilverScreenContext();
                 context.Database.Migrate();
             }
             catch (MySql.Data.MySqlClient.MySqlException) //In case DB has been modified externally it throws an exception
@@ -109,7 +102,7 @@ namespace SilverScreen
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("[!] There was an error while running migration. Please wait while we fix the error...");
 
-                SilverScreenContext context = new SilverScreenContext(Configuration);
+                SilverScreenContext context = new SilverScreenContext();
                 context.EfmigrationsHistories.RemoveRange(context.EfmigrationsHistories); //Remove previous versions
 
                 string[] migrationsDirectory = Directory.GetFiles(@"Migrations\", "*.cs"); //Get all migrations

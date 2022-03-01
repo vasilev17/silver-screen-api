@@ -11,12 +11,6 @@ namespace SilverScreen.Services
 {
     public class NotificationService
     {
-        private IConfiguration Configuration;
-        public NotificationService(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-        
 
         /// <summary>
         /// Gets all notification for a corresponding user by id.
@@ -25,7 +19,7 @@ namespace SilverScreen.Services
         /// <returns>A list that is full or empty, based on how social is the corresponding user.</returns>
         public Notification[] GetAllNotificationsForUser(int userId)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             var notificationsRaw = context.Notifications
                 .Where(x => x.UserId == userId)
                 .Include(x => x.User)
@@ -88,7 +82,7 @@ namespace SilverScreen.Services
         /// <returns>A list that is full or empty, based on what's the interest for the corresponding user on upcoming films.</returns>
         public MovieNotification[] GetAllMovieNotificationsForUser(int userId)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             var notificationsRaw = context.MovieNotifications
                 .Where(x => x.UserId == userId)
                 .Include(x => x.Movie)
@@ -128,7 +122,7 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for finding a duplicate.</returns>
         public int SendFriendNotification(int userId, int friendId, string message)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             //Check if similar notification already exists. Refuse the request if something like this happens
             if((context.Notifications.Where(x => x.UserId == userId && 
@@ -167,7 +161,7 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for throwing an exception.</returns>
         public int RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             //Check if similar notification already exists. If it exists, replace the notification
             try
@@ -211,7 +205,7 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, 404 for not found, -1 if the record exists.</returns>
         public int SetFilmReleaseNotification(int userId, int movieID, bool status)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             if (status)
             {
                 if (context.MovieNotifications.Where(x => x.UserId == userId && x.MovieId == movieID).Any())
@@ -255,18 +249,23 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found</returns>
         public int RespondToFriendRequest(int userID, int notificationId)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             var friendRequest = context.Notifications.Where(x => x.Id == notificationId && x.UserId == userID).Include(x => x.User);
             if(friendRequest.Any())
             {
-                UserService userService = new UserService(Configuration);
+                UserService userService = new UserService();
                 switch(userService.AddFriend(friendRequest.FirstOrDefault().AuthorId, friendRequest.FirstOrDefault().UserId))
                 {
                     case 0:
+                        var username = friendRequest.FirstOrDefault().User.Username;
+                        if(username.Length > 20)
+                        {
+                            username = username.Substring(0, 20) + "...";
+                        }
                         Notification newNotification = new Notification()
                         {
                             Type = "TextOnly",
-                            Content = friendRequest.FirstOrDefault().User.Username + " accepted your friend request.",
+                            Content = username + " accepted your friend request.",
                             AuthorId = friendRequest.FirstOrDefault().UserId,
                             UserId = friendRequest.FirstOrDefault().AuthorId,
                             Active = true
@@ -294,7 +293,7 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found, 401 for unauthorized.</returns>
         public int ToggleNotificationActivity(int userID, int notificationId)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             var notification = context.Notifications.Find(notificationId);
             if(notification != null)
             {
@@ -330,7 +329,7 @@ namespace SilverScreen.Services
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for not found, 401 for unauthorized.</returns>
         public int DeleteNotification(int userID, int notificationId)
         {
-            SilverScreenContext context = new SilverScreenContext(Configuration);
+            SilverScreenContext context = new SilverScreenContext();
             var notification = context.Notifications.Find(notificationId);
             if (notification != null)
             {

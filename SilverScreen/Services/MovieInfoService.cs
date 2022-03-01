@@ -9,14 +9,7 @@ using System.Threading.Tasks;
 namespace SilverScreen.Services
 {
     public class MovieInfoService
-    {
-        private IConfiguration configuration;
-
-        public MovieInfoService(IConfiguration config)
-        {
-            configuration = config;
-        }
-        
+    { 
         /// <summary>
         /// Gets the movie that corresponds to a perticular ID
         /// </summary>
@@ -24,7 +17,7 @@ namespace SilverScreen.Services
         /// <returns>Returns the movie object that has the entered ID</returns>
         public Movie GetMovieByID(int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             using (context)
             {
                 var movie = context.Movies.Where(s => s.Id == movieID);
@@ -33,13 +26,13 @@ namespace SilverScreen.Services
         }
 
         /// <summary>
-        /// Gets all the comments that a certain movie has.
+        /// Gets all the comments that a certain movie has
         /// </summary>
-        /// <param name="movieID">The ID, based on which the comments for the right movie are retrieved.</param>
+        /// <param name="movieID">The ID, based on which the comments for the right movie are retrieved</param>
         /// <returns>Returns a list containing all of the comments a movie has</returns>
         public List<Comment> GetCommentsByMovieID(int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<Comment> comments = new List<Comment>();
 
             using (context)
@@ -56,12 +49,12 @@ namespace SilverScreen.Services
         /// <summary>
         /// Gets all the ratings that friends have given to a certain movie and calculates the average
         /// </summary>
-        /// <param name="userID">The ID of the user, based on which the right group of friends is selected.</param>
+        /// <param name="userID">The ID of the user, based on which the right group of friends is selected</param>
         /// <param name="movieID">The ID of the movie, whose friend rating is wanted</param>
         /// <returns>Returns a number of type double, which represents the average of all friend ratings given to that movie</returns>
         public double GetFriendRatingByUser(int userID, int movieID)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<FriendList> friends = new List<FriendList>();
             List<double> ratings = new List<double>();
             double friendRating;
@@ -98,7 +91,7 @@ namespace SilverScreen.Services
         /// <returns>Returns an integer number, that shows whether the movie was successfully added (1) / removed (0) or an error occurred (-1)</returns>
         public int ToggleMovieInMyList(int userID, int movieID, bool watched)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             var movie = new MyList()
             {
@@ -137,14 +130,14 @@ namespace SilverScreen.Services
         /// <summary>
         /// Saves/Deletes or modifies a rating a user gives to a movie
         /// </summary>
-        /// <param name="userID">The ID of the user that is giving/deleting or modifying the rating.</param>
+        /// <param name="userID">The ID of the user that is giving/deleting or modifying the rating</param>
         /// <param name="movieID">The ID of the movie that corresponds to the rating given/removed/changed</param>
-        /// <param name="rating">A number of type double that represents the rating that the user selects.</param>
+        /// <param name="rating">A number of type double that represents the rating that the user selects</param>
         /// <returns>Returns an integer number, that shows whether a new rating was successfully added (1) / an old rating was removed (0) /
         /// an old rating was modified (2) or an error occurred (-1)</returns>
         public int GiveMovieRating(int userID, int movieID, double rating)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
 
             var movieRating = new MovieRating()
             {
@@ -187,6 +180,57 @@ namespace SilverScreen.Services
             }
         }
 
+        /// <summary>
+        /// Gets all the genres that a certain movie has
+        /// </summary>
+        /// <param name="movieID">The ID, based on which the genres for the right movie are retrieved</param>
+        /// <returns>Returns a list containing all of the genres a movie has</returns>
+        public List<string> GetGenresByMovieID(int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            List<MovieGenre> movieGenres = new List<MovieGenre>();
+            List<string> genres = new List<string>();
+
+            using (context)
+            {
+
+                movieGenres = context.MovieGenres.Where(s => s.MovieId == movieID).ToList();
+
+                foreach (var movieGenre in movieGenres)
+                {
+                        genres.Add(context.Genres.Where(s => s.Id == movieGenre.GenreId).FirstOrDefault().Genre1);
+                }
+            }
+
+            return genres;
+        }
+
+        /// <summary>
+        /// Gets all the staff members that a certain movie has
+        /// </summary>
+        /// <param name="movieID">The ID, based on which the staff for the right movie is retrieved</param>
+        /// <returns>Returns a list containing all of the staff members a movie has</returns>
+        public List<staff> GetStaffByMovieID(int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            List<MovieStaff> movieStaffs = new List<MovieStaff>();
+            List<staff> staffs = new List<staff>();
+
+            using (context)
+            {
+
+                movieStaffs = context.MovieStaffs.Where(s => s.MovieId == movieID).ToList();
+
+                foreach (var movieStaff in movieStaffs)
+                {
+                    staffs.Add(context.staff.Where(s => s.Id == movieStaff.StaffId).FirstOrDefault());
+                }
+            }
+
+            return staffs;
+        }
 
     }
 }

@@ -12,12 +12,6 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class IMDbAPIController : Controller
     {
-        private IConfiguration configuration;
-
-        public IMDbAPIController(IConfiguration config)
-        {
-            configuration = config;
-        }
         [HttpGet]
         [Route("TestNotification")]
         public string GetTestNotification()
@@ -46,7 +40,7 @@ namespace SilverScreen.Controllers
         {
             try
             {
-              IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
+              IMDbAPIService iMDbAPIService = new IMDbAPIService();
               iMDbAPIService.LoadMovieIntoDB(title);
             }
             catch(MySql.Data.MySqlClient.MySqlException)
@@ -56,12 +50,12 @@ namespace SilverScreen.Controllers
         }
         [HttpPost]
         [Route("AddMoviesToDB")]
-        public void Add25MoviesToDB(string title)
+        public void AddMoviesToDB(string title,  int count)
         {
             try
             {
-                IMDbAPIService iMDbAPIService = new IMDbAPIService(configuration);
-                iMDbAPIService.Load25MoviesIntoDB(title);
+                IMDbAPIService iMDbAPIService = new IMDbAPIService();
+                iMDbAPIService.LoadMoviesIntoDB(title, count);
             }
             catch (MySql.Data.MySqlClient.MySqlException)
             {

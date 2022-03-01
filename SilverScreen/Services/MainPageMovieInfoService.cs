@@ -10,12 +10,6 @@ namespace SilverScreen.Services
 {
     public class MainPageMovieInfoService
     {
-        private IConfiguration configuration;
-
-        public MainPageMovieInfoService(IConfiguration config)
-        {
-            configuration = config;
-        }
         /// <summary>
         /// This metod takes all movies based on a specific genre.
         /// </summary>
@@ -23,21 +17,23 @@ namespace SilverScreen.Services
         /// <returns>Returns list of movies by genre.</returns>
         public List<Movie> GetMoviesByGenre(string genre)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<MovieGenre> movieGenres = new List<MovieGenre>();
             List<Movie> movies = new List<Movie>();
-            
-            
 
-                var genreMovie = context.Genres.Where(s => s.Genre1.Equals(genre)).Include(s => s.MovieGenres).FirstOrDefault();
+
+
+            var genreMovies = context.Genres.Where(s => s.Genre1.Equals(genre)).Include(s => s.MovieGenres).FirstOrDefault();
             context.Dispose();
-            SilverScreenContext context1 = new SilverScreenContext(configuration);
-            foreach (var movie in genreMovie.MovieGenres){
-                    movies.Add(context1.Movies.Find(movie.MovieId));
-                }
-                return movies;
+            SilverScreenContext context1 = new SilverScreenContext();
+            foreach (var genreMovie in genreMovies.MovieGenres)
+            {
+                movies.Add(context1.Movies.Find(genreMovie.MovieId));
+            }
+            context1.Dispose();
+            return movies;
 
-            
+
 
         }
         /// <summary>
@@ -48,7 +44,7 @@ namespace SilverScreen.Services
         /// <returns>Returns list of movies based on with have been watched or are for watching.</returns>
         public List<Movie> GetMyListMovies(int userID, bool watched)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<MyList> myListMovies = new List<MyList>();
             List<Movie> movies = new List<Movie>();
             using (context)
@@ -70,7 +66,7 @@ namespace SilverScreen.Services
         /// <returns>Returns a list that contains all movies with that title.</returns>
         public List<Movie> SearchMovieByTitle(string searchString)
         {
-            SilverScreenContext context = new SilverScreenContext(configuration);
+            SilverScreenContext context = new SilverScreenContext();
             List<Movie> searchMovies = new List<Movie>();
             using (context)
             {

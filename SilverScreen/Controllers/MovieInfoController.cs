@@ -14,14 +14,6 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class MovieInfoController : Controller
     {
-
-        private IConfiguration configuration;
-
-
-        public MovieInfoController(IConfiguration config) {
-            configuration = config;
-        }
-
         /// <summary>
         /// A GET request that calls the "GetMovieByID" method from the "MovieInfoService" service in order to get a movie based on its ID
         /// </summary>
@@ -31,7 +23,7 @@ namespace SilverScreen.Controllers
         [Route("MovieGetRequest")]
         public Movie GetMovieDetails(int movieID)
         {
-            MovieInfoService service = new MovieInfoService(configuration);
+            MovieInfoService service = new MovieInfoService();
             return service.GetMovieByID(movieID);
         }
 
@@ -44,7 +36,7 @@ namespace SilverScreen.Controllers
         [Route("CommentsGetRequest")]
         public List<Comment> GetComments(int movieID)
         {
-            MovieInfoService service = new MovieInfoService(configuration);
+            MovieInfoService service = new MovieInfoService();
             return service.GetCommentsByMovieID(movieID);
         }
 
@@ -61,7 +53,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                MovieInfoService service = new MovieInfoService(configuration);
+                MovieInfoService service = new MovieInfoService();
                 return Json( service.GetFriendRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
             }
             return Unauthorized();
@@ -81,7 +73,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                    MovieInfoService service = new MovieInfoService(configuration);
+                    MovieInfoService service = new MovieInfoService();
 
 
                     int result = service.ToggleMovieInMyList(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, watched);
@@ -114,7 +106,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                MovieInfoService service = new MovieInfoService(configuration);
+                MovieInfoService service = new MovieInfoService();
 
 
                 int result = service.GiveMovieRating(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, rating);
@@ -134,6 +126,31 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// A GET request that calls the "GetGenresByMovieID" method from the "MovieInfoService" service in order to get all the genres of a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose genres should be retrieved</param>
+        /// <returns>Returns a list of strings containing all the genres a particular movie has</returns>
+        [HttpGet]
+        [Route("GenresGetRequest")]
+        public List<string> GetMovieGenres(int movieID)
+        {
+            MovieInfoService service = new MovieInfoService();
+            return service.GetGenresByMovieID(movieID);
+        }
+
+        /// <summary>
+        /// A GET request that calls the "GetStaffByMovieID" method from the "MovieInfoService" service in order to get all the staff of a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose staff should be retrieved</param>
+        /// <returns>Returns a list of staff members a particular movie has</returns>
+        [HttpGet]
+        [Route("StaffGetRequest")]
+        public List<staff> GetMovieStaff(int movieID)
+        {
+            MovieInfoService service = new MovieInfoService();
+            return service.GetStaffByMovieID(movieID);
+        }
 
     }
 }

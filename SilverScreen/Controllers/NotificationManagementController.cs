@@ -15,12 +15,6 @@ namespace SilverScreen.Controllers
     [Route("[controller]")]
     public class NotificationManagementController : Controller
     {
-        private IConfiguration Configuration;
-        public NotificationManagementController(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         /// <summary>
         /// Gets all notifications to the corresponding user. Needs token to authenticate.
         /// </summary>
@@ -35,7 +29,7 @@ namespace SilverScreen.Controllers
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 notifications = notificationService.GetAllNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
             }   
             return notifications;
@@ -55,7 +49,7 @@ namespace SilverScreen.Controllers
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 notifications = notificationService.GetAllMovieNotificationsForUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value));
             }
             return notifications;
@@ -75,7 +69,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 try
                 {
                     switch (notificationService.SetFilmReleaseNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.movieId, request.status))
@@ -111,7 +105,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 switch (notificationService.RespondToFriendRequest(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.notificationId))
                 {
                     case 0:
@@ -140,7 +134,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendId, request.movieId, request.message))
                 {
                     case 0:
@@ -166,7 +160,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 switch (notificationService.ToggleNotificationActivity(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.notificationId))
                 {
                     case 0:
@@ -195,7 +189,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                NotificationService notificationService = new NotificationService(Configuration);
+                NotificationService notificationService = new NotificationService();
                 switch (notificationService.DeleteNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.notificationId))
                 {
                     case 0:

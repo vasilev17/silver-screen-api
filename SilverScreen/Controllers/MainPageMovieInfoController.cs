@@ -12,13 +12,6 @@ namespace SilverScreen.Controllers
 {
     public class MainPageMovieInfoController : Controller
     {
-        private IConfiguration configuration;
-
-
-        public MainPageMovieInfoController(IConfiguration config)
-        {
-            configuration = config;
-        }
         /// <summary>
         /// A get request that calls "GetMyListMovies" to get movies by specific genre.
         /// </summary>
@@ -28,7 +21,7 @@ namespace SilverScreen.Controllers
         [Route("GetMoviesForMainPage")]
         public List<Movie> GetMoviesByGenreForMainPage(string genre)
         {
-            MainPageMovieInfoService service = new MainPageMovieInfoService(configuration);
+            MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.GetMoviesByGenre(genre);
         }
         /// <summary>
@@ -44,7 +37,7 @@ namespace SilverScreen.Controllers
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                MainPageMovieInfoService service = new MainPageMovieInfoService(configuration);
+                MainPageMovieInfoService service = new MainPageMovieInfoService();
                 return Json(service.GetMyListMovies(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), watched));
 
             }
@@ -59,7 +52,7 @@ namespace SilverScreen.Controllers
         [Route("GetMoviesBySearch")]
         public List<Movie> GetMoviesBySearchForMainPage(string searchString)
         {
-            MainPageMovieInfoService service = new MainPageMovieInfoService(configuration);
+            MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.SearchMovieByTitle(searchString);
         }
     }
