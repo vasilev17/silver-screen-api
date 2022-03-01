@@ -150,6 +150,7 @@ namespace SilverScreen.Services
         public User RegisterUser(Login login)
         {
             User user = null;
+            var confirmPassword = " ";
             SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
             if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
@@ -163,19 +164,29 @@ namespace SilverScreen.Services
                         {
                             if (!login.Password.Contains(" "))
                             {
-                                User registeredUser = new User()
+                                if (login.confirmPassword.Equals(login.Password))
                                 {
-                                    Username = login.Username,
-                                    Password = authentication.Encrypt(login.Password),
-                                    Email = login.Email,
-                                    Avatar = "https://i.ibb.co/zVd6Vnv/defautprifilepic.png",
-                                    IsAdmin = false,
-                                    IsDeleted = false,
-                                    Banned = null
-                                };
-                                context.Add(registeredUser);
-                                context.SaveChanges();
-                                user = registeredUser;
+
+
+                                    User registeredUser = new User()
+                                    {
+                                        Username = login.Username,
+                                        Password = authentication.Encrypt(login.Password),
+                                        Email = login.Email,
+                                        Avatar = "https://i.ibb.co/zVd6Vnv/defautprifilepic.png",
+                                        IsAdmin = false,
+                                        IsDeleted = false,
+                                        Banned = null
+                                    };
+                                    confirmPassword = login.confirmPassword;
+
+                                    context.Add(registeredUser);
+                                    context.SaveChanges();
+                                    user = registeredUser;
+                                }else
+                                {
+                                    throw new Exception("Passwords do not match");
+                                }
                             }
                             else
                             {

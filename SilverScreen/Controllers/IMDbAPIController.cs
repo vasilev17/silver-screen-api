@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SilverScreen.Services;
 using System;
@@ -50,6 +51,7 @@ namespace SilverScreen.Controllers
         }
         [HttpPost]
         [Route("AddMoviesToDB")]
+        [Authorize]
         public void AddMoviesToDB(string title,  int count)
         {
             try
