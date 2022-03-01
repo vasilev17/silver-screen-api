@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
-using SilverScreen.Services;
 
 #nullable disable
 
@@ -37,7 +35,7 @@ namespace SilverScreen.Models.Tables
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySQL("datasource=" + GetLocalIPService.GetLocalIPAddress() + "; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));
+                optionsBuilder.UseMySQL($"datasource={Environment.GetEnvironmentVariable("MYSQL_DATABASE_IP") ?? "localhost"}; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));
             }
         }
 
@@ -132,6 +130,8 @@ namespace SilverScreen.Models.Tables
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.ContentType).HasMaxLength(10);
+
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(800);
@@ -139,7 +139,8 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.ImdbId)
                     .IsRequired()
                     .HasMaxLength(15)
-                    .HasColumnName("IMDB_ID");
+                    .HasColumnName("IMDB_ID")
+                    .HasDefaultValueSql("''");
 
                 entity.Property(e => e.MaturityRating).HasMaxLength(5);
 

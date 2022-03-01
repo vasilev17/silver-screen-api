@@ -126,6 +126,31 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// A GET request that calls the "GetGenresByMovieID" method from the "MovieInfoService" service in order to get all the genres of a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose genres should be retrieved</param>
+        /// <returns>Returns a list of strings containing all the genres a particular movie has</returns>
+        [HttpGet]
+        [Route("GenresGetRequest")]
+        public List<string> GetMovieGenres(int movieID)
+        {
+            MovieInfoService service = new MovieInfoService();
+            return service.GetGenresByMovieID(movieID);
+        }
+
+        /// <summary>
+        /// A GET request that calls the "GetStaffByMovieID" method from the "MovieInfoService" service in order to get all the staff of a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose staff should be retrieved</param>
+        /// <returns>Returns a list of staff members a particular movie has</returns>
+        [HttpGet]
+        [Route("StaffGetRequest")]
+        public List<staff> GetMovieStaff(int movieID)
+        {
+            MovieInfoService service = new MovieInfoService();
+            return service.GetStaffByMovieID(movieID);
+        }
 
     }
 }

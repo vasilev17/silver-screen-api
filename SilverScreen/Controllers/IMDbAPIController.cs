@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SilverScreen.Services;
 using System;
@@ -50,12 +51,13 @@ namespace SilverScreen.Controllers
         }
         [HttpPost]
         [Route("AddMoviesToDB")]
-        public void Add25MoviesToDB(string title)
+        [Authorize]
+        public void AddMoviesToDB(string title,  int count)
         {
             try
             {
                 IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                iMDbAPIService.Load25MoviesIntoDB(title);
+                iMDbAPIService.LoadMoviesIntoDB(title, count);
             }
             catch (MySql.Data.MySqlClient.MySqlException)
             {

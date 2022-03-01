@@ -32,9 +32,7 @@ When the EF entities are updated via scaffolding, it replaces the original `Silv
 
 Here what to do in case of scaffolding:
 
-* Import `SilverScreen.Services`
-
-* Find `optionsBuilder.UseMySQL`, and replace the entire row with `optionsBuilder.UseMySQL("datasource=" + GetLocalIPService.GetLocalIPAddress() + "; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));` and remove the warning that starts with the # symbol above.
+* Find `optionsBuilder.UseMySQL`, and replace the entire row with `optionsBuilder.UseMySQL($"datasource={Environment.GetEnvironmentVariable("MYSQL_DATABASE_IP") ?? "localhost"}; port=3306; database=SilverScreen; username=root; password=" + Environment.GetEnvironmentVariable("SSDbPass"));` and remove the warning that starts with the # symbol above.
 
 After doing all this steps or you have updated the entitied directly, open the Package Manager console in Visual Studio and run this command: `Add-Migration NameOfTheMigraion`.
 
