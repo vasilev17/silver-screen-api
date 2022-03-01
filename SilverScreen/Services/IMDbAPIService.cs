@@ -258,6 +258,20 @@ namespace SilverScreen.Services
                     }
                     else
                     {
+                        if (extractedDescription.plot.Length > 500)
+                        {
+                            string shortDescription = extractedDescription.plot.Substring(0, 500);
+                            for (int i = shortDescription.Length-1; i >= 0; i--)
+                            {
+                                if (shortDescription[i] == '.')
+                                {
+                                    extractedDescription.plot = shortDescription.Substring(0, i+1);
+                                    break;
+                                }
+                                    
+
+                            }
+                        }
                         movie.Description = extractedDescription.plot;
                     }
 
