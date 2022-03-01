@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
@@ -20,22 +21,23 @@ namespace SilverScreen.Services
         /// </summary>
         /// <param name="genre">Take movies based on the genre you have chosen.</param>
         /// <returns>Returns list of movies by genre.</returns>
-        public List<Movie> GetMoviesByGenre(int genre)
+        public List<Movie> GetMoviesByGenre(string genre)
         {
             SilverScreenContext context = new SilverScreenContext(configuration);
             List<MovieGenre> movieGenres = new List<MovieGenre>();
             List<Movie> movies = new List<Movie>();
-            using (context)
-            {
+            
+            
 
-                movieGenres = context.MovieGenres.Where(s => s.GenreId == genre).ToList();
-                foreach (var movieGenre in movieGenres)
-                {
-                    movies.Add(context.Movies.Where(s => s.Id == movieGenre.MovieId).FirstOrDefault());
+                var genreMovie = context.Genres.Where(s => s.Genre1.Equals(genre)).Include(s => s.MovieGenres).FirstOrDefault();
+            context.Dispose();
+            SilverScreenContext context1 = new SilverScreenContext(configuration);
+            foreach (var movie in genreMovie.MovieGenres){
+                    movies.Add(context1.Movies.Find(movie.MovieId));
                 }
                 return movies;
 
-            }
+            
 
         }
         /// <summary>
