@@ -15,14 +15,14 @@ namespace SilverScreen.Controllers
         /// <summary>
         /// A get request that calls "GetMyListMovies" to get movies by specific genre.
         /// </summary>
-        /// <param name="genreID">The genre based on witch movies are retrieved.</param>
+        /// <param name="genre">The genre based on witch movies are retrieved.</param>
         /// <returns>Returns a call to "GetMoviesByGenre".</returns>
         [HttpGet]
         [Route("GetMoviesForMainPage")]
-        public List<Movie> GetMoviesByGenreForMainPage(int genreID)
+        public List<Movie> GetMoviesByGenreForMainPage(string genre)
         {
             MainPageMovieInfoService service = new MainPageMovieInfoService();
-            return service.GetMoviesByGenre(genreID);
+            return service.GetMoviesByGenre(genre);
         }
         /// <summary>
         /// A get request that calls "GetMyListMovies" to get watched movies.

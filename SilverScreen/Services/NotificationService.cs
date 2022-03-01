@@ -258,9 +258,9 @@ namespace SilverScreen.Services
                 {
                     case 0:
                         var username = friendRequest.FirstOrDefault().User.Username;
-                        if(username.Length > 23)
+                        if(username.Length > 20)
                         {
-                            username = username.Substring(0, 23) + "...";
+                            username = username.Substring(0, 20) + "...";
                         }
                         Notification newNotification = new Notification()
                         {
