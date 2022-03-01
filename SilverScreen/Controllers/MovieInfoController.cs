@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SilverScreen.Models;
 using SilverScreen.Models.Tables;
 using SilverScreen.Services;
 using System;
@@ -150,6 +151,28 @@ namespace SilverScreen.Controllers
         {
             MovieInfoService service = new MovieInfoService();
             return service.GetStaffByMovieID(movieID);
+        }
+
+        /// <summary>
+        /// A GET request that calls methods from the "MovieInfoService" service in order to get all the information needed for a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose information should be retrieved</param>
+        /// <returns>Returns a movie object, a list of strings containing the movie genres and a list of staff members</returns>
+        [HttpGet]
+        [Route("MovieInfoGetRequest")]
+        public MovieInfo GetMovieInfo(int movieID)
+        {
+            MovieInfoService service = new MovieInfoService();
+            MovieInfo movieInfo = new MovieInfo()
+            {
+                Movie = service.GetMovieByID(movieID),
+                Genres = service.GetGenresByMovieID(movieID),
+                Staff = service.GetStaffByMovieID(movieID),
+
+
+            };
+
+            return movieInfo;
         }
 
     }
