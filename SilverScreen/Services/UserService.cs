@@ -125,7 +125,7 @@ namespace SilverScreen.Services
         /// </summary>
         /// <param name="userInfo">Object from the User class. It contains (Email, Password, Username, etc...)</param>
         /// <returns>Returns a Token containing your information</returns>
-        public string GenerateJSONWebToken(User userInfo)
+        public string GenerateJSONWebToken(User userInfo, bool rememberMe)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SSJWTKey")));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -133,10 +133,19 @@ namespace SilverScreen.Services
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.Username),
                 new Claim("userID", userInfo.Id.ToString())
             };
+            var time = DateTime.Now;
+            if (rememberMe)
+            {
+                time.AddMonths(1);
+            }
+            else
+            {
+                time.AddDays(1);
+            }
             var token = new JwtSecurityToken("silverscreenbg",
               "silverscreenbg",
               claims,
-              expires: DateTime.Now.AddMinutes(120),
+              expires: time,
               signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
