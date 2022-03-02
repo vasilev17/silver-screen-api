@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class MainPageMovieInfoController : Controller
     {
         /// <summary>
