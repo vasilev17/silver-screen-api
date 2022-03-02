@@ -62,6 +62,7 @@ namespace SilverScreen.Controllers
         public IActionResult Login([FromBody] Login login)
         {
             UserService userService = new UserService();
+            var rememberMe = login.RememberMe;
             try
             {
                 IActionResult response = Unauthorized();
@@ -69,7 +70,7 @@ namespace SilverScreen.Controllers
 
                 if (user != null)
                 {
-                    var tokenString = userService.GenerateJSONWebToken(user);
+                    var tokenString = userService.GenerateJSONWebToken(user, rememberMe);
                     response = Ok(new { token = tokenString });
                 }
 
@@ -98,7 +99,7 @@ namespace SilverScreen.Controllers
                 var user = userService.RegisterUser(login);
                 if (user != null)
                 {
-                    var tokenString = userService.GenerateJSONWebToken(user);
+                    var tokenString = userService.GenerateJSONWebToken(user, false);
                     return Ok(new { token = tokenString });
                 }
                 else
