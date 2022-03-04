@@ -10,6 +10,8 @@ pipelines:
           - dotnetcore
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}  
+          - apt install oftware-properties-common
+          - apt-get update
           - add-apt-repository main
           - add-apt-repository universe
           - add-apt-repository restricted
