@@ -14,8 +14,8 @@ pipelines:
           - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
     - step:
         name: Deploy to production
-        deployment: production
+        deployment: staging
         runs-on: self.hosted
         trigger: manual 
         script:
-          - echo "Test manual deploy"
+          - ls
