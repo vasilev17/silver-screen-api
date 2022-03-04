@@ -1,4 +1,5 @@
-image: mcr.microsoft.com/dotnet/sdk:5.0
+#image: mcr.microsoft.com/dotnet/sdk:5.0
+image: atlassian/default-image:latest
 
 options:
   docker: true
@@ -12,6 +13,18 @@ pipelines:
           - dotnetcore
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}
+          
+          - curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          - sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+
+          - sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-trusty-prod trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+
+          # Install .NET Core SDK.
+          - sudo apt-get install apt-transport-https
+          - sudo apt-get update
+          - sudo apt-get -y install dotnet-sdk-5.0
+          
+          
           - dotnet restore
           - dotnet build --no-restore --configuration Release
           - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
