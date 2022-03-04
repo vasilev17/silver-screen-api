@@ -20,7 +20,7 @@ pipelines:
           - docker
         trigger: manual 
         script:
-          - docker build -t silverscreen-api .
+          - docker build -t silverscreen-api -f Dockerfile .
           - docker image tag silverscreen-api:latest https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
           - docker login --username=${regUsr} --password=${regPass}
           - docker image push https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
