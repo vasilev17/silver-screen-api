@@ -10,10 +10,10 @@ pipelines:
           - dotnetcore
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}  
-          - sudo add-apt-repository main
-          - sudo add-apt-repository universe
-          - sudo add-apt-repository restricted
-          - sudo add-apt-repository multiverse  
+          - add-apt-repository main
+          - add-apt-repository universe
+          - add-apt-repository restricted
+          - add-apt-repository multiverse  
           - apt-get -y install wget
           - wget -q packages-microsoft-prod.deb https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
           - apt-get update
