@@ -13,9 +13,12 @@ pipelines:
           - dotnet build --no-restore --configuration Release
           - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
     - step:
-        name: Deploy to production
+        name: Deploy to staging enviroment
         deployment: staging
         runs-on: self.hosted
         trigger: manual 
         script:
-          - ls
+          - docker build -t silverscreen-api .
+          - docker image tag silverscreen-api:latest https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
+          - docker login --username=${regUsr} --password=${regPass}
+          - docker image push https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
