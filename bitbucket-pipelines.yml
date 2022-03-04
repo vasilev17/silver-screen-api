@@ -1,5 +1,8 @@
 image: mcr.microsoft.com/dotnet/sdk:5.0
 
+options:
+  docker: true
+  
 pipelines:
   default:
     - step:
@@ -16,12 +19,10 @@ pipelines:
         name: Deploy to staging enviroment
         deployment: staging
         runs-on: self.hosted
-        services:
-          - docker
-        trigger: manual 
+        #trigger: manual -> for now it will deploy automatically 
         script:
           - cd dotnetcore
           - docker build -t silverscreen-api -f Dockerfile .
           - docker image tag silverscreen-api:latest https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
-          - docker login --username=${regUsr} --password=${regPass}
+          - docker login --username $regUsr --password $regPass
           - docker image push https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
