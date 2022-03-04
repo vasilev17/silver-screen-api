@@ -28,7 +28,7 @@ pipelines:
           - linter-reports/**
     - step:
         name: Deploy to production
-        deployment: p
+        deployment: production
         runs-on: self.hosted
         trigger: manual 
         script:
