@@ -17,6 +17,6 @@ pipelines:
           - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
           
           - docker build -t silverscreen-api -f Dockerfile .
-          - docker image tag silverscreen-api:latest https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
+          - docker image tag silverscreen-api:latest docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
           - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
           - docker image push https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
