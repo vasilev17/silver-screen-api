@@ -16,6 +16,8 @@ pipelines:
         name: Deploy to staging enviroment
         deployment: staging
         runs-on: self.hosted
+        services:
+          - docker
         trigger: manual 
         script:
           - docker build -t silverscreen-api .
