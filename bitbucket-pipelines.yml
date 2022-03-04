@@ -10,7 +10,6 @@ pipelines:
           - dotnetcore
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}  
-          - apt install software-properties-common
           - apt-get update
           - add-apt-repository main
           - add-apt-repository universe
