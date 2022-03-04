@@ -21,13 +21,13 @@ pipelines:
           - docker login docker-registry.bobost2.net --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
           - docker image push docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
           
-    -step:
-      runs-on: self.hosted
-      name: Restart the containers
-      script:
-        - pipe: atlassian/ssh-run:0.4.0
-          variables:
-            SSH_USER: $SERVER_USERNAME
-            SERVER: $SERVER_LOCATION
-            COMMAND: 'cd /home/silverscreen/silverscreen-backend && docker login docker-registry.bobost2.net --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} && docker-compose pull && docker-compose up -d'
+    - step:
+        runs-on: self.hosted
+        name: Restart the containers
+        script:
+          - pipe: atlassian/ssh-run:0.4.0
+            variables:
+              SSH_USER: $SERVER_USERNAME
+              SERVER: $SERVER_LOCATION
+              COMMAND: 'cd /home/silverscreen/silverscreen-backend && docker login docker-registry.bobost2.net --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} && docker-compose pull && docker-compose up -d'
   
