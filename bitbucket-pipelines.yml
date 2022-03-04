@@ -19,4 +19,4 @@ pipelines:
           - docker build -t silverscreen-api -f Dockerfile .
           - docker image tag silverscreen-api:latest docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
           - docker login docker-registry.bobost2.net --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
-          - docker image push https://docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
+          - docker image push docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
