@@ -6,7 +6,7 @@ options:
 pipelines:
   default:
     - step:
-        #runs-on: self.hosted - Am I the idiot or smth is wrong with Bitbucket CI
+        runs-on: self.hosted
         name: Build, test and deploy
         deployment: staging
         script:
