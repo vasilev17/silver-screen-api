@@ -29,5 +29,6 @@ pipelines:
             variables:
               SSH_USER: $SERVER_USERNAME
               SERVER: $SERVER_LOCATION
+              SSH_KEY: $SERVER_SSH
               COMMAND: 'cd /home/silverscreen/silverscreen-backend && docker login docker-registry.bobost2.net --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} && docker-compose pull && docker-compose up -d'
   
