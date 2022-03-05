@@ -37,4 +37,4 @@ pipelines:
         image: node
         script:
           - npm install -g newman
-          - newman run https://www.getpostman.com/collections/cd8287c46cd903b744eb
+          - newman run $POSTMAN_NOTIFICATION_TEST_URL
