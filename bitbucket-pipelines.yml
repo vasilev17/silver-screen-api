@@ -1,21 +1,40 @@
-image: mcr.microsoft.com/dotnet/core/sdk:5.0
+image: mcr.microsoft.com/dotnet/sdk:5.0
 
+options:
+  docker: true
+ 
 pipelines:
   default:
     - step:
         runs-on: self.hosted
-        name: Build and Test
-        caches:
-          - dotnetcore
+        name: Build, test and deploy
+        deployment: staging
         script:
-          - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER}
+          - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER} 
+          
           - dotnet restore
           - dotnet build --no-restore --configuration Release
           - dotnet test --no-build --configuration Release --test-adapter-path:. --logger:"junit;LogFilePath=$REPORTS_PATH/junit.xml"
+          
+          - docker build -t silverscreen-api -f Dockerfile .
+          - docker image tag silverscreen-api:latest docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
+          - docker login docker-registry.bobost2.net --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+          - docker image push docker-registry.bobost2.net/silverscreen/silverscreen-api:latest
+          
     - step:
-        name: Deploy to production
-        deployment: production
         runs-on: self.hosted
-        trigger: manual 
+        name: Restart the containers
         script:
-          - echo "Test manual deploy"
+          - pipe: atlassian/ssh-run:0.4.0
+            variables:
+              SSH_USER: $SERVER_USERNAME
+              SERVER: $SERVER_LOCATION
+              COMMAND: 'cd /home/silverscreen/silverscreen-backend && docker login docker-registry.bobost2.net --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} && docker-compose pull && docker-compose up -d'
+    
+    - step:
+        runs-on: self.hosted
+        name: Run Postman tests
+        image: node
+        script:
+          - npm install -g newman
+          - newman run $POSTMAN_NOTIFICATION_TEST_URL
