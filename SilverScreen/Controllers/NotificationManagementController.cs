@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SilverScreen.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class NotificationManagementController : Controller
     {
         /// <summary>

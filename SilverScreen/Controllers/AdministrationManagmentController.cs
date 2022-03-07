@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SilverScreen.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AdministrationManagmentController : Controller
     {
         static List<string> comments = new List<string>();
