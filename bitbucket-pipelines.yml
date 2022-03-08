@@ -9,6 +9,9 @@ pipelines:
         runs-on: self.hosted
         name: Build, test and deploy
         deployment: staging
+        caches:
+          - dotnetcore
+          - docker
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER} 
           
@@ -35,6 +38,8 @@ pipelines:
         runs-on: self.hosted
         name: Run Postman tests
         image: node
+        caches:
+          - node
         script:
           - npm install -g newman
           - newman run $POSTMAN_NOTIFICATION_TEST_URL

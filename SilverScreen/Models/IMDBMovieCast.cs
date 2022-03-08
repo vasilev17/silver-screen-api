@@ -9,7 +9,7 @@ namespace SilverScreen.Models
     {
         public IMDBScreenplayJobs directors { get; set; }
         public IMDBScreenplayJobs writers { get; set; }
-
+        public string errorMessage { get; set; }
         public List<IMDBActors> actors { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace SilverScreen.Models
     class IMDBTrailerLink
     {
         public string linkEmbed { get; set; }
+        public string errorMessage { get; set; }
     }
 }
