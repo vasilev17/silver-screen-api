@@ -133,7 +133,7 @@ namespace SilverScreen.Services
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.Username),
                 new Claim("userID", userInfo.Id.ToString())
             };
-            var time = DateTime.Now;
+            var time = DateTime.UtcNow;
             if (rememberMe)
             {
                 time.AddMonths(1);
