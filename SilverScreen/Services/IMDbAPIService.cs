@@ -206,9 +206,11 @@ namespace SilverScreen.Services
         }
         public void LoadMoviesIntoDB(string title ,int count)
         {
-            string API_KEY = "k_mfd5skue"; //k_faxyw40f //k_mfd5skue k_44lmaclu
             SilverScreenContext context = new SilverScreenContext();
-
+            var movieCount = count;
+            string[] apiKeys = { "k_faxyw40f", "k_t9h2vl7k", "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" };
+            int keyCount = 0;
+            string API_KEY = apiKeys[keyCount];
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
             var client = new RestClient(url);
             var request = new RestRequest();
@@ -216,7 +218,23 @@ namespace SilverScreen.Services
             request.AddParameter("count", count);
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
-            var movieCount = count;
+
+                while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains("Maximum usage") == true)
+                {
+                    keyCount++;
+                    API_KEY = apiKeys[keyCount];
+                    url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
+                    client = new RestClient(url);
+                    request = new RestRequest();
+                    request.AddParameter("title", title);
+                    request.AddParameter("count", count);
+                    response = client.Get(request);
+                    extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+
+                }
+            
+
+
             if (extractedFilm.results.Count < count)
             {
                 movieCount = extractedFilm.results.Count;
@@ -229,25 +247,56 @@ namespace SilverScreen.Services
                 var requestTrailer = new RestRequest();
                 var responseTrailer = clientTrailer.Get(requestTrailer);
                 var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
+                while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains("Maximum usage") == true)
+                {
+                    keyCount++;
+                    API_KEY = apiKeys[keyCount];
+                    imdbId = extractedFilm.results[j].id;
+                    urlTrailer = $"https://imdb-api.com/en/API/Trailer/" + API_KEY + "/" + imdbId;
+                    clientTrailer = new RestClient(urlTrailer);
+                    requestTrailer = new RestRequest();
+                    responseTrailer = clientTrailer.Get(requestTrailer);
+                    extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
 
+                }
                 string urlCast = "https://imdb-api.com/en/API/FullCast/" + API_KEY + "/" + imdbId;
                 var clientCast = new RestClient(urlCast);
                 var requestCast = new RestRequest();
                 var responseCast = clientCast.Get(requestCast);
                 var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains("Maximum usage") == true)
+                {
+                    keyCount++;
+                    API_KEY = apiKeys[keyCount];
+                    urlCast = "https://imdb-api.com/en/API/FullCast/" + API_KEY + "/" + imdbId;
+                    clientCast = new RestClient(urlCast);
+                    requestCast = new RestRequest();
+                    responseCast = clientCast.Get(requestCast);
+                    extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                }
 
                 string urlDescription = "https://imdb-api.com/en/API/Title/" + API_KEY + "/" + imdbId;
                 var clientDescription = new RestClient(urlDescription);
                 var requestDescription = new RestRequest();
                 var responseDescription = clientDescription.Get(requestDescription);
                 var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
-
+                while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains("Maximum usage") == true)
+                {
+                    keyCount++;
+                    API_KEY = apiKeys[keyCount];
+                    urlDescription = "https://imdb-api.com/en/API/Title/" + API_KEY + "/" + imdbId;
+                    clientDescription = new RestClient(urlDescription);
+                    requestDescription = new RestRequest();
+                    responseDescription = clientDescription.Get(requestDescription);
+                    extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+                }
                 NumberFormatInfo nfi = new NumberFormatInfo();
                 nfi.NumberDecimalSeparator = ".";
                 
                 
-                if(extractedDescription.type == "TVSeries" || extractedDescription.type == "Movie")
+                if((extractedDescription.type == "TVSeries" || extractedDescription.type == "Movie") && !context.Movies.Where(x => x.ImdbId.Equals(extractedFilm.results[j].id)).Any())
                 {
+                    
                     var movie = new Movie();
                     movie.ImdbId = extractedFilm.results[j].id;
                     movie.Title = extractedFilm.results[j].title;
