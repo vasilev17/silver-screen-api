@@ -11,6 +11,7 @@ pipelines:
         deployment: staging
         caches:
           - dotnetcore
+          - docker
         script:
           - REPORTS_PATH=./test-reports/build_${BITBUCKET_BUILD_NUMBER} 
           
