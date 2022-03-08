@@ -206,7 +206,7 @@ namespace SilverScreen.Services
         }
         public void LoadMoviesIntoDB(string title ,int count)
         {
-            string API_KEY = "k_mfd5skue"; //k_faxyw40f //k_mfd5skue k_44lmaclu
+            string API_KEY = "k_44lmaclu"; //k_faxyw40f //k_mfd5skue k_44lmaclu
             SilverScreenContext context = new SilverScreenContext();
 
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
@@ -246,8 +246,9 @@ namespace SilverScreen.Services
                 nfi.NumberDecimalSeparator = ".";
                 
                 
-                if(extractedDescription.type == "TVSeries" || extractedDescription.type == "Movie")
+                if((extractedDescription.type == "TVSeries" || extractedDescription.type == "Movie") && !context.Movies.Where(x => x.ImdbId.Equals(extractedFilm.results[j].id)).Any())
                 {
+                    
                     var movie = new Movie();
                     movie.ImdbId = extractedFilm.results[j].id;
                     movie.Title = extractedFilm.results[j].title;
