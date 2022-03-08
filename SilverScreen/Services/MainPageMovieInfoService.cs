@@ -18,7 +18,6 @@ namespace SilverScreen.Services
         public List<Movie> GetMoviesByGenre(string genre)
         {
             SilverScreenContext context = new SilverScreenContext();
-            List<MovieGenre> movieGenres = new List<MovieGenre>();
             List<Movie> movies = new List<Movie>();
 
 
@@ -73,6 +72,25 @@ namespace SilverScreen.Services
                 searchMovies = context.Movies.Where(s => s.Title.Contains(searchString)).ToList();
             }
             return searchMovies;
+        }
+        public List<Movie> GetMoviesByContentAndGenre(string genre, string content)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            List<Movie> movies = new List<Movie>();
+
+            var genreMovies = context.Genres.Where(s => s.Genre1.Equals(genre)).Include(s => s.MovieGenres).FirstOrDefault();
+            context.Dispose();
+            SilverScreenContext context1 = new SilverScreenContext();
+            foreach (var genreMovie in genreMovies.MovieGenres)
+            {
+                var movie = context1.Movies.Where(x => x.Id == genreMovie.MovieId && x.ContentType.Equals(content));
+                if (movie.Any())
+                {
+                    movies.Add(movie.FirstOrDefault());
+                }
+            }
+            context1.Dispose();
+            return movies;
         }
     }
 }

@@ -206,7 +206,7 @@ namespace SilverScreen.Services
         }
         public void LoadMoviesIntoDB(string title ,int count)
         {
-            string API_KEY = "k_faxyw40f"; //k_44lmaclu //k_mfd5skue k_44lmaclu
+            string API_KEY = "k_t9h2vl7k"; //k_44lmaclu //k_mfd5skue k_44lmaclu k_faxyw40f k_xahgruqu
             SilverScreenContext context = new SilverScreenContext();
 
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;

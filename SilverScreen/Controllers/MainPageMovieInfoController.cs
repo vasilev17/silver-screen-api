@@ -57,5 +57,12 @@ namespace SilverScreen.Controllers
             MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.SearchMovieByTitle(searchString);
         }
+        [HttpGet]
+        [Route("GetMoviesByContentAndGenre")]
+        public List<Movie> GetMoviesByContentAndGenreForMainPage(string genre, string content)
+        {
+            MainPageMovieInfoService service = new MainPageMovieInfoService();
+            return service.GetMoviesByContentAndGenre(genre, content);
+        }
     }
 }
