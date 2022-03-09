@@ -208,7 +208,7 @@ namespace SilverScreen.Services
         {
             SilverScreenContext context = new SilverScreenContext();
             var movieCount = count;
-            string[] apiKeys = { "k_faxyw40f", "k_t9h2vl7k", "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" };
+            string[] apiKeys = { "k_faxyw40f", "k_t9h2vl7k", "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" , "k_k15dcusr" , "k_zrj40392" };
             int keyCount = 0;
             string API_KEY = apiKeys[keyCount];
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
@@ -219,21 +219,19 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-                while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains("Maximum usage") == true)
-                {
-                    keyCount++;
-                    API_KEY = apiKeys[keyCount];
-                    url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
-                    client = new RestClient(url);
-                    request = new RestRequest();
-                    request.AddParameter("title", title);
-                    request.AddParameter("count", count);
-                    response = client.Get(request);
-                    extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains("Maximum usage") == true)
+            {
+                keyCount++;
+                API_KEY = apiKeys[keyCount];
+                url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
+                client = new RestClient(url);
+                request = new RestRequest();
+                request.AddParameter("title", title);
+                request.AddParameter("count", count);
+                response = client.Get(request);
+                extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-                }
-            
-
+            }
 
             if (extractedFilm.results.Count < count)
             {
