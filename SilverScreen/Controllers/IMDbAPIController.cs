@@ -37,32 +37,69 @@ namespace SilverScreen.Controllers
         /// <param name="title">The method uses this string to send a get request for the particular movie we want to add to the database</param>
         [HttpPost]
         [Route("AddMovieToDB")]
-        public void AddMovieToDB(string title)
+        [Authorize]
+        public IActionResult AddMovieToDB(string title)
         {
-            try
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
             {
-              IMDbAPIService iMDbAPIService = new IMDbAPIService();
-              iMDbAPIService.LoadMovieIntoDB(title);
+                var adminService = new AdministrationService();
+                var userService = new UserService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        IMDbAPIService iMDbAPIService = new IMDbAPIService();
+                        iMDbAPIService.LoadMovieIntoDB(title);
+                    }
+                    catch (MySql.Data.MySqlClient.MySqlException)
+                    {
+                        return StatusCode(500);
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
-            catch(MySql.Data.MySqlClient.MySqlException)
-            {
-              
-            }
+
+            return Unauthorized();
         }
         [HttpPost]
         [Route("AddMoviesToDB")]
         [Authorize]
-        public void AddMoviesToDB(string title,  int count)
+        public IActionResult AddMoviesToDB(string title,  int count)
         {
-            try
-            {
-                IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                iMDbAPIService.LoadMoviesIntoDB(title, count);
-            }
-            catch (MySql.Data.MySqlClient.MySqlException)
-            {
+            var user = HttpContext.User;
 
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                var userService = new UserService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        IMDbAPIService iMDbAPIService = new IMDbAPIService();
+                        iMDbAPIService.LoadMoviesIntoDB(title, count);
+                    }
+                    catch (MySql.Data.MySqlClient.MySqlException)
+                    {
+                        return StatusCode(500);
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
+
+            return Unauthorized();
         }
     }
 }
