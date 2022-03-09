@@ -136,11 +136,11 @@ namespace SilverScreen.Services
             var time = DateTime.UtcNow;
             if (rememberMe)
             {
-                time.AddMonths(1);
+                time = time.AddMonths(1);
             }
             else
             {
-                time.AddDays(1);
+                time = time.AddDays(1);
             }
             var token = new JwtSecurityToken("silverscreenbg",
               "silverscreenbg",
