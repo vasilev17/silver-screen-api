@@ -204,9 +204,14 @@ namespace SilverScreen.Services
             }
             context.SaveChanges();
         }
-        public void LoadMoviesIntoDB(string title ,int count)
+        public int LoadMoviesIntoDB(string title ,int count)
         {
             SilverScreenContext context = new SilverScreenContext();
+            if(count < 1)
+            {
+                throw new Exception("Please enter a valid number");
+            }
+            int addedMovies = 0; 
             var movieCount = count;
             string[] apiKeys = { "k_faxyw40f", "k_t9h2vl7k", "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" , "k_k15dcusr" , "k_zrj40392" };
             int keyCount = 0;
@@ -238,7 +243,7 @@ namespace SilverScreen.Services
             }
             if (extractedFilm.results.Count == 0)
             {
-                throw new Exception("Sorry we didnt find movies with that title");
+                throw new Exception("Sorry we didnt find any movies with that title");
             }
             else
             {
@@ -535,12 +540,18 @@ namespace SilverScreen.Services
 
                         }
                         context.SaveChanges();
+                        addedMovies++;
                     }
 
                 }
             }
-            
-            
+            if (addedMovies<1)
+            {
+                throw new Exception("Sorry we didnt find any movies that aren't already in the DB");
+            }
+            return addedMovies;
+
+
         }
     }
 }

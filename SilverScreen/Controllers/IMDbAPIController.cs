@@ -87,8 +87,7 @@ namespace SilverScreen.Controllers
                     try
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                        iMDbAPIService.LoadMoviesIntoDB(title, count);
-                        return Ok();
+                        return Json(iMDbAPIService.LoadMoviesIntoDB(title, count));
                     }
                     catch (Exception ex)
                     {
