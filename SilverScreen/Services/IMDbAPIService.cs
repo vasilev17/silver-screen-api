@@ -204,6 +204,39 @@ namespace SilverScreen.Services
             }
             context.SaveChanges();
         }
+        /// <summary>
+        /// This method sends a get request to the imdb-api using rest sharp to get a number of movie/s based from the input we get from
+        /// the title and count, then the method checks if the count is less than 1 because we can't add a negative number of movies, if the
+        /// count is less then 1 we throw and exception. To use the api we need api keys, the api keys we have have a limit of 100 requests
+        /// per day so we've made and array with 6 keys. We use the variable keyCount to know on which key we are at the moment.
+        /// after every request we check if we got an error message that countains maximum usage if we do we add 1 to keyCount and we change the key
+        /// to the next one in the array we make the same request with the new key and do the check again this repeats until we get a key that has request,  but if we 
+        /// dont have any keys with request we throw an exception. If we've successfully completed the first request that gets most of the data we need.
+        /// We check if we got any movies at all if we did not we trow an exception. We check if we got less movies than the wanted amount by the user
+        /// and if we did we add the amount found, but if its more we only add the wanted amount. Then we run 3 more request with the imdbId we got for every
+        /// movie we got from the previus request. The 3 new request get the Trailer, Staff, Description and Content type which are essential.
+        /// we do the same checks as the previus request for all of them. Then we check if the content type is either movie or tv series because we can get games
+        /// comercials and etc. and we dont want to add them to the db also we check if the movie is already in the db by the imdbId. If the movie is already in the db go to the
+        /// movie and do the same checks. If everything is ok then we check if the data is ok first we check if there is discription, because some old 
+        /// movies dont have descriptions if there isnt a description we set a defaut one. If we have a description we check if its longer than 500 charecters if it is
+        /// we create a substring of 500 charecters and we find the last full stop and we save that. Then we check if we got a thumbnail if we do not 
+        /// we add a defaut one. Then we check if we have a maturity rating if we dont we set it as null, if we do , we check if the maturity rating is longer than 5 charecters
+        /// because if the data is 5 or more chars. its not maturity rating and we dont want to save that so we set it as null if everything is ok with the
+        /// maturity rating we set it as it is. Then we check if the imdb rating is null if its not we parse it into double and save it. Then we check if the 
+        /// duration is null if it isnt we split the string from the first " " we get because we want to save it as int and the api returns it in this format 122 min, then we
+        /// parse it into int and save it. Then we start adding the genres, we want to add 3 or less genres so we check if we got less and we do we add less
+        /// first we check if the genres are already in the genres db table if they are we dont add them there we just make the connection between the genre and the movie
+        /// in the moviegenre db table. We do more or less the same thing with the staff but we check if the specific person is in the staff
+        /// table with the same role so someone can be a writer, actor or director. We only want to add 1 director and writer and 3 actors we go have less
+        /// we add less if we dont have any we dont any. last of all we send all the data we got via entity framework and we add 1 to added movies 
+        /// so we can return the number of movies added . We check if that number is less than one if it is we throw an exception
+        /// 
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="title">the title of the movie/s we want to add</param>
+        /// <param name="count">the number of the movie/s we want to add</param>
+        /// <returns></returns>
         public int LoadMoviesIntoDB(string title ,int count)
         {
             SilverScreenContext context = new SilverScreenContext();
