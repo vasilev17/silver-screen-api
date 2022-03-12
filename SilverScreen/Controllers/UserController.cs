@@ -30,6 +30,30 @@ namespace SilverScreen.Controllers
             return userService.GetUserByID(userID);
         }
 
+
+        [HttpGet]
+        [Authorize]
+        [Route("UserGetInfo")]
+        
+        public IActionResult GetUserInfo()
+        {
+
+            var user = HttpContext.User;
+            
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var userService = new UserService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                var userObj = userService.GetUserByID(userId);
+                return Json(new { username = userObj.Username, avatar = userObj.Avatar });
+
+            }
+
+            return Unauthorized();
+        }        
+
         /// <summary>
         /// A Delete request that calls the "GetUserByID" method from the "UserService" service in order to delete the user and his information based on his ID
         /// </summary>
@@ -117,6 +141,9 @@ namespace SilverScreen.Controllers
             
             //return 500
         }
+
+
+
 
         [AllowAnonymous]
         [HttpPost]

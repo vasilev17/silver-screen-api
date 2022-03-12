@@ -30,6 +30,7 @@ namespace SilverScreen.Services
                 movies.Add(context1.Movies.Find(genreMovie.MovieId));
             }
             context1.Dispose();
+            movies.Reverse();
             return movies;
 
 
@@ -90,6 +91,7 @@ namespace SilverScreen.Services
                 }
             }
             context1.Dispose();
+            movies.Reverse();
             return movies;
         }
     }

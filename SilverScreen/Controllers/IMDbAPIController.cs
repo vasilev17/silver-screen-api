@@ -54,6 +54,7 @@ namespace SilverScreen.Controllers
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
                         iMDbAPIService.LoadMovieIntoDB(title);
+                        return Ok();
                     }
                     catch (MySql.Data.MySqlClient.MySqlException)
                     {
@@ -86,11 +87,11 @@ namespace SilverScreen.Controllers
                     try
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                        iMDbAPIService.LoadMoviesIntoDB(title, count);
+                        return Json(iMDbAPIService.LoadMoviesIntoDB(title, count));
                     }
-                    catch (MySql.Data.MySqlClient.MySqlException)
+                    catch (Exception ex)
                     {
-                        return StatusCode(500);
+                        return BadRequest(new { errorMessage = ex.Message });
                     }
                 }
                 else
