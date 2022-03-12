@@ -102,7 +102,7 @@ namespace SilverScreen.Controllers
         [HttpPost]
         [Route("RateMovie")]
         [Authorize]
-        public IActionResult RateMovie(int movieID, double rating)
+        public IActionResult RateMovie(int movieID, int rating)
         {
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))

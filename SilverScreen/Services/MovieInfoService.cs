@@ -135,7 +135,7 @@ namespace SilverScreen.Services
         /// <param name="rating">A number of type double that represents the rating that the user selects</param>
         /// <returns>Returns an integer number, that shows whether a new rating was successfully added (1) / an old rating was removed (0) /
         /// an old rating was modified (2) or an error occurred (-1)</returns>
-        public int GiveMovieRating(int userID, int movieID, double rating)
+        public int GiveMovieRating(int userID, int movieID, int rating)
         {
             SilverScreenContext context = new SilverScreenContext();
 
