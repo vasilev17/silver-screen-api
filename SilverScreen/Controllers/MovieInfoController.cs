@@ -94,10 +94,10 @@ namespace SilverScreen.Controllers
 
         
         /// <summary>
-        /// A POST request that calls the "GiveMovieRating" method from the "MovieInfoService" service in order to add/delete or modify a movie rating
+        /// A POST request that calls the "GiveMovieRating" method from the "MovieInfoService" service in order to add or modify a movie rating
         /// </summary>
-        /// <param name="movieID">The ID of the movie, whose rating should be added/deleted or modified</param>
-        /// <param name="rating">A number of type double that represents the rating that the user gives</param>
+        /// <param name="movieID">The ID of the movie, whose rating should be added or modified</param>
+        /// <param name="rating">A number of type integer that represents the rating that the user gives</param>
         /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
         [HttpPost]
         [Route("RateMovie")]
@@ -117,7 +117,7 @@ namespace SilverScreen.Controllers
                     case 1:
                         return Json(new { msg = "Movie rating successful!" });
                     case 0:
-                        return Json(new { msg = "Successfully REMOVED a rating!" });
+                        return Json(new { msg = "This rating already exists!" });
                     case 2:
                         return Json(new { msg = "Successfully CHANGED a rating!" });
                     case -1:
@@ -126,6 +126,37 @@ namespace SilverScreen.Controllers
             }
             return Unauthorized();
         }
+
+        /// <summary>
+        /// A POST request that calls the "RemoveMovieRating" method from the "MovieInfoService" service in order to remove a rating
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose rating should be removed</param>
+        /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
+        [HttpPost]
+        [Route("RemoveRating")]
+        [Authorize]
+        public IActionResult RemoveRating(int movieID)
+        {
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                MovieInfoService service = new MovieInfoService();
+
+
+                int result = service.RemoveMovieRating(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID);
+
+                switch (result)
+                {
+                    case 1:
+                        return Json(new { msg = "Movie rating successfully DELETED!" });
+                    case -1:
+                        return Json(new { errorMsg = "Something went wrong!" });
+                }
+            }
+            return Unauthorized();
+        }
+
+
 
         /// <summary>
         /// A GET request that calls the "GetGenresByMovieID" method from the "MovieInfoService" service in order to get all the genres of a movie
@@ -173,6 +204,48 @@ namespace SilverScreen.Controllers
             };
 
             return movieInfo;
+        }
+
+
+        /// <summary>
+        /// A GET request that calls the "GetPersonalRatingByUser" method from the "MovieInfoService" service in order to get the personal rating a user as given to a movie in the past
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose personal rating should be retrieved</param>
+        /// <returns>Returns a Json containing a call to a method that provides the personal rating that a movie has or a response that says the user is Unauthorized</returns>
+        [HttpGet]
+        [Route("PersonalRatingGetRequest")]
+        [Authorize]
+        public IActionResult GetPersonalRating(int movieID)
+        {
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                MovieInfoService service = new MovieInfoService();
+                return Json(service.GetPersonalRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
+            }
+            return Unauthorized();
+        }
+
+        /// <summary>
+        /// A GET request that calls methods from the "MovieInfoService" service in order to get the friend rating and the personal rating of a movie
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose information should be retrieved</param>
+        /// <returns>Returns a double number representing the friend rating and an integer number representing the personal rating</returns>
+        [HttpGet]
+        [Route("MovieRatingsGetRequest")]
+        [Authorize]
+        public MovieRatings GetMovieRatings(int movieID)
+        {
+            var user = HttpContext.User;
+            MovieInfoService service = new MovieInfoService();
+            MovieRatings movieRating = new MovieRatings()
+            {
+                FriendRating = service.GetFriendRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID),
+                PersonalRating = service.GetPersonalRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID),
+
+            };
+
+            return movieRating;
         }
 
     }
