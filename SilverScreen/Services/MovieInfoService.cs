@@ -1,15 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using SilverScreen.Models.Tables;
+﻿using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace SilverScreen.Services
 {
     public class MovieInfoService
-    { 
+    {
         /// <summary>
         /// Gets the movie that corresponds to a perticular ID
         /// </summary>
@@ -21,7 +19,7 @@ namespace SilverScreen.Services
             using (context)
             {
                 var movie = context.Movies.Where(s => s.Id == movieID);
-                    return movie.FirstOrDefault();
+                return movie.FirstOrDefault();
             }
         }
 
@@ -68,7 +66,7 @@ namespace SilverScreen.Services
                 {
                     if (context.MovieRatings.Where(s => s.UserId == friend.UserId1 && s.MovieId == movieID).Any())
                         ratings.Add(context.MovieRatings.Where(s => s.UserId == friend.UserId1 && s.MovieId == movieID).FirstOrDefault().Rating);
-                    }
+                }
             }
             try
             {
@@ -79,7 +77,28 @@ namespace SilverScreen.Services
             {
                 return 0;
             }
-            
+
+        }
+
+        /// <summary>
+        /// Gets the rating that the user has given to a particular movie in the past
+        /// </summary>
+        /// <param name="userID">The ID of the user, based on which the right persona rating is selected</param>
+        /// <param name="movieID">The ID of the movie, whose personal rating is wanted</param>
+        /// <returns>Returns a number of type integer, which represents the rating given to that movie</returns>
+        public int GetPersonalRatingByUser(int userID, int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            int personalRating = 0;
+
+            using (context)
+            {
+
+                if (context.MovieRatings.Where(s => s.UserId == userID && s.MovieId == movieID).Any())
+                    personalRating = context.MovieRatings.Where(s => s.UserId == userID && s.MovieId == movieID).FirstOrDefault().Rating;
+            }
+            return personalRating;
+
         }
 
         /// <summary>
@@ -128,12 +147,12 @@ namespace SilverScreen.Services
         }
 
         /// <summary>
-        /// Saves/Deletes or modifies a rating a user gives to a movie
+        /// Saves or modifies a rating a user gives to a movie
         /// </summary>
-        /// <param name="userID">The ID of the user that is giving/deleting or modifying the rating</param>
-        /// <param name="movieID">The ID of the movie that corresponds to the rating given/removed/changed</param>
-        /// <param name="rating">A number of type double that represents the rating that the user selects</param>
-        /// <returns>Returns an integer number, that shows whether a new rating was successfully added (1) / an old rating was removed (0) /
+        /// <param name="userID">The ID of the user that is giving or modifying the rating</param>
+        /// <param name="movieID">The ID of the movie that corresponds to the rating given/changed</param>
+        /// <param name="rating">A number of type integer that represents the rating that the user selects</param>
+        /// <returns>Returns an integer number, that shows whether a new rating was successfully added (1) / the rating already exists (0) /
         /// an old rating was modified (2) or an error occurred (-1)</returns>
         public int GiveMovieRating(int userID, int movieID, int rating)
         {
@@ -155,11 +174,10 @@ namespace SilverScreen.Services
                 {
                     if (checkIfRatingExists.Any())
                     {
-                        context.MovieRatings.Remove(checkIfRatingExists.FirstOrDefault());
-                        context.SaveChanges();
+
                         return 0;
                     }
-                    else if(checkIfDifferentRatingExists.Any())
+                    else if (checkIfDifferentRatingExists.Any())
                     {
                         checkIfDifferentRatingExists.FirstOrDefault().Rating = rating;
                         context.SaveChanges();
@@ -180,6 +198,42 @@ namespace SilverScreen.Services
             }
         }
 
+
+        /// <summary>
+        /// Removes the rating a user has given to a movie
+        /// </summary>
+        /// <param name="userID">The ID of the user that is removing the rating</param>
+        /// <param name="movieID">The ID of the movie whose rating should be removed</param>
+        /// <returns>Returns an integer number, that shows whether a rating was successfully removed (1) or an error occurred (-1)</returns>
+        public int RemoveMovieRating(int userID, int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            var movieRating = new MovieRating()
+            {
+                UserId = userID,
+                MovieId = movieID,
+            };
+
+            using (context)
+            {
+
+                var checkIfRatingExists = context.MovieRatings.Where(s => s.UserId == userID && s.MovieId == movieID);
+                if (checkIfRatingExists.Any())
+                {
+                    context.MovieRatings.Remove(checkIfRatingExists.FirstOrDefault());
+                    context.SaveChanges();
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+
+                }
+            }
+        }
+
+
         /// <summary>
         /// Gets all the genres that a certain movie has
         /// </summary>
@@ -199,7 +253,7 @@ namespace SilverScreen.Services
 
                 foreach (var movieGenre in movieGenres)
                 {
-                        genres.Add(context.Genres.Where(s => s.Id == movieGenre.GenreId).FirstOrDefault().Genre1);
+                    genres.Add(context.Genres.Where(s => s.Id == movieGenre.GenreId).FirstOrDefault().Genre1);
                 }
             }
 
