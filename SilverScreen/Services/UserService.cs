@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SilverScreen.Models;
 using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -226,33 +228,65 @@ namespace SilverScreen.Services
             return user;
         }
 
-        public User UploadAvatar(Login login)
+        public async void UploadAvatar(IFormFile avatar, int userId)
         {
-            User user = null;
-            SilverScreenContext context = new SilverScreenContext();
-            AuthenticationService authentication = new AuthenticationService();
-            if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
+            string uploadDir = Environment.CurrentDirectory + "/cdn";
+
+            if (Environment.GetEnvironmentVariable("PROD_FRONTEND") == null)
             {
-                if (context.Users.Where(s => s.Password.Equals(login.Password)).Any())
-                {
-
-
-                    User registeredUser = new User()
-                    {
-                        Username = user.Username,
-                        Password = authentication.Encrypt(user.Password),
-                        Email = user.Email,
-                        //Avatar = login.Avatar,
-                        IsAdmin = false,
-                        IsDeleted = false,
-                        Banned = null
-                    };
-                    context.Update(registeredUser);
-                    context.SaveChanges();
-                    user = registeredUser;
-                }
+                uploadDir = Path.Combine(Environment.CurrentDirectory, @"..\..\silverscreen-ui\public") + @"\cdn";
             }
-            return user;
+
+            if (!Directory.Exists(uploadDir))
+            {
+                Directory.CreateDirectory(uploadDir);
+            }
+
+            string filePath = Path.Combine(uploadDir, avatar.FileName);
+
+            string fileExt = avatar.FileName.Split('.')[avatar.FileName.Split('.').Length - 1];
+            string fileName = avatar.FileName.Substring(0, avatar.FileName.Length - 1 - fileExt.Length);
+            if (File.Exists(filePath))
+            {
+                bool foundUniqueNum = false;
+                for (int i = 0; !foundUniqueNum ; i++) {
+                    if (!File.Exists(Path.Combine(uploadDir, $"{fileName}({i}).{fileExt}")))
+                    {
+                        if(i == 0)
+                        {
+                            fileName += "(0)";
+                        }
+                        else
+                        {
+                            fileName = fileName.Substring(0, fileName.Length) + "(" + i + ")";
+                        }
+                        foundUniqueNum = true;
+                    }
+                }
+                
+                filePath = Path.Combine(uploadDir, fileName + "." + fileExt);
+
+            }
+            try
+            {          
+                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await avatar.CopyToAsync(fileStream);
+                }
+
+                SilverScreenContext context = new SilverScreenContext();
+                context.Users.Find(userId).Avatar = 
+                    Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ?
+                    Environment.GetEnvironmentVariable("PROD_FRONTEND") + $"/cdn/{fileName}.{fileExt}" :
+                    $"http://localhost:3000/cdn/{fileName}.{fileExt}";
+                context.SaveChanges();
+                context.Dispose();
+            }
+            catch(System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
 
         /// <summary>
