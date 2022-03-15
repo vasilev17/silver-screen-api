@@ -9,6 +9,8 @@ namespace SilverScreen.Models
     {
         public string type { get; set; }
         public string plot { get; set; }
+        public string releaseDate { get; set; }
         public string errorMessage { get; set; }
+        
     }
 }
