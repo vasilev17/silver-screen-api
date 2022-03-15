@@ -182,7 +182,7 @@ namespace SilverScreen.Services
                                         Username = login.Username,
                                         Password = authentication.Encrypt(login.Password),
                                         Email = login.Email,
-                                        Avatar = Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ? Environment.GetEnvironmentVariable("PROD_FRONTEND") + "/DefaultProfilePic.png" : "http://localhost:3000/DefaultProfilePic.png",
+                                        Avatar = Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ? Environment.GetEnvironmentVariable("PROD_FRONTEND") + "/defaultProfilePic.png" : "http://localhost:3000/defaultProfilePic.png",
                                         IsAdmin = false,
                                         IsDeleted = false,
                                         Banned = null
