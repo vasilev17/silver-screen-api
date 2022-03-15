@@ -147,7 +147,7 @@ namespace SilverScreen.Controllers
 
 
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost]
         [Route("UploadAvatar")]
         public async Task<IActionResult> UploadAvatar(IFormFile avatar)
