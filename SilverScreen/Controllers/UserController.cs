@@ -150,7 +150,7 @@ namespace SilverScreen.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("UploadAvatar")]
-        public IActionResult UploadAvatar(IFormFile avatar)
+        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
         {
             var user = HttpContext.User;
 
@@ -163,7 +163,7 @@ namespace SilverScreen.Controllers
                     try
                     {
                         UserService userService = new UserService();
-                        userService.UploadAvatar(avatar, userId);
+                        await userService.UploadAvatar(avatar, userId);
                         return Ok(new { message = "Avatar uploaded successfully!" });
                     }
                     catch (Exception ex)

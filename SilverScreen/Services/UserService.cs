@@ -228,7 +228,7 @@ namespace SilverScreen.Services
             return user;
         }
 
-        public async void UploadAvatar(IFormFile avatar, int userId)
+        public async Task UploadAvatar(IFormFile avatar, int userId)
         {
             string uploadDir = Environment.CurrentDirectory + "/cdn";
 
@@ -268,11 +268,10 @@ namespace SilverScreen.Services
 
             }
             try
-            {          
-                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await avatar.CopyToAsync(fileStream);
-                }
+            {
+                Stream fileStream = new FileStream(filePath, FileMode.Create);
+                await avatar.CopyToAsync(fileStream);
+                
 
                 SilverScreenContext context = new SilverScreenContext();
                 context.Users.Find(userId).Avatar = 
