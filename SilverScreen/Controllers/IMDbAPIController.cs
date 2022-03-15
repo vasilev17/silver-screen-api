@@ -31,44 +31,8 @@ namespace SilverScreen.Controllers
         {
             return "Put method";
         }
-        /// <summary>
-        /// A GET request that calls the "LoadMovieIntoDB" method from the "IMDbAPIService" service in order to save a movie into the database based on its title
-        /// </summary>
-        /// <param name="title">The method uses this string to send a get request for the particular movie we want to add to the database</param>
-        [HttpPost]
-        [Route("AddMovieToDB")]
-        [Authorize]
-        public IActionResult AddMovieToDB(string title)
-        {
-            var user = HttpContext.User;
-
-            if (user.HasClaim(x => x.Type == "userID"))
-            {
-                var adminService = new AdministrationService();
-                var userService = new UserService();
-                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-
-                if (adminService.isUserAdministrator(userId))
-                {
-                    try
-                    {
-                        IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                        iMDbAPIService.LoadMovieIntoDB(title);
-                        return Ok();
-                    }
-                    catch (MySql.Data.MySqlClient.MySqlException)
-                    {
-                        return StatusCode(500);
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
-
-            return Unauthorized();
-        }
+        
+        
         [HttpPost]
         [Route("AddMoviesToDB")]
         [Authorize]
@@ -88,6 +52,39 @@ namespace SilverScreen.Controllers
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
                         return Json(iMDbAPIService.LoadMoviesIntoDB(title, count));
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { errorMessage = ex.Message });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+        [HttpPost]
+        [Route("AddUpComingMoviesToDB")]
+        [Authorize]
+        public IActionResult AddUpComingMoviesToDB(int count)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                var userService = new UserService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        IMDbAPIService iMDbAPIService = new IMDbAPIService();
+                        return Json(iMDbAPIService.LoadUpComingMoviesIntoDB(count));
                     }
                     catch (Exception ex)
                     {
