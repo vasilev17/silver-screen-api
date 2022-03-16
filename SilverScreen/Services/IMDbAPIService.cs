@@ -69,10 +69,10 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-            while (extractedFilm.errorMessage != null)
+            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true)
             {
                 keyCount++;
-                if (keyCount > apiKeys.Length)
+                if (keyCount >= apiKeys.Length)
                 {
                     throw new Exception("Sorry we ran out of API calls");
                 }
@@ -104,10 +104,10 @@ namespace SilverScreen.Services
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
                     var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
-                    while (extractedTrailer.errorMessage != null)
+                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -125,10 +125,10 @@ namespace SilverScreen.Services
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
                     var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
-                    while (extractedCast.errorMessage != null)
+                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -145,10 +145,10 @@ namespace SilverScreen.Services
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
                     var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
-                    while (extractedDescription.errorMessage != null)
+                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -455,10 +455,10 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-            while (extractedFilm.errorMessage != null)
+            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true)
             {
                 keyCount++;
-                if (keyCount > apiKeys.Length)
+                if (keyCount >= apiKeys.Length)
                 {
                     throw new Exception("Sorry we ran out of API calls");
                 }
@@ -490,10 +490,10 @@ namespace SilverScreen.Services
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
                     var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
-                    while (extractedTrailer.errorMessage != null)
+                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -511,10 +511,10 @@ namespace SilverScreen.Services
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
                     var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
-                    while (extractedCast.errorMessage != null)
+                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -531,10 +531,10 @@ namespace SilverScreen.Services
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
                     var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
-                    while (extractedDescription.errorMessage != null)
+                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true)
                     {
                         keyCount++;
-                        if (keyCount > apiKeys.Length)
+                        if (keyCount >= apiKeys.Length)
                         {
                             throw new Exception("Sorry we ran out of API calls");
                         }
@@ -558,8 +558,10 @@ namespace SilverScreen.Services
                         movie.ContentType = extractedDescription.type;
                         if(extractedDescription.releaseDate!=null || extractedDescription.releaseDate != "")
                         {
-                            movie.SpecificReleaseDate = Convert.ToDateTime(extractedDescription.releaseDate.Substring(5, 5));
-                        }
+                            
+                            movie.SpecificReleaseDate = Convert.ToDateTime(extractedDescription.releaseDate);
+                           
+                        }   
                         if (extractedDescription.plot == null || extractedDescription.plot == "")
                         {
                             movie.Description = "You caught us! We don't have the description yet.";
