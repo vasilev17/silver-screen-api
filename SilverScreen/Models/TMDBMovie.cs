@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    class IMDBMovie
+    class TMDBMovie
     {
         //[JsonProperty ("id")]
         public string id { get; set; }
         public string title { get; set; }
-        public string description { get; set; }
-        public string image { get; set; }
+        public string poster_path { get; set; }
         public string runtimeStr { get; set; } 
-        public string imDbRating { get; set; } 
-        public string plot { get; set; } 
-        public string contentRating { get; set; } 
+        public string vote_average { get; set; } 
+        public string overview { get; set; } 
+        public string release_date { get; set; }
+        public string backdrop_path { get; set; }
 
-        public List<IMDBGenres> genreList { get; set; }
+        
     }
 }
