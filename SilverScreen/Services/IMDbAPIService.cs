@@ -58,7 +58,7 @@ namespace SilverScreen.Services
             }
             int addedMovies = 0; 
             var movieCount = count;
-            string[] apiKeys = {"k_t9h2vl7k", "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" , "k_k15dcusr" , "k_faxyw40f" };
+            string[] apiKeys = { "k_mfd5skue", "k_xahgruqu", "k_44lmaclu" , "k_k15dcusr" , "k_faxyw40f" };
             int keyCount = 0;
             string API_KEY = apiKeys[keyCount];
             string url = "https://imdb-api.com/API/AdvancedSearch/" + API_KEY;
