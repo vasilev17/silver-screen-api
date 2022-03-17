@@ -55,7 +55,7 @@ namespace SilverScreen.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return BadRequest(new { errorMessage = ex.Message });
+                         return BadRequest(new { errorMessage = ex.Message });
                     }
                 }
                 else

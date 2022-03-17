@@ -169,8 +169,10 @@ namespace SilverScreen.Services
                     {
                         movie.Duration = extractedDescription.runtime;
                     }
-
-                    movie.Trailer = extractedTrailer.results[0].key;
+                    if(extractedTrailer.results.Count!=0)
+                    {
+                        movie.Trailer = extractedTrailer.results[0].key;
+                    }
                     movie.ReleaseDate = extractedFilm.results[j].release_date;
                     context.Add(movie);
                     context.SaveChanges();
