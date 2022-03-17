@@ -69,7 +69,7 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true)
+            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true && extractedFilm.errorMessage.Contains("404") != true)
             {
                 keyCount++;
                 if (keyCount >= apiKeys.Length)
@@ -104,7 +104,7 @@ namespace SilverScreen.Services
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
                     var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
-                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true)
+                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true && extractedTrailer.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
@@ -125,7 +125,7 @@ namespace SilverScreen.Services
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
                     var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
-                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true)
+                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true && extractedCast.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
@@ -145,7 +145,7 @@ namespace SilverScreen.Services
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
                     var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
-                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true)
+                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true && extractedDescription.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
@@ -455,7 +455,7 @@ namespace SilverScreen.Services
             var response = client.Get(request);
             var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
 
-            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true)
+            while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true && extractedFilm.errorMessage.Contains("404")!=true)
             {
                 keyCount++;
                 if (keyCount >= apiKeys.Length)
@@ -490,7 +490,7 @@ namespace SilverScreen.Services
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
                     var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
-                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true)
+                    while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true && extractedTrailer.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
@@ -511,7 +511,7 @@ namespace SilverScreen.Services
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
                     var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
-                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true)
+                    while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true && extractedCast.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
@@ -531,7 +531,7 @@ namespace SilverScreen.Services
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
                     var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
-                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true)
+                    while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true && extractedDescription.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
                         if (keyCount >= apiKeys.Length)
