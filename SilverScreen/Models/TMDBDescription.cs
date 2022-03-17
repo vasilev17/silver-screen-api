@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    public class IMDBGenres
+    public class TMDBDescription
     {
-        public string value { get; set; }
+        public List<TMDBGenres> genres { get; set; }
+        public string runtime { get; set; }
+       
     }
 }

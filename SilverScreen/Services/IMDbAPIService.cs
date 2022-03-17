@@ -67,7 +67,7 @@ namespace SilverScreen.Services
             request.AddParameter("title", title);
             request.AddParameter("count", count);
             var response = client.Get(request);
-            var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+            var extractedFilm = JsonSerializer.Deserialize<TMDBQuery>(response.Content);
 
             while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true && extractedFilm.errorMessage.Contains("404") != true)
             {
@@ -83,7 +83,7 @@ namespace SilverScreen.Services
                 request.AddParameter("title", title);
                 request.AddParameter("count", count);
                 response = client.Get(request);
-                extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+                extractedFilm = JsonSerializer.Deserialize<TMDBQuery>(response.Content);
 
             }
             if (extractedFilm.results.Count == 0)
@@ -103,7 +103,7 @@ namespace SilverScreen.Services
                     var clientTrailer = new RestClient(urlTrailer);
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
-                    var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
+                    var extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
                     while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true && extractedTrailer.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -117,14 +117,14 @@ namespace SilverScreen.Services
                         clientTrailer = new RestClient(urlTrailer);
                         requestTrailer = new RestRequest();
                         responseTrailer = clientTrailer.Get(requestTrailer);
-                        extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
+                        extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
 
                     }
                     string urlCast = "https://imdb-api.com/en/API/FullCast/" + API_KEY + "/" + imdbId;
                     var clientCast = new RestClient(urlCast);
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
-                    var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                    var extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
                     while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true && extractedCast.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -137,14 +137,14 @@ namespace SilverScreen.Services
                         clientCast = new RestClient(urlCast);
                         requestCast = new RestRequest();
                         responseCast = clientCast.Get(requestCast);
-                        extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                        extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
                     }
 
                     string urlDescription = "https://imdb-api.com/en/API/Title/" + API_KEY + "/" + imdbId;
                     var clientDescription = new RestClient(urlDescription);
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
-                    var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+                    var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                     while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true && extractedDescription.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -157,7 +157,7 @@ namespace SilverScreen.Services
                         clientDescription = new RestClient(urlDescription);
                         requestDescription = new RestRequest();
                         responseDescription = clientDescription.Get(requestDescription);
-                        extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+                        extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                     }
                     NumberFormatInfo nfi = new NumberFormatInfo();
                     nfi.NumberDecimalSeparator = ".";
@@ -453,7 +453,7 @@ namespace SilverScreen.Services
             request.AddParameter("release_date", dates);
             request.AddParameter("count", count);
             var response = client.Get(request);
-            var extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+            var extractedFilm = JsonSerializer.Deserialize<TMDBQuery>(response.Content);
 
             while (extractedFilm.errorMessage != null && extractedFilm.errorMessage.Contains(" ") == true && extractedFilm.errorMessage.Contains("404")!=true)
             {
@@ -469,7 +469,7 @@ namespace SilverScreen.Services
                 request.AddParameter("release_date", dates);
                 request.AddParameter("count", count);
                 response = client.Get(request);
-                extractedFilm = JsonSerializer.Deserialize<IMDBQuery>(response.Content);
+                extractedFilm = JsonSerializer.Deserialize<TMDBQuery>(response.Content);
 
             }
             if (extractedFilm.results.Count == 0)
@@ -489,7 +489,7 @@ namespace SilverScreen.Services
                     var clientTrailer = new RestClient(urlTrailer);
                     var requestTrailer = new RestRequest();
                     var responseTrailer = clientTrailer.Get(requestTrailer);
-                    var extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
+                    var extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
                     while (extractedTrailer.errorMessage != null && extractedTrailer.errorMessage.Contains(" ") == true && extractedTrailer.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -503,14 +503,14 @@ namespace SilverScreen.Services
                         clientTrailer = new RestClient(urlTrailer);
                         requestTrailer = new RestRequest();
                         responseTrailer = clientTrailer.Get(requestTrailer);
-                        extractedTrailer = JsonSerializer.Deserialize<IMDBTrailerLink>(responseTrailer.Content);
+                        extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
 
                     }
                     string urlCast = "https://imdb-api.com/en/API/FullCast/" + API_KEY + "/" + imdbId;
                     var clientCast = new RestClient(urlCast);
                     var requestCast = new RestRequest();
                     var responseCast = clientCast.Get(requestCast);
-                    var extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                    var extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
                     while (extractedCast.errorMessage != null && extractedCast.errorMessage.Contains(" ") == true && extractedCast.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -523,14 +523,14 @@ namespace SilverScreen.Services
                         clientCast = new RestClient(urlCast);
                         requestCast = new RestRequest();
                         responseCast = clientCast.Get(requestCast);
-                        extractedCast = JsonSerializer.Deserialize<IMDBMovieCast>(responseCast.Content);
+                        extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
                     }
 
                     string urlDescription = "https://imdb-api.com/en/API/Title/" + API_KEY + "/" + imdbId;
                     var clientDescription = new RestClient(urlDescription);
                     var requestDescription = new RestRequest();
                     var responseDescription = clientDescription.Get(requestDescription);
-                    var extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+                    var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                     while (extractedDescription.errorMessage != null && extractedDescription.errorMessage.Contains(" ") == true && extractedDescription.errorMessage.Contains("404") != true)
                     {
                         keyCount++;
@@ -543,7 +543,7 @@ namespace SilverScreen.Services
                         clientDescription = new RestClient(urlDescription);
                         requestDescription = new RestRequest();
                         responseDescription = clientDescription.Get(requestDescription);
-                        extractedDescription = JsonSerializer.Deserialize<IMDBDescription>(responseDescription.Content);
+                        extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                     }
                     NumberFormatInfo nfi = new NumberFormatInfo();
                     nfi.NumberDecimalSeparator = ".";
@@ -790,5 +790,290 @@ namespace SilverScreen.Services
 
 
         }
+        public int LoadMoviesIntoDBviaTMDB(string title, int count)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            if (count < 1)
+            {
+                throw new Exception("Please enter a valid number");
+            }
+            int addedMovies = 0;
+            var movieCount = count;
+            
+            string API_KEY = "990b1ebdae34eb39da96a2a37e0bbaf9";
+            string url = "https://api.themoviedb.org/3/search/movie/";
+            var client = new RestClient(url);
+            var request = new RestRequest();
+            request.AddParameter("api_key", API_KEY);
+            request.AddParameter("query", title);
+            var response = client.Get(request);
+            var extractedFilm = JsonSerializer.Deserialize<TMDBQuery>(response.Content);
+
+            
+            if (extractedFilm.results.Count == 0)
+            {
+                throw new Exception("Sorry we didnt find any movies with that title");
+            }
+            else
+            {
+                if (extractedFilm.results.Count < count)
+                {
+                    movieCount = extractedFilm.results.Count;
+                }
+                for (int j = 0; j < movieCount; j++)
+                {
+                    string TMDBId = extractedFilm.results[j].id;
+                    string urlTrailer = $"https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id + "/videos";
+                    var clientTrailer = new RestClient(urlTrailer);
+                    var requestTrailer = new RestRequest();
+                    requestTrailer.AddParameter("api_key", API_KEY);
+                    var responseTrailer = clientTrailer.Get(requestTrailer);
+                    var extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
+                    
+                    string urlCast = "https://api.themoviedb.org/3/movie/"+ extractedFilm.results[j].id + "/credits";
+                    var clientCast = new RestClient(urlCast);
+                    var requestCast = new RestRequest();
+                    requestCast.AddParameter("api_key", API_KEY);
+                    var responseCast = clientCast.Get(requestCast);
+                    var extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
+                    
+
+                    string urlDescription = "https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id;
+                    var clientDescription = new RestClient(urlDescription);
+                    var requestDescription = new RestRequest();
+                    requestDescription.AddParameter("api_key", API_KEY);
+                    var responseDescription = clientDescription.Get(requestDescription);
+                    var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
+                    
+                    NumberFormatInfo nfi = new NumberFormatInfo();
+                    nfi.NumberDecimalSeparator = ".";
+
+
+                   
+                        var movie = new Movie();
+                        movie.ImdbId = extractedFilm.results[j].id;
+                        movie.Title = extractedFilm.results[j].title;
+                        if (extractedFilm.results[j].overview == null || extractedFilm.results[j].overview == "")
+                        {
+                            movie.Description = "You caught us! We don't have the description yet.";
+                        }
+                        else
+                        {
+                            if (extractedFilm.results[j].overview.Length > 500)
+                            {
+                                string shortDescription = extractedFilm.results[j].overview.Substring(0, 500);
+                                for (int i = shortDescription.Length - 1; i >= 0; i--)
+                                {
+                                    if (shortDescription[i] == '.')
+                                    {
+                                        extractedFilm.results[j].overview = shortDescription.Substring(0, i + 1);
+                                        break;
+                                    }
+
+
+                                }
+                            }
+                            movie.Description = extractedFilm.results[j].overview;
+                        }
+
+                        if (extractedFilm.results[j].poster_path == null)
+                        {
+                            movie.Thumbnail = "https://iili.io/0pLhOX.png";
+                        }
+                        else
+                        {
+                            movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path;
+                        }
+                        if (extractedFilm.results[j].backdrop_path == null)
+                        {
+                            //movie.backround = "https://iili.io/0pLhOX.png"; uncomment when the db is changed
+                        }
+                        else
+                        {
+                            //movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path; uncomment when the db is changed
+                        }
+
+                        if (extractedFilm.results[j].vote_average == "0.0" || extractedFilm.results[j].vote_average == "0")
+                        {
+                            movie.Rating = null;
+                        }
+                        else
+                        {
+                            movie.Rating = Double.Parse(extractedFilm.results[j].vote_average, nfi);
+                        }
+                        if (extractedDescription.runtime == null)
+                        {
+                            movie.Duration = null;
+                        }
+                        else
+                        {
+                            movie.Duration = int.Parse(extractedDescription.runtime);
+                        }
+
+                        movie.Trailer = "https://www.youtube.com/watch?v=" + extractedTrailer.key;
+                        movie.ReleaseDate = extractedFilm.results[j].release_date;
+
+                        context.Add(movie);
+                        context.SaveChanges();
+                        if (extractedDescription.genres != null)
+                        {
+                            var genresCount = 3;
+                            if (extractedDescription.genres.Count < 3)
+                            {
+                                genresCount = extractedDescription.genres.Count;
+                            }
+                            for (int i = 0; i < genresCount; i++)
+                            {
+                                var genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
+                                if (genres.Any())
+                                {
+                                    var movieGenre = new MovieGenre
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        GenreId = genres.FirstOrDefault().Id
+
+                                    };
+                                    context.Add(movieGenre);
+                                }
+                                else
+                                {
+                                    var genre = new Genre
+                                    {
+                                        Genre1 = extractedDescription.genres[i].name
+
+                                    };
+                                    context.Add(genre);
+                                    context.SaveChanges();
+                                    genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
+                                    var movieGenre = new MovieGenre
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        GenreId = genres.FirstOrDefault().Id
+
+                                    };
+                                    context.Add(movieGenre);
+                                }
+                            }
+                        }
+
+
+                        if (extractedCast.directors.items.Count != 0)
+                        {
+                            var directorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.directors.items[0].name) && x.Position.Equals(extractedCast.directors.job));
+                            if (directorsCast != null)
+                            {
+                                if (directorsCast.Any())
+                                {
+                                    var movieStaff = new MovieStaff
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        StaffId = directorsCast.FirstOrDefault().Id
+                                    };
+                                    context.Add(movieStaff);
+
+                                }
+                                else
+                                {
+                                    var director = new staff
+                                    {
+                                        Name = extractedCast.directors.items[0].name,
+                                        Position = "Director"
+                                    };
+                                    context.Add(director);
+                                    context.SaveChanges();
+                                    directorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.directors.items[0].name) && x.Position.Equals(extractedCast.directors.job));
+                                    var movieStaff = new MovieStaff
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        StaffId = directorsCast.FirstOrDefault().Id
+                                    };
+                                    context.Add(movieStaff);
+                                }
+                            }
+                        }
+
+                        if (extractedCast.writers.items.Count != 0)
+                        {
+                            var writersCast = context.staff.Where(x => x.Name.Equals(extractedCast.writers.items[0].name) && x.Position.Equals(extractedCast.writers.job));
+                            if (writersCast.Any())
+                            {
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = writersCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
+                            else
+                            {
+                                var writer = new staff
+                                {
+                                    Name = extractedCast.writers.items[0].name,
+                                    Position = "Writer"
+                                };
+                                context.Add(writer);
+                                context.SaveChanges();
+                                writersCast = context.staff.Where(x => x.Name.Equals(extractedCast.writers.items[0].name) && x.Position.Equals(extractedCast.writers.job));
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = writersCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
+                        }
+                        var actorCount = 3;
+                        if (extractedCast.actors.Count < 3)
+                        {
+                            actorCount = extractedCast.actors.Count;
+                        }
+                        for (int i = 0; i < actorCount; i++)
+                        {
+                            var actorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.actors[i].name) && x.Position.Equals("Actor"));
+
+                            if (actorsCast.Any())
+                            {
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = actorsCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
+                            else
+                            {
+                                var actor = new staff
+                                {
+                                    Name = extractedCast.actors[i].name,
+                                    Position = "Actor"
+                                };
+                                context.staff.Add(actor);
+                                context.SaveChanges();
+                                actorsCast = context.staff.Where(x => x.Name.Equals(extractedCast.actors[i].name) && x.Position.Equals("Actor"));
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = actorsCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
+
+
+                        }
+                        context.SaveChanges();
+                        addedMovies++;
+                    }
+
+                }
+            if (addedMovies < 1)
+            {
+                throw new Exception("Sorry we didnt find any movies that aren't already in the DB");
+            }
+            return addedMovies;
+        }
+            
+
+
+        }
     }
-}
+

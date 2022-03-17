@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    public class IMDBScreenplayJobs
+    class TMDBTrailerLink
     {
-        public string job { get; set; }
-        public List<TMDBFullCast> items { get; set; }
+        public string key { get; set; }
     }
 }
