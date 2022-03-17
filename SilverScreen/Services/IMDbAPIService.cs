@@ -82,245 +82,249 @@ namespace SilverScreen.Services
                 }
                 for (int j = 0; j < movieCount; j++)
                 {
-                    int TMDBId = extractedFilm.results[j].id;
-                    string urlTrailer = $"https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id + "/videos";
-                    var clientTrailer = new RestClient(urlTrailer);
-                    var requestTrailer = new RestRequest();
-                    requestTrailer.AddParameter("api_key", API_KEY);
-                    var responseTrailer = clientTrailer.Get(requestTrailer);
-                    var extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
-
-                    string urlCast = "https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id + "/credits";
-                    var clientCast = new RestClient(urlCast);
-                    var requestCast = new RestRequest();
-                    requestCast.AddParameter("api_key", API_KEY);
-                    var responseCast = clientCast.Get(requestCast);
-                    var extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
-
-
-                    string urlDescription = "https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id;
-                    var clientDescription = new RestClient(urlDescription);
-                    var requestDescription = new RestRequest();
-                    requestDescription.AddParameter("api_key", API_KEY);
-                    var responseDescription = clientDescription.Get(requestDescription);
-                    var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
-
-                    NumberFormatInfo nfi = new NumberFormatInfo();
-                    nfi.NumberDecimalSeparator = ".";
-
-
-
-                    var movie = new Movie();
-                    movie.ImdbId = extractedFilm.results[j].id + "";
-                    movie.Title = extractedFilm.results[j].title;
-                    if (extractedFilm.results[j].overview == null || extractedFilm.results[j].overview == "")
+                    if (!context.Movies.Any(x => x.ImdbId == extractedFilm.results[j].id + ""))
                     {
-                        movie.Description = "You caught us! We don't have the description yet.";
-                    }
-                    else
-                    {
-                        if (extractedFilm.results[j].overview.Length > 500)
+                        int TMDBId = extractedFilm.results[j].id;
+                        string urlTrailer = $"https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id + "/videos";
+                        var clientTrailer = new RestClient(urlTrailer);
+                        var requestTrailer = new RestRequest();
+                        requestTrailer.AddParameter("api_key", API_KEY);
+                        var responseTrailer = clientTrailer.Get(requestTrailer);
+                        var extractedTrailer = JsonSerializer.Deserialize<TMDBTrailerLink>(responseTrailer.Content);
+
+                        string urlCast = "https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id + "/credits";
+                        var clientCast = new RestClient(urlCast);
+                        var requestCast = new RestRequest();
+                        requestCast.AddParameter("api_key", API_KEY);
+                        var responseCast = clientCast.Get(requestCast);
+                        var extractedCast = JsonSerializer.Deserialize<TMDBCast>(responseCast.Content);
+
+
+                        string urlDescription = "https://api.themoviedb.org/3/movie/" + extractedFilm.results[j].id;
+                        var clientDescription = new RestClient(urlDescription);
+                        var requestDescription = new RestRequest();
+                        requestDescription.AddParameter("api_key", API_KEY);
+                        var responseDescription = clientDescription.Get(requestDescription);
+                        var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
+
+                        NumberFormatInfo nfi = new NumberFormatInfo();
+                        nfi.NumberDecimalSeparator = ".";
+
+
+
+                        var movie = new Movie();
+
+                        movie.ImdbId = extractedFilm.results[j].id + "";
+                        movie.Title = extractedFilm.results[j].title;
+                        if (extractedFilm.results[j].overview == null || extractedFilm.results[j].overview == "")
                         {
-                            string shortDescription = extractedFilm.results[j].overview.Substring(0, 500);
-                            for (int i = shortDescription.Length - 1; i >= 0; i--)
+                            movie.Description = "You caught us! We don't have the description yet.";
+                        }
+                        else
+                        {
+                            if (extractedFilm.results[j].overview.Length > 500)
                             {
-                                if (shortDescription[i] == '.')
+                                string shortDescription = extractedFilm.results[j].overview.Substring(0, 500);
+                                for (int i = shortDescription.Length - 1; i >= 0; i--)
                                 {
-                                    extractedFilm.results[j].overview = shortDescription.Substring(0, i + 1);
-                                    break;
+                                    if (shortDescription[i] == '.')
+                                    {
+                                        extractedFilm.results[j].overview = shortDescription.Substring(0, i + 1);
+                                        break;
+                                    }
+
+
                                 }
-
-
                             }
+                            movie.Description = extractedFilm.results[j].overview;
                         }
-                        movie.Description = extractedFilm.results[j].overview;
-                    }
 
-                    if (extractedFilm.results[j].poster_path == null)
-                    {
-                        movie.Thumbnail = "https://iili.io/0pLhOX.png";
-                    }
-                    else
-                    {
-                        movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path;
-                    }
-                    if (extractedFilm.results[j].backdrop_path == null)
-                    {
-                        //movie.backround = "https://iili.io/0pLhOX.png"; uncomment when the db is changed
-                    }
-                    else
-                    {
-                        //movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path; uncomment when the db is changed
-                    }
-
-                    if (extractedFilm.results[j].vote_average == 0.0 || extractedFilm.results[j].vote_average == 0)
-                    {
-                        movie.Rating = null;
-                    }
-                    else
-                    {
-                        movie.Rating = extractedFilm.results[j].vote_average;
-                    }
-                    if (extractedDescription.runtime == 0)
-                    {
-                        movie.Duration = null;
-                    }
-                    else
-                    {
-                        movie.Duration = extractedDescription.runtime;
-                    }
-                    if(extractedTrailer.results.Count!=0)
-                    {
-                        movie.Trailer = extractedTrailer.results[0].key;
-                    }
-                    movie.ReleaseDate = extractedFilm.results[j].release_date;
-                    context.Add(movie);
-                    context.SaveChanges();
-                    if (extractedDescription.genres != null)
-                    {
-                        var genresCount = 3;
-                        if (extractedDescription.genres.Count < 3)
+                        if (extractedFilm.results[j].poster_path == null)
                         {
-                            genresCount = extractedDescription.genres.Count;
-                        }
-                        for (int i = 0; i < genresCount; i++)
-                        {
-                            var genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
-                            if (genres.Any())
-                            {
-                                var movieGenre = new MovieGenre
-                                {
-                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                    GenreId = genres.FirstOrDefault().Id
-
-                                };
-                                context.Add(movieGenre);
-                            }
-                            else
-                            {
-                                var genre = new Genre
-                                {
-                                    Genre1 = extractedDescription.genres[i].name
-
-                                };
-                                context.Add(genre);
-                                context.SaveChanges();
-                                genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
-                                var movieGenre = new MovieGenre
-                                {
-                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                    GenreId = genres.FirstOrDefault().Id
-
-                                };
-                                context.Add(movieGenre);
-                            }
-                        }
-                    }
-                    int actorCount = 3;
-                    var actors = extractedCast.cast.Where(x => x.known_for_department.Equals("Acting")).ToList();
-                    if (actors.Count < actorCount)
-                    {
-                        actorCount = actors.Count;
-                    }
-                    for (int i = 0; i < actorCount; i++)
-                    {
-                        var actorsCast = context.staff.Where(x => x.Name.Equals(actors[i].name) && x.Position.Equals("Actor"));
-
-                        if (actorsCast.Any())
-                        {
-                            var movieStaff = new MovieStaff
-                            {
-                                MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                StaffId = actorsCast.FirstOrDefault().Id
-                            };
-                            context.Add(movieStaff);
+                            movie.Thumbnail = "https://iili.io/0pLhOX.png";
                         }
                         else
                         {
-                            var actor = new staff
-                            {
-                                Name = actors[i].name,
-                                Position = "Actor"
-                            };
-                            context.staff.Add(actor);
-                            context.SaveChanges();
-                            actorsCast = context.staff.Where(x => x.Name.Equals(actors[i].name) && x.Position.Equals("Actor"));
-                            var movieStaff = new MovieStaff
-                            {
-                                MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                StaffId = actorsCast.FirstOrDefault().Id
-                            };
-                            context.Add(movieStaff);
+                            movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path;
                         }
-                    }
-                    var directors = extractedCast.cast.Where(x => x.job != null ? x.job.Equals("Director") : false).ToList();
-                    if(directors.Count != 0)
-                    {
-                        var directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
-                        if (directorsCast != null)
+                        if (extractedFilm.results[j].backdrop_path == null)
                         {
-                            if (directorsCast.Any())
+                            //movie.backround = "https://iili.io/0pLhOX.png"; uncomment when the db is changed
+                        }
+                        else
+                        {
+                            //movie.Thumbnail = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path; uncomment when the db is changed
+                        }
+
+                        if (extractedFilm.results[j].vote_average == 0.0 || extractedFilm.results[j].vote_average == 0)
+                        {
+                            movie.Rating = null;
+                        }
+                        else
+                        {
+                            movie.Rating = extractedFilm.results[j].vote_average;
+                        }
+                        if (extractedDescription.runtime == 0)
+                        {
+                            movie.Duration = null;
+                        }
+                        else
+                        {
+                            movie.Duration = extractedDescription.runtime;
+                        }
+                        if (extractedTrailer.results.Count != 0)
+                        {
+                            movie.Trailer = extractedTrailer.results[0].key;
+                        }
+                        movie.ReleaseDate = extractedFilm.results[j].release_date;
+                        context.Add(movie);
+                        context.SaveChanges();
+                        if (extractedDescription.genres != null)
+                        {
+                            var genresCount = 3;
+                            if (extractedDescription.genres.Count < 3)
+                            {
+                                genresCount = extractedDescription.genres.Count;
+                            }
+                            for (int i = 0; i < genresCount; i++)
+                            {
+                                var genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
+                                if (genres.Any())
+                                {
+                                    var movieGenre = new MovieGenre
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        GenreId = genres.FirstOrDefault().Id
+
+                                    };
+                                    context.Add(movieGenre);
+                                }
+                                else
+                                {
+                                    var genre = new Genre
+                                    {
+                                        Genre1 = extractedDescription.genres[i].name
+
+                                    };
+                                    context.Add(genre);
+                                    context.SaveChanges();
+                                    genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
+                                    var movieGenre = new MovieGenre
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        GenreId = genres.FirstOrDefault().Id
+
+                                    };
+                                    context.Add(movieGenre);
+                                }
+                            }
+                        }
+                        int actorCount = 3;
+                        var actors = extractedCast.cast.Where(x => x.known_for_department.Equals("Acting")).ToList();
+                        if (actors.Count < actorCount)
+                        {
+                            actorCount = actors.Count;
+                        }
+                        for (int i = 0; i < actorCount; i++)
+                        {
+                            var actorsCast = context.staff.Where(x => x.Name.Equals(actors[i].name) && x.Position.Equals("Actor"));
+
+                            if (actorsCast.Any())
                             {
                                 var movieStaff = new MovieStaff
                                 {
                                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                    StaffId = directorsCast.FirstOrDefault().Id
+                                    StaffId = actorsCast.FirstOrDefault().Id
                                 };
                                 context.Add(movieStaff);
-
                             }
                             else
                             {
-                                var director = new staff
+                                var actor = new staff
                                 {
-                                    Name = directors[0].name,
-                                    Position = "Director"
+                                    Name = actors[i].name,
+                                    Position = "Actor"
                                 };
-                                context.Add(director);
+                                context.staff.Add(actor);
                                 context.SaveChanges();
-                                directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
+                                actorsCast = context.staff.Where(x => x.Name.Equals(actors[i].name) && x.Position.Equals("Actor"));
                                 var movieStaff = new MovieStaff
                                 {
                                     MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                    StaffId = directorsCast.FirstOrDefault().Id
+                                    StaffId = actorsCast.FirstOrDefault().Id
                                 };
                                 context.Add(movieStaff);
                             }
                         }
-                    }
-                    var writers = extractedCast.cast.Where(x => x.job != null ? (x.job.Equals("Writer") || x.job.Equals("Novel")) : false).ToList();
-                    if (writers.Count != 0)
-                    {
-                        var writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
-                        if (writersCast.Any())
+                        var directors = extractedCast.cast.Where(x => x.job != null ? x.job.Equals("Director") : false).ToList();
+                        if (directors.Count != 0)
                         {
-                            var movieStaff = new MovieStaff
+                            var directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
+                            if (directorsCast != null)
                             {
-                                MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                StaffId = writersCast.FirstOrDefault().Id
-                            };
-                            context.Add(movieStaff);
+                                if (directorsCast.Any())
+                                {
+                                    var movieStaff = new MovieStaff
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        StaffId = directorsCast.FirstOrDefault().Id
+                                    };
+                                    context.Add(movieStaff);
+
+                                }
+                                else
+                                {
+                                    var director = new staff
+                                    {
+                                        Name = directors[0].name,
+                                        Position = "Director"
+                                    };
+                                    context.Add(director);
+                                    context.SaveChanges();
+                                    directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
+                                    var movieStaff = new MovieStaff
+                                    {
+                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        StaffId = directorsCast.FirstOrDefault().Id
+                                    };
+                                    context.Add(movieStaff);
+                                }
+                            }
                         }
-                        else
+                        var writers = extractedCast.cast.Where(x => x.job != null ? (x.job.Equals("Writer") || x.job.Equals("Novel")) : false).ToList();
+                        if (writers.Count != 0)
                         {
-                            var writer = new staff
+                            var writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
+                            if (writersCast.Any())
                             {
-                                Name = writers[0].name,
-                                Position = "Writer"
-                            };
-                            context.Add(writer);
-                            context.SaveChanges();
-                            writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
-                            var movieStaff = new MovieStaff
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = writersCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
+                            else
                             {
-                                MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
-                                StaffId = writersCast.FirstOrDefault().Id
-                            };
-                            context.Add(movieStaff);
+                                var writer = new staff
+                                {
+                                    Name = writers[0].name,
+                                    Position = "Writer"
+                                };
+                                context.Add(writer);
+                                context.SaveChanges();
+                                writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
+                                var movieStaff = new MovieStaff
+                                {
+                                    MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                    StaffId = writersCast.FirstOrDefault().Id
+                                };
+                                context.Add(movieStaff);
+                            }
                         }
+                        context.SaveChanges();
+                        addedMovies++;
                     }
-                    context.SaveChanges();
-                    addedMovies++;
                 }
 
             }
