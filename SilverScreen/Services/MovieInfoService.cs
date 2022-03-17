@@ -24,27 +24,6 @@ namespace SilverScreen.Services
         }
 
         /// <summary>
-        /// Gets all the comments that a certain movie has
-        /// </summary>
-        /// <param name="movieID">The ID, based on which the comments for the right movie are retrieved</param>
-        /// <returns>Returns a list containing all of the comments a movie has</returns>
-        public List<Comment> GetCommentsByMovieID(int movieID)
-        {
-            SilverScreenContext context = new SilverScreenContext();
-            List<Comment> comments = new List<Comment>();
-
-            using (context)
-            {
-
-                comments = context.Comments.Where(s => s.MovieId == movieID).ToList();
-                return comments;
-
-
-            }
-
-        }
-
-        /// <summary>
         /// Gets all the ratings that friends have given to a certain movie and calculates the average
         /// </summary>
         /// <param name="userID">The ID of the user, based on which the right group of friends is selected</param>
