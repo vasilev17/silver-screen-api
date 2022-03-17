@@ -10,6 +10,6 @@ namespace SilverScreen.Models
     class TMDBQuery
     {
         public List<TMDBMovie> results { get; set; }
-        public string total_results { get; set; }
+        
     }
 }

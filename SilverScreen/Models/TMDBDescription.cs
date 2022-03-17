@@ -8,7 +8,7 @@ namespace SilverScreen.Models
     public class TMDBDescription
     {
         public List<TMDBGenres> genres { get; set; }
-        public string runtime { get; set; }
+        public int runtime { get; set; }
        
     }
 }
