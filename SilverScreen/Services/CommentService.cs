@@ -19,7 +19,7 @@ namespace SilverScreen.Services
 
             foreach(var friend in userFriends)
             {
-                var commentQuery = context.Comments.Where(x => x.UserId == friend.UserId && x.IsFriendsOnly && x.MovieId == movieId).ToList();
+                var commentQuery = context.Comments.Where(x => x.UserId == friend.UserId && x.MovieId == movieId).ToList();
                 if(commentQuery.Any())
                 {
                     Comment comment = new Comment
@@ -47,24 +47,32 @@ namespace SilverScreen.Services
             List<Comment> comments = new List<Comment>();
 
             var fetchedComments = context.Comments.Where(x => x.MovieId == movieId && !x.IsFriendsOnly && x.UserId !=userId).Include(x => x.User);
+            var userFriends = context.FriendLists.Where(x => x.UserId1 == userId).Include(x => x.User).ToList();
 
-            foreach(var comment in fetchedComments)
+            foreach (var comment in fetchedComments)
             {
-                Comment commentResult = new Comment
+                bool ignoreFriend = false;
+                for (int i = 0; i < userFriends.Count; i++)
                 {
-                    MovieId = movieId,
-                    Content = comment.Content,
-                    User = new User
+                    if (comment.UserId == userFriends[i].UserId) { ignoreFriend = true; break; }
+                }
+                if (!ignoreFriend)
+                {
+                    Comment commentResult = new Comment
                     {
-                        Id = comment.User.Id,
-                        Username = comment.User.Username,
-                        Avatar = comment.User.Avatar
-                    },
-                    IsFriendsOnly = false
-                };
-                comments.Add(commentResult);
+                        MovieId = movieId,
+                        Content = comment.Content,
+                        User = new User
+                        {
+                            Id = comment.User.Id,
+                            Username = comment.User.Username,
+                            Avatar = comment.User.Avatar
+                        },
+                        IsFriendsOnly = false
+                    };
+                    comments.Add(commentResult);
+                }
             }
-
             return comments;
         }
 
@@ -80,6 +88,61 @@ namespace SilverScreen.Services
             {
                 return null;
             }
+        }
+
+        public void PostComment(int userId, int movieId, string message, bool friendsOnly)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            if(context.Comments.Where(comment => comment.UserId == userId && comment.MovieId == movieId).Any())
+            {
+                throw new Exception("Comment already exists!");
+            }
+            
+            Comment comment = new Comment
+            {
+                UserId = userId,
+                Content = message,
+                MovieId = movieId,
+                IsFriendsOnly = friendsOnly
+            };
+
+            context.Add(comment);
+            context.SaveChanges();
+            context.Dispose();
+        }
+
+        public void UpdateComment(int userId, int movieId, string message, bool friendsOnly)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            var commentQuery = context.Comments.Where(comment => comment.UserId == userId && comment.MovieId == movieId);
+            if (!commentQuery.Any())
+            {
+                throw new Exception("Comment does not exist!");
+            }
+
+            var comment = commentQuery.FirstOrDefault();
+            comment.Content = message;
+            comment.IsFriendsOnly = friendsOnly;
+            context.SaveChanges();
+            context.Dispose();
+        }
+
+
+        public void DeleteComment(int userId, int movieId)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+            var commentQuery = context.Comments.Where(comment => comment.UserId == userId && comment.MovieId == movieId);
+            if (!commentQuery.Any())
+            {
+                throw new Exception("Comment does not exist!");
+            }
+
+            context.Remove(commentQuery.First());
+            context.SaveChanges();
+            context.Dispose();
         }
     }
 }

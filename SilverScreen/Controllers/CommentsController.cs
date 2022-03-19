@@ -16,7 +16,7 @@ namespace SilverScreen.Controllers
     {
         [HttpGet]
         [Route("GetComments")]
-        public IActionResult GetComments(int movieId) //Rethink this method, because it sorts friends only if they are marked!
+        public IActionResult GetComments(int movieId)
         {
             var user = HttpContext.User;
             try
@@ -73,6 +73,7 @@ namespace SilverScreen.Controllers
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
                 try
                 {
+                    service.PostComment(userId, movieId, message, friendsOnly);
                     return Ok();
                 }
                 catch (System.Exception ex)
@@ -95,6 +96,7 @@ namespace SilverScreen.Controllers
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
                 try
                 {
+                    service.UpdateComment(userId, movieId, message, friendsOnly);
                     return Ok();
                 }
                 catch (System.Exception ex)
@@ -117,6 +119,7 @@ namespace SilverScreen.Controllers
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
                 try
                 {
+                    service.DeleteComment(userId, movieId);
                     return Ok();
                 }
                 catch (System.Exception ex)
