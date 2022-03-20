@@ -83,7 +83,7 @@ namespace SilverScreen.Services
         /// <summary>
         /// Gets the rating that the user has given to a particular movie in the past
         /// </summary>
-        /// <param name="userID">The ID of the user, based on which the right persona rating is selected</param>
+        /// <param name="userID">The ID of the user, based on which the right personal rating is selected</param>
         /// <param name="movieID">The ID of the movie, whose personal rating is wanted</param>
         /// <returns>Returns a number of type integer, which represents the rating given to that movie</returns>
         public int GetPersonalRatingByUser(int userID, int movieID)
@@ -102,13 +102,38 @@ namespace SilverScreen.Services
         }
 
         /// <summary>
-        /// Adds or removes a perticular movie to a list of watched or desired movies (MyList), based on wether it already exists in the list for the user
+        /// Gets whether a movie is present and in which section of MyList
+        /// </summary>
+        /// <param name="userID">The ID of the user, based on which the right MyList is selected</param>
+        /// <param name="movieID">The ID of the movie, which we want to know whether is present in MyList</param>
+        /// <returns>Returns a string, which shows whether the movie is present in the Watchlist/Completed or is not</returns>
+        public string GetMyListInfoByMovieAndUser(int userID, int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            string response= "Not added";
+
+            using (context)
+            {
+
+                if (context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID).Any()) {
+                    if (context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID).FirstOrDefault().Watched == true)
+                        response = "Completed"; 
+                    else
+                        response = "Watchlist";
+                }
+            }
+            return response;
+
+        }
+
+        /// <summary>
+        /// Adds a perticular movie to a list of watched or desired movies (MyList)
         /// </summary>
         /// <param name="userID">The ID of the user, based on which the movie is added to the right "MyList"</param>
         /// <param name="movieID">The ID of the movie, which should be added to "MyList"</param>
         /// <param name="watched">A boolean, which shows whether the movie should be added as already watched or desired</param>
-        /// <returns>Returns an integer number, that shows whether the movie was successfully added (1) / removed (0) or an error occurred (-1)</returns>
-        public int ToggleMovieInMyList(int userID, int movieID, bool watched)
+        /// <returns>Returns an integer number, that shows whether the movie was successfully added (1) / already exists (0) / exists in a different section (2) or an error occurred (-1)</returns>
+        public int AddMovieToMyList(int userID, int movieID, bool watched)
         {
             SilverScreenContext context = new SilverScreenContext();
 
@@ -122,14 +147,20 @@ namespace SilverScreen.Services
             using (context)
             {
 
-                var checkIfExists = context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID);
+                var checkIfExists = context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID && s.Watched == watched);
+                var checkIfAddedToDifferentMyListSection = context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID);
                 try
                 {
                     if (checkIfExists.Any())
                     {
-                        context.MyLists.Remove(checkIfExists.FirstOrDefault());
-                        context.SaveChanges();
                         return 0;
+                    }
+                    else if (checkIfAddedToDifferentMyListSection.Any())
+                    {
+                        checkIfAddedToDifferentMyListSection.FirstOrDefault().Watched = watched;
+                        context.SaveChanges();
+                        return 2;
+
                     }
                     else
                     {
@@ -142,6 +173,35 @@ namespace SilverScreen.Services
                 {
 
                     return -1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a movie from the user's list of completed or desired movies
+        /// </summary>
+        /// <param name="userID">The ID of the user that is removing the movie</param>
+        /// <param name="movieID">The ID of the movie which should be removed</param>
+        /// <returns>Returns an integer number, that shows whether the movie was successfully removed (1) or an error occurred (-1)</returns>
+        public int RemoveMovieFromMyList(int userID, int movieID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+
+
+            using (context)
+            {
+
+                var checkIfExists = context.MyLists.Where(s => s.UserId == userID && s.MovieId == movieID);
+                if (checkIfExists.Any())
+                {
+                    context.MyLists.Remove(checkIfExists.FirstOrDefault());
+                    context.SaveChanges();
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+
                 }
             }
         }
@@ -209,11 +269,6 @@ namespace SilverScreen.Services
         {
             SilverScreenContext context = new SilverScreenContext();
 
-            var movieRating = new MovieRating()
-            {
-                UserId = userID,
-                MovieId = movieID,
-            };
 
             using (context)
             {
