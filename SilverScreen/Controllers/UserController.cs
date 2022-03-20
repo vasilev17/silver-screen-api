@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using SilverScreen.Models;
@@ -6,6 +7,7 @@ using SilverScreen.Models.Tables;
 using SilverScreen.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -145,21 +147,37 @@ namespace SilverScreen.Controllers
 
 
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost]
         [Route("UploadAvatar")]
-        public IActionResult UploadAvatar([FromBody] Login login)
+        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
         {
             var user = HttpContext.User;
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
-               UserService userService = new UserService();
-               // userService.UploadAvatar();            
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+                var fileExt = avatar.FileName.Split('.')[avatar.FileName.Split('.').Length - 1];
+                if (fileExt.Equals("png") || fileExt.Equals("jpg") || fileExt.Equals("jpeg") || fileExt.Equals("gif") || fileExt.Equals("bmp"))
+                {
+                    try
+                    {
+                        UserService userService = new UserService();
+                        await userService.UploadAvatar(avatar, userId);
+                        return Ok(new { message = "Avatar uploaded successfully!" });
+                    }
+                    catch (Exception ex)
+                    {
+                        return UnprocessableEntity(ex.Message);
+                    }
+                }
+                else
+                {
+                    return UnprocessableEntity(new { message = "Invalid file format!" });
+                }
             }
 
-           
-            return Ok(new { ErrorMessage = "Error" });
+            return Unauthorized(new { ErrorMessage = "Error" });
 
         }
 

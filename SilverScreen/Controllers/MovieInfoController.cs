@@ -26,19 +26,6 @@ namespace SilverScreen.Controllers
         }
 
         /// <summary>
-        /// A GET request that calls the "GetCommentsByMovieID" method from the "MovieInfoService" service in order to get all the comments the movie has
-        /// </summary>
-        /// <param name="movieID">The ID of the movie, whose comments should be retrieved</param>
-        /// <returns>Returns a call to a method that provides a list that contains all of the commnets a movie has attatched to it</returns>
-        [HttpGet]
-        [Route("CommentsGetRequest")]
-        public List<Comment> GetComments(int movieID)
-        {
-            MovieInfoService service = new MovieInfoService();
-            return service.GetCommentsByMovieID(movieID);
-        }
-
-        /// <summary>
         /// A GET request that calls the "GetFriendRatingByUser" method from the "MovieInfoService" service in order to get the average of all friend ratings
         /// </summary>
         /// <param name="movieID">The ID of the movie, whose average friend rating should be calculated</param>
