@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using SilverScreen.Models;
 using SilverScreen.Models.Tables;
 using SilverScreen.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SilverScreen.Controllers
 {
@@ -42,44 +39,46 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 MovieInfoService service = new MovieInfoService();
-                return Json( service.GetFriendRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
+                return Json(service.GetFriendRatingByUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
             }
             return Unauthorized();
         }
 
         /// <summary>
-        /// A POST request that calls the "ToggleMovieInMyList" method from the "MovieInfoService" service in order to add or delete a movie from a list of watched/desired movies (MyList)
+        /// A POST request that calls the "AddMovieToMyList" method from the "MovieInfoService" service in order to add a movie to a list of watched/desired movies (MyList)
         /// </summary>
-        /// <param name="movieID">The ID of the movie which should be added or deleted from "MyList"</param>
+        /// <param name="movieID">The ID of the movie which should be added to "MyList"</param>
         /// <param name="watched">A boolean, which shows whether the movie should be added as already watched or desired</param>
         /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
         [HttpPost]
-        [Route("AddOrRemoveMovieFromMyList")]
+        [Route("AddMovieToMyList")]
         [Authorize]
-        public IActionResult AddOrRemoveMovieFromMyList(int movieID, bool watched)
+        public IActionResult AddMovieToMyList(int movieID, bool watched)
         {
             var user = HttpContext.User;
             if (user.HasClaim(x => x.Type == "userID"))
             {
-                    MovieInfoService service = new MovieInfoService();
+                MovieInfoService service = new MovieInfoService();
 
 
-                    int result = service.ToggleMovieInMyList(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, watched);
+                int result = service.AddMovieToMyList(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID, watched);
 
-                    switch (result)
-                    {
-                        case 1:
-                            return Json(new { msg = "Movie successfully ADDED to MyList!" });
-                        case 0:
-                            return Json(new { msg = "Movie successfully REMOVED from MyList!" });
-                        case -1:
-                            return Json(new { errorMsg = "Something went wrong!" });
-                    }
+                switch (result)
+                {
+                    case 1:
+                        return Json(new { msg = "Movie successfully ADDED to MyList!" });
+                    case 2:
+                        return Json(new { msg = "MyList section successfully changed!" });
+                    case 0:
+                        return Json(new { msg = "Movie already exists in this section of MyList!" });
+                    case -1:
+                        return Json(new { errorMsg = "Something went wrong!" });
+                }
             }
             return Unauthorized();
         }
 
-        
+
         /// <summary>
         /// A POST request that calls the "GiveMovieRating" method from the "MovieInfoService" service in order to add or modify a movie rating
         /// </summary>
@@ -143,7 +142,34 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// A POST request that calls the "RemoveMovieFromMyList" method from the "MovieInfoService" service in order to remove a movie from MyList
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, which should be removed</param>
+        /// <returns>Returns a Json containing a message with the outcome or a response that says the user is Unauthorized</returns>
+        [HttpPost]
+        [Route("RemoveMovieFromMyList")]
+        [Authorize]
+        public IActionResult RemoveMovieFromMyList(int movieID)
+        {
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                MovieInfoService service = new MovieInfoService();
 
+
+                int result = service.RemoveMovieFromMyList(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID);
+
+                switch (result)
+                {
+                    case 1:
+                        return Json(new { msg = "Movie successfully DELETED from MyList!" });
+                    case -1:
+                        return Json(new { errorMsg = "Something went wrong!" });
+                }
+            }
+            return Unauthorized();
+        }
 
         /// <summary>
         /// A GET request that calls the "GetGenresByMovieID" method from the "MovieInfoService" service in order to get all the genres of a movie
@@ -233,6 +259,25 @@ namespace SilverScreen.Controllers
             };
 
             return movieRating;
+        }
+
+        /// <summary>
+        /// A GET request that calls a method from the "MovieInfoService" service in order to get whether the movie is added to MyList and in which section
+        /// </summary>
+        /// <param name="movieID">The ID of the movie, whose information should be retrieved</param>
+        /// <returns>Returns a string representing whether the movie exists and in which section of MyList</returns>
+        [HttpGet]
+        [Route("MyListInfoGetRequest")]
+        [Authorize]
+        public IActionResult GetMyListInfo(int movieID)
+        {
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                MovieInfoService service = new MovieInfoService();
+                return Json(service.GetMyListInfoByMovieAndUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), movieID));
+            }
+            return Unauthorized();
         }
 
     }
