@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SilverScreen.Models;
 using SilverScreen.Models.Tables;
@@ -282,6 +283,26 @@ namespace SilverScreen.Services
                 return 0;
             }
             return -1;
+        }
+
+
+
+        public List<User> GetFriendListByUser(int userID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            List<User> userList = new List<User>(); ;
+            var users = context.FriendLists.Where(x => x.UserId1 == userID).Include(x => x.User);
+            foreach (var user in users)
+            {
+                var friend = new User() {
+                    Id = user.User.Id,
+                    Username = user.User.Username,
+                    Avatar = user.User.Avatar,
+                };
+                userList.Add(friend);
+            }
+            context.Dispose();
+            return userList;
         }
     }
 }
