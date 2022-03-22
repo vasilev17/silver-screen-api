@@ -24,6 +24,7 @@ namespace SilverScreen.Services
                 {
                     Comment comment = new Comment
                     {
+                        Id = commentQuery.FirstOrDefault().Id,
                         MovieId = movieId,
                         Content = commentQuery.FirstOrDefault().Content,
                         User = new User
@@ -60,6 +61,7 @@ namespace SilverScreen.Services
                 {
                     Comment commentResult = new Comment
                     {
+                        Id = comment.Id,
                         MovieId = movieId,
                         Content = comment.Content,
                         User = new User
