@@ -152,6 +152,8 @@ namespace SilverScreen.Models.Tables
                     .IsRequired()
                     .HasMaxLength(15);
 
+                entity.Property(e => e.SpecificReleaseDate).HasColumnType("date");
+
                 entity.Property(e => e.Thumbnail)
                     .IsRequired()
                     .HasMaxLength(200);

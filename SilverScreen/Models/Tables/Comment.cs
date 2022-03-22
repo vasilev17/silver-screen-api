@@ -11,6 +11,7 @@ namespace SilverScreen.Models.Tables
         public int UserId { get; set; }
         public int MovieId { get; set; }
         public string Content { get; set; }
+        public bool IsFriendsOnly { get; set; }
 
         public virtual Movie Movie { get; set; }
         public virtual User User { get; set; }

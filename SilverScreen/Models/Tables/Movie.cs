@@ -30,6 +30,7 @@ namespace SilverScreen.Models.Tables
         public string MaturityRating { get; set; }
         public string ImdbId { get; set; }
         public string ContentType { get; set; }
+        public DateTime? SpecificReleaseDate { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<MovieGenre> MovieGenres { get; set; }

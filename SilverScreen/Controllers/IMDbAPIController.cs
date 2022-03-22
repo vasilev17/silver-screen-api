@@ -36,7 +36,7 @@ namespace SilverScreen.Controllers
         [HttpPost]
         [Route("AddMoviesToDB")]
         [Authorize]
-        public IActionResult AddMoviesToDB(string title,  int count)
+        public IActionResult LoadMoviesIntoDBviaTMDB(string title,  int count)
         {
             var user = HttpContext.User;
 
@@ -51,11 +51,11 @@ namespace SilverScreen.Controllers
                     try
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                        return Json(iMDbAPIService.LoadMoviesIntoDB(title, count));
+                        return Json(iMDbAPIService.LoadMoviesIntoDBviaTMDB(title, count));
                     }
                     catch (Exception ex)
                     {
-                        return BadRequest(new { errorMessage = ex.Message });
+                         return BadRequest(new { errorMessage = ex.Message });
                     }
                 }
                 else
@@ -66,38 +66,6 @@ namespace SilverScreen.Controllers
 
             return Unauthorized();
         }
-        [HttpPost]
-        [Route("AddUpComingMoviesToDB")]
-        [Authorize]
-        public IActionResult AddUpComingMoviesToDB(int count)
-        {
-            var user = HttpContext.User;
-
-            if (user.HasClaim(x => x.Type == "userID"))
-            {
-                var adminService = new AdministrationService();
-                var userService = new UserService();
-                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-
-                if (adminService.isUserAdministrator(userId))
-                {
-                    try
-                    {
-                        IMDbAPIService iMDbAPIService = new IMDbAPIService();
-                        return Json(iMDbAPIService.LoadUpComingMoviesIntoDB(count));
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new { errorMessage = ex.Message });
-                    }
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
-
-            return Unauthorized();
-        }
+        
     }
 }

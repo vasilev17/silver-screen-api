@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    public class IMDBScreenplayJobs
+    public class TMDBCast
     {
-        public string job { get; set; }
-        public List<TMDBFullCast> items { get; set; }
+        public List<TMDBFullCast> cast { get; set; }
     }
 }
