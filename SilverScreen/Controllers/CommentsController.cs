@@ -24,13 +24,15 @@ namespace SilverScreen.Controllers
                 CommentService service = new CommentService();
                 List<Comment> comments = new List<Comment>();
                 int userId = 0;
+                bool authorized = false;
                 if (user.HasClaim(x => x.Type == "userID"))
                 {
                     userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);                 
                     comments.AddRange(service.FetchFriendCommentsForUser(userId, movieId));
+                    authorized = true;
                 }
                 comments.AddRange(service.FetchCommentsForMovie(userId, movieId));
-                return Ok(comments);
+                return Ok(new { authorized=authorized, comments = comments });
                 
             }
             catch (System.Exception ex)
