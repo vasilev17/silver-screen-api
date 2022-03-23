@@ -7,7 +7,7 @@ namespace SilverScreen.Models
 {
     public class AddFriendRequest
     {
-        public int friendID { get; set; }
+        public string username { get; set; }
         public string message { get; set; }
 
     }

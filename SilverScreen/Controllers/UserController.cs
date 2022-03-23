@@ -197,7 +197,7 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService();
-                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendID, request.message);
+                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.username, request.message);
                 return Ok(new { Message = "Sent request" });
             }
 

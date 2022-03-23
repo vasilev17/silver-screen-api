@@ -117,12 +117,14 @@ namespace SilverScreen.Services
         /// Send friend request via the notification system.
         /// </summary>
         /// <param name="userId">User identifier.</param>
-        /// <param name="friendId">User identifier of the targeted friend.</param>
+        /// <param name="friendUsername">Username of the targeted friend. (was friend id before)</param>
         /// <param name="message">User stating why he wants the targeted friend in the friend list.</param>
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for finding a duplicate.</returns>
-        public int SendFriendNotification(int userId, int friendId, string message)
+        public int SendFriendNotification(int userId, string friendUsername, string message)
         {
             SilverScreenContext context = new SilverScreenContext();
+
+            var friendId = context.Users.Where(user => user.Username.Equals(friendUsername)).FirstOrDefault().Id;
 
             //Check if similar notification already exists. Refuse the request if something like this happens
             if((context.Notifications.Where(x => x.UserId == userId && 
