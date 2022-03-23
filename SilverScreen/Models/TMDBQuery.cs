@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    class IMDBQuery
+    class TMDBQuery
     {
-        public string queryString { get; set; }
-        public List<IMDBMovie> results { get; set; }
-        public string errorMessage { get; set; }
+        public List<TMDBMovie> results { get; set; }
+        
     }
 }

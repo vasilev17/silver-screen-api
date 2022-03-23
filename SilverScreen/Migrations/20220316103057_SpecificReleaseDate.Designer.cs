@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SilverScreen.Models.Tables;
 
 namespace SilverScreen.Migrations
 {
     [DbContext(typeof(SilverScreenContext))]
-    partial class SilverScreenContextModelSnapshot : ModelSnapshot
+    [Migration("20220316103057_SpecificReleaseDate")]
+    partial class SpecificReleaseDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace SilverScreen.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<bool>("IsFriendsOnly")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("int")

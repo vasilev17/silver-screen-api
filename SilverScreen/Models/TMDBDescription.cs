@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    public class AddFriendRequest
+    public class TMDBDescription
     {
-        public string username { get; set; }
-        public string message { get; set; }
-
+        public List<TMDBGenres> genres { get; set; }
+        public int runtime { get; set; }
+       
     }
 }

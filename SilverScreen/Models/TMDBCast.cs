@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace SilverScreen.Models
 {
-    public class AddFriendRequest
+    public class TMDBCast
     {
-        public string username { get; set; }
-        public string message { get; set; }
-
+        public List<TMDBFullCast> cast { get; set; }
     }
 }

@@ -72,6 +72,7 @@ namespace SilverScreen.Services
             {
                 searchMovies = context.Movies.Where(s => s.Title.Contains(searchString)).ToList();
             }
+            searchMovies.Reverse();
             return searchMovies;
         }
         public List<Movie> GetMoviesByContentAndGenre(string genre, string content)
