@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -30,6 +31,7 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<staff> staff { get; set; }
+        public IEnumerable<object> FriendList { get; internal set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

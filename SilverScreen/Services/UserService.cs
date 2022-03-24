@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SilverScreen.Models;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SilverScreen.Services
@@ -54,7 +56,7 @@ namespace SilverScreen.Services
                 if (user.Any())
                 {
                     var userComments = context.Comments.Where(x => x.UserId == userID);
-                    if(userComments.Any())
+                    if (userComments.Any())
                     {
                         context.RemoveRange(userComments);
                     }
@@ -164,65 +166,93 @@ namespace SilverScreen.Services
             var confirmPassword = " ";
             SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
-            if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
-            {
+            var regex = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
+            bool isValid = Regex.IsMatch(login.Email, regex, RegexOptions.IgnoreCase);
 
-                if (!context.Users.Where(s => s.Username.Equals(login.Username)).Any())
+            if (!context.Users.Where(s => s.Username.Equals(login.Username)).Any())
+            {
+                if (Regex.IsMatch(login.Username, "^[a-zA-Z0-9_/+*@!#$%^&=~:;.'`|,]+$"))
                 {
-                    if (login.Password.Length >= 6 && login.Password.Length <= 25)
+                    if (login.Username.Length >= 3 && login.Username.Length <= 20)
                     {
-                        if (login.Password.Any(char.IsUpper))
+
+                        if (!context.Users.Where(s => s.Email.Equals(login.Email)).Any())
                         {
-                            if (!login.Password.Contains(" "))
+                            if (isValid)
                             {
                                 if (login.confirmPassword.Equals(login.Password))
                                 {
 
 
-                                    User registeredUser = new User()
+                                    if (login.Password.Length >= 6 && login.Password.Length <= 25)
                                     {
-                                        Username = login.Username,
-                                        Password = authentication.Encrypt(login.Password),
-                                        Email = login.Email,
-                                        Avatar = Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ? Environment.GetEnvironmentVariable("PROD_FRONTEND") + "/defaultProfilePic.png" : "http://localhost:3000/defaultProfilePic.png",
-                                        IsAdmin = false,
-                                        IsDeleted = false,
-                                        Banned = null
-                                    };
-                                    confirmPassword = login.confirmPassword;
+                                        if (login.Password.Any(char.IsUpper))
+                                        {
+                                            if (!login.Password.Contains(" "))
+                                            {
 
-                                    context.Add(registeredUser);
-                                    context.SaveChanges();
-                                    user = registeredUser;
-                                }else
+
+
+                                                User registeredUser = new User()
+                                                {
+                                                    Username = login.Username,
+                                                    Password = authentication.Encrypt(login.Password),
+                                                    Email = login.Email,
+                                                    Avatar = Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ? Environment.GetEnvironmentVariable("PROD_FRONTEND") + "/defaultProfilePic.png" : "http://localhost:3000/defaultProfilePic.png",
+                                                    IsAdmin = false,
+                                                    IsDeleted = false,
+                                                    Banned = null
+                                                };
+                                                confirmPassword = login.confirmPassword;
+
+                                                context.Add(registeredUser);
+                                                context.SaveChanges();
+                                                user = registeredUser;
+
+                                            }
+                                            else
+                                            {
+                                                throw new Exception("The password should not contain white spaces");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("The password requires at least one upper case letter");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("The password requires more than 6 and less than 25 characters");
+                                    }
+                                }
+                                else
                                 {
                                     throw new Exception("Passwords do not match");
                                 }
                             }
                             else
                             {
-                                throw new Exception("The password should not contain white spaces");
+                                throw new Exception("Invalid Email");
                             }
                         }
                         else
                         {
-                            throw new Exception("The password requires at least one upper case letter");
+                            throw new Exception("This email is already in use");
                         }
                     }
                     else
                     {
-                        throw new Exception("The password requires more than 6 and less than 25 characters");
+                        throw new Exception("The username requires more than 3 and less than 20 characters");
                     }
                 }
                 else
                 {
-                    throw new Exception("This username is already in use");
+                    throw new Exception("Username is not valid");
                 }
-
             }
             else
             {
-                throw new Exception("This email is already in use");
+                throw new Exception("This username is already in use");
             }
 
             return user;
@@ -249,10 +279,11 @@ namespace SilverScreen.Services
             if (File.Exists(filePath))
             {
                 bool foundUniqueNum = false;
-                for (int i = 0; !foundUniqueNum ; i++) {
+                for (int i = 0; !foundUniqueNum; i++)
+                {
                     if (!File.Exists(Path.Combine(uploadDir, $"{fileName}({i}).{fileExt}")))
                     {
-                        if(i == 0)
+                        if (i == 0)
                         {
                             fileName += "(0)";
                         }
@@ -263,7 +294,7 @@ namespace SilverScreen.Services
                         foundUniqueNum = true;
                     }
                 }
-                
+
                 filePath = Path.Combine(uploadDir, fileName + "." + fileExt);
 
             }
@@ -271,21 +302,21 @@ namespace SilverScreen.Services
             {
                 Stream fileStream = new FileStream(filePath, FileMode.Create);
                 await avatar.CopyToAsync(fileStream);
-                
+
 
                 SilverScreenContext context = new SilverScreenContext();
-                context.Users.Find(userId).Avatar = 
+                context.Users.Find(userId).Avatar =
                     Environment.GetEnvironmentVariable("PROD_FRONTEND") != null ?
                     Environment.GetEnvironmentVariable("PROD_FRONTEND") + $"/cdn/{fileName}.{fileExt}" :
                     $"http://localhost:3000/cdn/{fileName}.{fileExt}";
                 context.SaveChanges();
                 context.Dispose();
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            
+
         }
 
         /// <summary>
@@ -314,7 +345,32 @@ namespace SilverScreen.Services
                 context.SaveChanges();
                 return 0;
             }
+            else
+            {
+                throw new Exception("This User doesn't exist");
+            }
             return -1;
+        }
+
+
+
+        public List<User> GetFriendListByUser(int userID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            List<User> userList = new List<User>(); ;
+            var users = context.FriendLists.Where(x => x.UserId1 == userID).Include(x => x.User);
+            foreach (var user in users)
+            {
+                var friend = new User()
+                {
+                    Id = user.User.Id,
+                    Username = user.User.Username,
+                    Avatar = user.User.Avatar,
+                };
+                userList.Add(friend);
+            }
+            context.Dispose();
+            return userList;
         }
     }
 }

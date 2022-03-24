@@ -206,6 +206,28 @@ namespace SilverScreen.Controllers
 
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("GetFriendListByUser")]
+
+        public IActionResult GetFriendListByUser()
+        {
+
+            var user = HttpContext.User;
+
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var userService = new UserService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                List<User> list = userService.GetFriendListByUser(userId);
+                return Ok(new { obj = list });
+
+            }
+
+            return Unauthorized();
+        }
 
     }
 }
