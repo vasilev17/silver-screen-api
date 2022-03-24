@@ -130,6 +130,11 @@ namespace SilverScreen.Models.Tables
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Bgimage)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnName("BGImage");
+
                 entity.Property(e => e.ContentType).HasMaxLength(10);
 
                 entity.Property(e => e.Description)
@@ -151,8 +156,6 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.ReleaseDate)
                     .IsRequired()
                     .HasMaxLength(15);
-
-                entity.Property(e => e.SpecificReleaseDate).HasColumnType("date");
 
                 entity.Property(e => e.Thumbnail)
                     .IsRequired()
