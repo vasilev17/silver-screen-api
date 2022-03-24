@@ -8,5 +8,6 @@ namespace SilverScreen.Models
     public class TMDBTrailerKey
     {
         public string key { get; set; }
+        public string site { get; set; }
     }
 }

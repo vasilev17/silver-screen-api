@@ -9,6 +9,8 @@ namespace SilverScreen.Models
     {
         public List<TMDBGenres> genres { get; set; }
         public int runtime { get; set; }
-       
+        public List<int> episode_run_time { get; set; }
+        public bool adult { get; set; }
+
     }
 }
