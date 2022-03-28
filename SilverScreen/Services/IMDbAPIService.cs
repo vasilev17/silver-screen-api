@@ -170,7 +170,7 @@ namespace SilverScreen.Services
                             }
                             else
                             {
-                                movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path;
+                                movie.Thumbnail = "https://image.tmdb.org/t/p/original/" + extractedFilm.results[j].poster_path;
                             }
                             if (extractedFilm.results[j].backdrop_path == null)
                             {
@@ -178,7 +178,7 @@ namespace SilverScreen.Services
                             }
                             else
                             {
-                                movie.Bgimage = movie.Thumbnail = "https://image.tmdb.org/t/p/w500/" + extractedFilm.results[j].poster_path;
+                                movie.Bgimage = "https://image.tmdb.org/t/p/original/" + extractedFilm.results[j].backdrop_path;
                             }
 
                             if (extractedFilm.results[j].vote_average == 0.0 || extractedFilm.results[j].vote_average == 0)
