@@ -82,7 +82,7 @@ namespace SilverScreen.Services
                 }
                 for (int j = 0; j < movieCount; j++)
                 {
-                    if (!context.Movies.Any(x => x.ImdbId == contentType+extractedFilm.results[j].id))
+                    if (!context.Movies.Any(x => x.ImdbId==contentType + extractedFilm.results[j].id) )
                     {
                         string urlDescription = "https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id;
                         var clientDescription = new RestClient(urlDescription);
@@ -90,7 +90,8 @@ namespace SilverScreen.Services
                         requestDescription.AddParameter("api_key", API_KEY);
                         var responseDescription = clientDescription.Get(requestDescription);
                         var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
-                        if(extractedDescription.adult==false){
+                        if(extractedDescription.adult==false)
+                        {
 
                             int TMDBId = extractedFilm.results[j].id;
                             string urlTrailer = $"https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id + "/videos";
@@ -139,7 +140,6 @@ namespace SilverScreen.Services
                                 {      
                                     movie.Duration = extractedDescription.episode_run_time[0];
                                 }
-                                
                                 movie.ReleaseDate = extractedFilm.results[j].first_air_date;
                                 movie.Title = extractedFilm.results[j].name;
                             }
@@ -280,7 +280,7 @@ namespace SilverScreen.Services
                                     context.Add(movieStaff);
                                 }
                             }
-                            var directors = extractedCast.cast.Where(x => x.job != null ? x.job.Equals("Director") : false).ToList();
+                            var directors = extractedCast.crew.Where(x => x.job != null ? x.job.Equals("Director") : false).ToList();
                             if (directors.Count != 0)
                             {
                                 var directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
@@ -315,7 +315,7 @@ namespace SilverScreen.Services
                                     }
                                 }
                             }
-                            var writers = extractedCast.cast.Where(x => x.job != null ? (x.job.Equals("Writer") || x.job.Equals("Novel")) : false).ToList();
+                            var writers = extractedCast.crew.Where(x => x.job != null ? (x.job.Equals("Writer") || x.job.Equals("Novel") || x.job.Equals("Author")) : false).ToList();
                             if (writers.Count != 0)
                             {
                                 var writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
