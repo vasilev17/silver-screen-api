@@ -52,11 +52,11 @@ namespace SilverScreen.Controllers
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
                         return Json(iMDbAPIService.LoadMoviesIntoDBviaTMDB(title, count, contentType));
-                   }
-                   catch (Exception ex)
-                   {
-                        return BadRequest(new { errorMessage = ex.Message });
-                   }
+                  }
+                  catch (Exception ex)
+                  {
+                       return BadRequest(new { errorMessage = ex.Message });
+                  }
                 }
                 else
                 {
