@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -31,7 +30,6 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<staff> staff { get; set; }
-        public IEnumerable<object> FriendList { get; internal set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -127,33 +125,18 @@ namespace SilverScreen.Models.Tables
 
             modelBuilder.Entity<Movie>(entity =>
             {
-                entity.HasIndex(e => e.ImdbId, "IMDB_U")
-                    .IsUnique();
-
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Bgimage)
-                    .IsRequired()
                     .HasMaxLength(200)
-                    .HasColumnName("BGImage");
+                    .HasColumnName("BGImage")
+                    .HasDefaultValueSql("''");
 
                 entity.Property(e => e.ContentType).HasMaxLength(10);
 
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(800);
-
-                entity.Property(e => e.ImdbId)
-                    .IsRequired()
-                    .HasMaxLength(15)
-                    .HasColumnName("IMDB_ID")
-                    .HasDefaultValueSql("''");
-
-                entity.Property(e => e.MaturityRating).HasMaxLength(5);
-
-                entity.Property(e => e.NetflixUrl)
-                    .HasMaxLength(100)
-                    .HasColumnName("NetflixURL");
 
                 entity.Property(e => e.ReleaseDate)
                     .IsRequired()
@@ -166,6 +149,8 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(100);
+
+                entity.Property(e => e.TmdbId).HasColumnName("TMDB_ID");
 
                 entity.Property(e => e.Trailer).HasMaxLength(100);
             });
