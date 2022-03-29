@@ -59,7 +59,15 @@ namespace SilverScreen.Services
             }
             int addedMovies = 0;
             var movieCount = count;
-            
+            string currentContentType;
+            if (contentType=="tv")
+            {
+                currentContentType = "TVSeries";
+            }
+            else
+            {
+                currentContentType = "Movie";
+            }
             string API_KEY = "990b1ebdae34eb39da96a2a37e0bbaf9";
             string url = "http://api.themoviedb.org/3/search/"+ contentType + "/";
             var client = new RestClient(url);
@@ -82,7 +90,7 @@ namespace SilverScreen.Services
                 }
                 for (int j = 0; j < movieCount; j++)
                 {
-                    if (!context.Movies.Any(x => x.TmdbId==/*contentType +*/ extractedFilm.results[j].id) )
+                    if (!context.Movies.Any(x => x.TmdbId==extractedFilm.results[j].id && x.ContentType== currentContentType))
                     {
                         string urlDescription = "https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id;
                         var clientDescription = new RestClient(urlDescription);
@@ -91,9 +99,7 @@ namespace SilverScreen.Services
                         var responseDescription = clientDescription.Get(requestDescription);
                         var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                         if(extractedDescription.adult==false)
-                        {
-
-                            int TMDBId = extractedFilm.results[j].id;
+                        {                    
                             string urlTrailer = $"https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id + "/videos";
                             var clientTrailer = new RestClient(urlTrailer);
                             var requestTrailer = new RestRequest();
@@ -113,11 +119,10 @@ namespace SilverScreen.Services
 
                             var movie = new Movie();
 
-                            movie.TmdbId = /*contentType +*/ extractedFilm.results[j].id;
-
+                            movie.TmdbId = extractedFilm.results[j].id;
+                            movie.ContentType = currentContentType;
                             if (contentType == "movie")
                             {
-                                movie.ContentType = "Movie";
                                 if (extractedDescription.runtime == 0)
                                 {
                                     movie.Duration = null;
@@ -131,7 +136,6 @@ namespace SilverScreen.Services
                             }
                             else
                             {
-                                movie.ContentType = "TVSeries";
                                 if (extractedDescription.episode_run_time.Count == 0)
                                 {
                                     movie.Duration = null;
