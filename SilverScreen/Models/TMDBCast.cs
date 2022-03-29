@@ -8,5 +8,6 @@ namespace SilverScreen.Models
     public class TMDBCast
     {
         public List<TMDBFullCast> cast { get; set; }
+        public List<TMDBFullCast> crew { get; set; }
     }
 }

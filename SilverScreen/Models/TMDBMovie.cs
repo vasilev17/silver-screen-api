@@ -18,7 +18,8 @@ namespace SilverScreen.Models
         public string overview { get; set; } 
         public string release_date { get; set; }
         public string backdrop_path { get; set; }
+        public string name { get; set; }
+        public string first_air_date { get; set; }
 
-        
     }
 }
