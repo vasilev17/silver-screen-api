@@ -6,87 +6,21 @@ namespace SilverScreen.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IMDB_U",
-                table: "Movies");
-
-            migrationBuilder.DropColumn(
-                name: "IMDB_ID",
-                table: "Movies");
-
-            migrationBuilder.DropColumn(
-                name: "MaturityRating",
-                table: "Movies");
-
-            migrationBuilder.DropColumn(
-                name: "NetflixURL",
-                table: "Movies");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BGImage",
-                table: "Movies",
-                type: "varchar(200)",
-                maxLength: 200,
-                nullable: true,
-                defaultValueSql: "''",
-                oldClrType: typeof(string),
-                oldType: "varchar(200)",
-                oldMaxLength: 200);
-
-            migrationBuilder.AddColumn<int>(
-                name: "TMDB_ID",
-                table: "Movies",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` DROP INDEX `IMDB_U`;");
+            migrationBuilder.Sql(@"UPDATE Movies SET IMDB_ID = REPLACE(IMDB_ID, 'tt', '');");
+            migrationBuilder.Sql(@"UPDATE Movies SET IMDB_ID = REPLACE(IMDB_ID, 'movie', '');");
+            migrationBuilder.Sql(@"UPDATE Movies SET IMDB_ID = REPLACE(IMDB_ID, 'tv', '');");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` CHANGE `IMDB_ID` `TMDB_ID` INT NOT NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` DROP `MaturityRating`;");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` DROP `NetflixURL`;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "TMDB_ID",
-                table: "Movies");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BGImage",
-                table: "Movies",
-                type: "varchar(200)",
-                maxLength: 200,
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "varchar(200)",
-                oldMaxLength: 200,
-                oldNullable: true,
-                oldDefaultValueSql: "''");
-
-            migrationBuilder.AddColumn<string>(
-                name: "IMDB_ID",
-                table: "Movies",
-                type: "varchar(15)",
-                maxLength: 15,
-                nullable: false,
-                defaultValueSql: "''");
-
-            migrationBuilder.AddColumn<string>(
-                name: "MaturityRating",
-                table: "Movies",
-                type: "varchar(5)",
-                maxLength: 5,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "NetflixURL",
-                table: "Movies",
-                type: "varchar(100)",
-                maxLength: 100,
-                nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IMDB_U",
-                table: "Movies",
-                column: "IMDB_ID",
-                unique: true);
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` ADD `MaturityRating` VARCHAR(5) NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` ADD `NetflixURL` VARCHAR(100) NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` CHANGE `TMDB_ID` `IMDB_ID` VARCHAR(15) NOT NULL;");
+            migrationBuilder.Sql(@"ALTER TABLE `Movies` ADD CONSTRAINT IMDB_U UNIQUE(`IMDB_ID`);");
         }
     }
 }
