@@ -2,61 +2,22 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SilverScreen.Models.Tables;
 
 namespace SilverScreen.Migrations
 {
     [DbContext(typeof(SilverScreenContext))]
-    partial class SilverScreenContextModelSnapshot : ModelSnapshot
+    [Migration("20220329123301_NetflixAndMaturityRemovedAndIMDBChangedToTMDB")]
+    partial class NetflixAndMaturityRemovedAndIMDBChangedToTMDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.13");
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.AccountReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<int>("FakeReports")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Reports")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "UserId" }, "UserFKAR");
-
-                    b.ToTable("AccountReports");
-                });
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.BanConfig", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<int?>("FakeReportsLimit")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WarningsLimit")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BanConfig");
-                });
 
             modelBuilder.Entity("SilverScreen.Models.Tables.Comment", b =>
                 {
@@ -88,42 +49,6 @@ namespace SilverScreen.Migrations
                     b.HasIndex(new[] { "UserId" }, "CUserID");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.CommentReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Contents")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<bool>("ReportIsLegit")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("ReportedForFalsePositive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int?>("UnderReview")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "UserId" }, "UserFKCR");
-
-                    b.HasIndex(new[] { "UnderReview" }, "UserFKRW");
-
-                    b.ToTable("CommentReports");
                 });
 
             modelBuilder.Entity("SilverScreen.Models.Tables.EfmigrationsHistory", b =>
@@ -449,31 +374,6 @@ namespace SilverScreen.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("SilverScreen.Models.Tables.UserWarning", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<bool>("IsItBan")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "UserId" }, "UserFKUW");
-
-                    b.ToTable("UserWarnings");
-                });
-
             modelBuilder.Entity("SilverScreen.Models.Tables.staff", b =>
                 {
                     b.Property<int>("Id")
@@ -495,17 +395,6 @@ namespace SilverScreen.Migrations
                     b.ToTable("Staff");
                 });
 
-            modelBuilder.Entity("SilverScreen.Models.Tables.AccountReport", b =>
-                {
-                    b.HasOne("SilverScreen.Models.Tables.User", "User")
-                        .WithMany("AccountReports")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("UserFKAR")
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SilverScreen.Models.Tables.Comment", b =>
                 {
                     b.HasOne("SilverScreen.Models.Tables.Movie", "Movie")
@@ -521,24 +410,6 @@ namespace SilverScreen.Migrations
                         .IsRequired();
 
                     b.Navigation("Movie");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SilverScreen.Models.Tables.CommentReport", b =>
-                {
-                    b.HasOne("SilverScreen.Models.Tables.User", "UnderReviewNavigation")
-                        .WithMany("CommentReportUnderReviewNavigations")
-                        .HasForeignKey("UnderReview")
-                        .HasConstraintName("UserFKRW");
-
-                    b.HasOne("SilverScreen.Models.Tables.User", "User")
-                        .WithMany("CommentReportUsers")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("UserFKCR")
-                        .IsRequired();
-
-                    b.Navigation("UnderReviewNavigation");
 
                     b.Navigation("User");
                 });
@@ -683,17 +554,6 @@ namespace SilverScreen.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SilverScreen.Models.Tables.UserWarning", b =>
-                {
-                    b.HasOne("SilverScreen.Models.Tables.User", "User")
-                        .WithMany("UserWarnings")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("UserFKUW")
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SilverScreen.Models.Tables.Genre", b =>
                 {
                     b.Navigation("MovieGenres");
@@ -718,12 +578,6 @@ namespace SilverScreen.Migrations
 
             modelBuilder.Entity("SilverScreen.Models.Tables.User", b =>
                 {
-                    b.Navigation("AccountReports");
-
-                    b.Navigation("CommentReportUnderReviewNavigations");
-
-                    b.Navigation("CommentReportUsers");
-
                     b.Navigation("Comments");
 
                     b.Navigation("FriendListUserId1Navigations");
@@ -739,8 +593,6 @@ namespace SilverScreen.Migrations
                     b.Navigation("NotificationAuthors");
 
                     b.Navigation("NotificationUsers");
-
-                    b.Navigation("UserWarnings");
                 });
 
             modelBuilder.Entity("SilverScreen.Models.Tables.staff", b =>

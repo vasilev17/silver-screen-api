@@ -25,10 +25,10 @@ namespace SilverScreen.Services
         /// to the next one in the array we make the same request with the new key and do the check again this repeats until we get a key that has request,  but if we 
         /// dont have any keys with request we throw an exception. If we've successfully completed the first request that gets most of the data we need.
         /// We check if we got any movies at all if we did not we trow an exception. We check if we got less movies than the wanted amount by the user
-        /// and if we did we add the amount found, but if its more we only add the wanted amount. Then we run 3 more request with the imdbId we got for every
+        /// and if we did we add the amount found, but if its more we only add the wanted amount. Then we run 3 more request with the TmdbId we got for every
         /// movie we got from the previus request. The 3 new request get the Trailer, Staff, Description and Content type which are essential.
         /// we do the same checks as the previus request for all of them. Then we check if the content type is either movie or tv series because we can get games
-        /// comercials and etc. and we dont want to add them to the db also we check if the movie is already in the db by the imdbId. If the movie is already in the db go to the
+        /// comercials and etc. and we dont want to add them to the db also we check if the movie is already in the db by the TmdbId. If the movie is already in the db go to the
         /// movie and do the same checks. If everything is ok then we check if the data is ok first we check if there is discription, because some old 
         /// movies dont have descriptions if there isnt a description we set a defaut one. If we have a description we check if its longer than 500 charecters if it is
         /// we create a substring of 500 charecters and we find the last full stop and we save that. Then we check if we got a thumbnail if we do not 
@@ -59,7 +59,15 @@ namespace SilverScreen.Services
             }
             int addedMovies = 0;
             var movieCount = count;
-            
+            string currentContentType;
+            if (contentType=="tv")
+            {
+                currentContentType = "TVSeries";
+            }
+            else
+            {
+                currentContentType = "Movie";
+            }
             string API_KEY = "990b1ebdae34eb39da96a2a37e0bbaf9";
             string url = "http://api.themoviedb.org/3/search/"+ contentType + "/";
             var client = new RestClient(url);
@@ -82,7 +90,7 @@ namespace SilverScreen.Services
                 }
                 for (int j = 0; j < movieCount; j++)
                 {
-                    if (!context.Movies.Any(x => x.ImdbId==contentType + extractedFilm.results[j].id) )
+                    if (!context.Movies.Any(x => x.TmdbId==extractedFilm.results[j].id && x.ContentType== currentContentType))
                     {
                         string urlDescription = "https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id;
                         var clientDescription = new RestClient(urlDescription);
@@ -91,9 +99,7 @@ namespace SilverScreen.Services
                         var responseDescription = clientDescription.Get(requestDescription);
                         var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
                         if(extractedDescription.adult==false)
-                        {
-
-                            int TMDBId = extractedFilm.results[j].id;
+                        {                    
                             string urlTrailer = $"https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id + "/videos";
                             var clientTrailer = new RestClient(urlTrailer);
                             var requestTrailer = new RestRequest();
@@ -113,11 +119,10 @@ namespace SilverScreen.Services
 
                             var movie = new Movie();
 
-                            movie.ImdbId = contentType + extractedFilm.results[j].id;
-
+                            movie.TmdbId = extractedFilm.results[j].id;
+                            movie.ContentType = currentContentType;
                             if (contentType == "movie")
                             {
-                                movie.ContentType = "Movie";
                                 if (extractedDescription.runtime == 0)
                                 {
                                     movie.Duration = null;
@@ -131,7 +136,6 @@ namespace SilverScreen.Services
                             }
                             else
                             {
-                                movie.ContentType = "TVSeries";
                                 if (extractedDescription.episode_run_time.Count == 0)
                                 {
                                     movie.Duration = null;
@@ -217,7 +221,7 @@ namespace SilverScreen.Services
                                     {
                                         var movieGenre = new MovieGenre
                                         {
-                                            MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                            MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                             GenreId = genres.FirstOrDefault().Id
 
                                         };
@@ -235,7 +239,7 @@ namespace SilverScreen.Services
                                         genres = context.Genres.Where(x => x.Genre1.Equals(extractedDescription.genres[i].name));
                                         var movieGenre = new MovieGenre
                                         {
-                                            MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                            MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                             GenreId = genres.FirstOrDefault().Id
 
                                         };
@@ -257,7 +261,7 @@ namespace SilverScreen.Services
                                 {
                                     var movieStaff = new MovieStaff
                                     {
-                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                         StaffId = actorsCast.FirstOrDefault().Id
                                     };
                                     context.Add(movieStaff);
@@ -274,7 +278,7 @@ namespace SilverScreen.Services
                                     actorsCast = context.staff.Where(x => x.Name.Equals(actors[i].name) && x.Position.Equals("Actor"));
                                     var movieStaff = new MovieStaff
                                     {
-                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                         StaffId = actorsCast.FirstOrDefault().Id
                                     };
                                     context.Add(movieStaff);
@@ -290,7 +294,7 @@ namespace SilverScreen.Services
                                     {
                                         var movieStaff = new MovieStaff
                                         {
-                                            MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                            MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                             StaffId = directorsCast.FirstOrDefault().Id
                                         };
                                         context.Add(movieStaff);
@@ -308,7 +312,7 @@ namespace SilverScreen.Services
                                         directorsCast = context.staff.Where(x => x.Name.Equals(directors[0].name) && x.Position.Equals("Director"));
                                         var movieStaff = new MovieStaff
                                         {
-                                            MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                            MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                             StaffId = directorsCast.FirstOrDefault().Id
                                         };
                                         context.Add(movieStaff);
@@ -323,7 +327,7 @@ namespace SilverScreen.Services
                                 {
                                     var movieStaff = new MovieStaff
                                     {
-                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                         StaffId = writersCast.FirstOrDefault().Id
                                     };
                                     context.Add(movieStaff);
@@ -340,7 +344,7 @@ namespace SilverScreen.Services
                                     writersCast = context.staff.Where(x => x.Name.Equals(writers[0].name) && x.Position.Equals("Writer"));
                                     var movieStaff = new MovieStaff
                                     {
-                                        MovieId = context.Movies.Where(x => x.ImdbId.Equals(movie.ImdbId)).FirstOrDefault().Id,
+                                        MovieId = context.Movies.Where(x => x.TmdbId.Equals(movie.TmdbId)).FirstOrDefault().Id,
                                         StaffId = writersCast.FirstOrDefault().Id
                                     };
                                     context.Add(movieStaff);

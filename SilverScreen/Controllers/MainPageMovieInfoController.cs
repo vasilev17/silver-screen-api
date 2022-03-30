@@ -21,10 +21,20 @@ namespace SilverScreen.Controllers
         /// <returns>Returns a call to "GetMoviesByGenre".</returns>
         [HttpGet]
         [Route("GetMoviesForMainPage")]
-        public List<Movie> GetMoviesByGenreForMainPage(string genre)
+        public IActionResult GetMoviesByGenreForMainPage(string genre)
         {
             MainPageMovieInfoService service = new MainPageMovieInfoService();
-            return service.GetMoviesByGenre(genre);
+            try { 
+            return Json(service.GetMoviesByGenre(genre));
+            }
+            catch (Exception e)
+            {
+
+                return NotFound(new { message = "Genre not found!" });
+
+            }
+
+
         }
         /// <summary>
         /// A get request that calls "GetMyListMovies" to get watched movies.

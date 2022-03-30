@@ -24,11 +24,9 @@ namespace SilverScreen.Models.Tables
         public string Thumbnail { get; set; }
         public string Trailer { get; set; }
         public double? Rating { get; set; }
-        public string NetflixUrl { get; set; }
         public string ReleaseDate { get; set; }
         public int? Duration { get; set; }
-        public string MaturityRating { get; set; }
-        public string ImdbId { get; set; }
+        public int TmdbId { get; set; }
         public string ContentType { get; set; }
         public string Bgimage { get; set; }
 
