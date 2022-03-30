@@ -31,12 +31,12 @@ namespace SilverScreen.Controllers
         {
             return "Put method";
         }
-        
-        
+
+
         [HttpPost]
         [Route("AddMoviesToDB")]
         [Authorize]
-        public IActionResult LoadMoviesIntoDBviaTMDB(string title,  int count, string contentType)
+        public IActionResult LoadMoviesIntoDBviaTMDB(string title, int count, string contentType)
         {
             var user = HttpContext.User;
 
@@ -52,11 +52,11 @@ namespace SilverScreen.Controllers
                     {
                         IMDbAPIService iMDbAPIService = new IMDbAPIService();
                         return Json(iMDbAPIService.LoadMoviesIntoDBviaTMDB(title, count, contentType));
-                  }
-                  catch (Exception ex)
-                  {
-                       return BadRequest(new { errorMessage = ex.Message });
-                  }
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { errorMessage = ex.Message });
+                    }
                 }
                 else
                 {
@@ -66,6 +66,6 @@ namespace SilverScreen.Controllers
 
             return Unauthorized();
         }
-        
+
     }
 }
