@@ -9,6 +9,9 @@ namespace SilverScreen.Models.Tables
     {
         public User()
         {
+            AccountReports = new HashSet<AccountReport>();
+            CommentReportUnderReviewNavigations = new HashSet<CommentReport>();
+            CommentReportUsers = new HashSet<CommentReport>();
             Comments = new HashSet<Comment>();
             FriendListUserId1Navigations = new HashSet<FriendList>();
             FriendListUsers = new HashSet<FriendList>();
@@ -17,6 +20,7 @@ namespace SilverScreen.Models.Tables
             MyLists = new HashSet<MyList>();
             NotificationAuthors = new HashSet<Notification>();
             NotificationUsers = new HashSet<Notification>();
+            UserWarnings = new HashSet<UserWarning>();
         }
 
         public int Id { get; set; }
@@ -28,6 +32,9 @@ namespace SilverScreen.Models.Tables
         public DateTime? Banned { get; set; }
         public bool IsDeleted { get; set; }
 
+        public virtual ICollection<AccountReport> AccountReports { get; set; }
+        public virtual ICollection<CommentReport> CommentReportUnderReviewNavigations { get; set; }
+        public virtual ICollection<CommentReport> CommentReportUsers { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<FriendList> FriendListUserId1Navigations { get; set; }
         public virtual ICollection<FriendList> FriendListUsers { get; set; }
@@ -36,5 +43,6 @@ namespace SilverScreen.Models.Tables
         public virtual ICollection<MyList> MyLists { get; set; }
         public virtual ICollection<Notification> NotificationAuthors { get; set; }
         public virtual ICollection<Notification> NotificationUsers { get; set; }
+        public virtual ICollection<UserWarning> UserWarnings { get; set; }
     }
 }

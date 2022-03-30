@@ -17,7 +17,10 @@ namespace SilverScreen.Models.Tables
         {
         }
 
+        public virtual DbSet<AccountReport> AccountReports { get; set; }
+        public virtual DbSet<BanConfig> BanConfigs { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<CommentReport> CommentReports { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
         public virtual DbSet<FriendList> FriendLists { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
@@ -29,6 +32,7 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<MyList> MyLists { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserWarning> UserWarnings { get; set; }
         public virtual DbSet<staff> staff { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,6 +45,26 @@ namespace SilverScreen.Models.Tables
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AccountReport>(entity =>
+            {
+                entity.HasIndex(e => e.UserId, "UserFKAR");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AccountReports)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("UserFKAR");
+            });
+
+            modelBuilder.Entity<BanConfig>(entity =>
+            {
+                entity.ToTable("BanConfig");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+            });
+
             modelBuilder.Entity<Comment>(entity =>
             {
                 entity.HasIndex(e => e.MovieId, "CMovieID");
@@ -68,6 +92,30 @@ namespace SilverScreen.Models.Tables
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("CUserID");
+            });
+
+            modelBuilder.Entity<CommentReport>(entity =>
+            {
+                entity.HasIndex(e => e.UserId, "UserFKCR");
+
+                entity.HasIndex(e => e.UnderReview, "UserFKRW");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Contents)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.HasOne(d => d.UnderReviewNavigation)
+                    .WithMany(p => p.CommentReportUnderReviewNavigations)
+                    .HasForeignKey(d => d.UnderReview)
+                    .HasConstraintName("UserFKRW");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.CommentReportUsers)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("UserFKCR");
             });
 
             modelBuilder.Entity<EfmigrationsHistory>(entity =>
@@ -361,6 +409,23 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<UserWarning>(entity =>
+            {
+                entity.HasIndex(e => e.UserId, "UserFKUW");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Reason)
+                    .IsRequired()
+                    .HasMaxLength(300);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserWarnings)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("UserFKUW");
             });
 
             modelBuilder.Entity<staff>(entity =>
