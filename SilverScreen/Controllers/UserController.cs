@@ -150,12 +150,19 @@ namespace SilverScreen.Controllers
         [Authorize]
         [HttpPost]
         [Route("UploadAvatar")]
-        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+        public async Task<IActionResult> UploadAvatar()
         {
+            if(Request.Form.Files.Count == 0)
+            {
+                return UnprocessableEntity("No avatar was atached!");
+            }
+            
             var user = HttpContext.User;
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
+                var avatar = Request.Form.Files[0];
+
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
                 var fileExt = avatar.FileName.Split('.')[avatar.FileName.Split('.').Length - 1];
                 if (fileExt.Equals("png") || fileExt.Equals("jpg") || fileExt.Equals("jpeg") || fileExt.Equals("gif") || fileExt.Equals("bmp"))

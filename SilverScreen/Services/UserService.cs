@@ -353,11 +353,39 @@ namespace SilverScreen.Services
         }
 
 
+        public int DeleteFriend(int userID, int friendID)
+        {
+            SilverScreenContext context = new SilverScreenContext();
+            if (!context.FriendLists.Where(x => (x.UserId == userID && x.UserId1 == friendID) || (x.UserId == friendID && x.UserId1 == userID)).Any())
+            {
+                FriendList frList1 = new FriendList
+                {
+                    UserId = userID,
+                    UserId1 = friendID
+                };
+                FriendList frList2 = new FriendList
+                {
+                    UserId = friendID,
+                    UserId1 = userID
+                };
+                context.Remove(frList1);
+                context.Remove(frList2);
+                context.SaveChanges();
+                return 0;
+            }
+            else
+            {
+                throw new Exception("This User doesn't exist");
+            }
+            return -1;
+        }
+
+
 
         public List<User> GetFriendListByUser(int userID)
         {
             SilverScreenContext context = new SilverScreenContext();
-            List<User> userList = new List<User>(); ;
+            List<User> userList = new List<User>();
             var users = context.FriendLists.Where(x => x.UserId1 == userID).Include(x => x.User);
             foreach (var user in users)
             {

@@ -49,7 +49,7 @@ namespace SilverScreen.Services
         /// <param name="title">the title of the movie/s we want to add</param>
         /// <param name="count">the number of the movie/s we want to add</param>
         /// <returns></returns>
-        
+
         public int LoadMoviesIntoDBviaTMDB(string title, int count, string contentType)
         {
             SilverScreenContext context = new SilverScreenContext();
@@ -60,7 +60,7 @@ namespace SilverScreen.Services
             int addedMovies = 0;
             var movieCount = count;
             string currentContentType;
-            if (contentType=="tv")
+            if (contentType == "tv")
             {
                 currentContentType = "TVSeries";
             }
@@ -69,7 +69,7 @@ namespace SilverScreen.Services
                 currentContentType = "Movie";
             }
             string API_KEY = "990b1ebdae34eb39da96a2a37e0bbaf9";
-            string url = "http://api.themoviedb.org/3/search/"+ contentType + "/";
+            string url = "http://api.themoviedb.org/3/search/" + contentType + "/";
             var client = new RestClient(url);
             var request = new RestRequest();
             request.AddParameter("api_key", API_KEY);
@@ -83,14 +83,14 @@ namespace SilverScreen.Services
                 throw new Exception("Sorry we didnt find any movies with that title");
             }
             else
-            {  
+            {
                 if (extractedFilm.results.Count < count)
                 {
                     movieCount = extractedFilm.results.Count;
                 }
                 for (int j = 0; j < movieCount; j++)
                 {
-                    if (!context.Movies.Any(x => x.TmdbId==extractedFilm.results[j].id && x.ContentType== currentContentType))
+                    if (!context.Movies.Any(x => x.TmdbId == extractedFilm.results[j].id && x.ContentType == currentContentType))
                     {
                         string urlDescription = "https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id;
                         var clientDescription = new RestClient(urlDescription);
@@ -98,8 +98,8 @@ namespace SilverScreen.Services
                         requestDescription.AddParameter("api_key", API_KEY);
                         var responseDescription = clientDescription.Get(requestDescription);
                         var extractedDescription = JsonSerializer.Deserialize<TMDBDescription>(responseDescription.Content);
-                        if(extractedDescription.adult==false)
-                        {                    
+                        if (extractedDescription.adult == false)
+                        {
                             string urlTrailer = $"https://api.themoviedb.org/3/" + contentType + "/" + extractedFilm.results[j].id + "/videos";
                             var clientTrailer = new RestClient(urlTrailer);
                             var requestTrailer = new RestRequest();
@@ -140,8 +140,8 @@ namespace SilverScreen.Services
                                 {
                                     movie.Duration = null;
                                 }
-                                else if(extractedDescription.episode_run_time[0]!=0)
-                                {      
+                                else if (extractedDescription.episode_run_time[0] != 0)
+                                {
                                     movie.Duration = extractedDescription.episode_run_time[0];
                                 }
                                 movie.ReleaseDate = extractedFilm.results[j].first_air_date;
@@ -209,6 +209,25 @@ namespace SilverScreen.Services
                             context.SaveChanges();
                             if (extractedDescription.genres != null)
                             {
+                                for (int i = 0; i < extractedDescription.genres.Count; i++)
+                                {
+                                    if (extractedDescription.genres[i].name.Contains("&"))
+                                    {
+                                        char[] genreSeparator = { ' ', '&' };
+                                        String[] extractedGenreList = extractedDescription.genres[i].name.Split(genreSeparator, StringSplitOptions.RemoveEmptyEntries);
+                                        for (int k = 0; k < extractedGenreList.Length; k++)
+                                        {
+                                            if (i + k >= extractedDescription.genres.Count)
+                                            {
+                                                extractedDescription.genres.Add(new TMDBGenres { name = extractedGenreList[k] });
+                                            }
+                                            else
+                                            {
+                                                extractedDescription.genres[i + k].name = extractedGenreList[k];
+                                            }
+                                        }
+                                    }
+                                }
                                 var genresCount = 3;
                                 if (extractedDescription.genres.Count < 3)
                                 {
@@ -353,7 +372,7 @@ namespace SilverScreen.Services
                             context.SaveChanges();
                             addedMovies++;
                         }
-                        
+
                     }
                 }
 
