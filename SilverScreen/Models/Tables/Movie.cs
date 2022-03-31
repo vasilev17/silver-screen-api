@@ -9,6 +9,7 @@ namespace SilverScreen.Models.Tables
     {
         public Movie()
         {
+            CommentReports = new HashSet<CommentReport>();
             Comments = new HashSet<Comment>();
             MovieGenres = new HashSet<MovieGenre>();
             MovieNotifications = new HashSet<MovieNotification>();
@@ -30,6 +31,7 @@ namespace SilverScreen.Models.Tables
         public string ContentType { get; set; }
         public string Bgimage { get; set; }
 
+        public virtual ICollection<CommentReport> CommentReports { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<MovieGenre> MovieGenres { get; set; }
         public virtual ICollection<MovieNotification> MovieNotifications { get; set; }

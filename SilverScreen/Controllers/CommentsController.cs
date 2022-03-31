@@ -22,6 +22,7 @@ namespace SilverScreen.Controllers
             try
             {
                 CommentService service = new CommentService();
+                AdministrationService administrationService = new AdministrationService();
                 List<Comment> comments = new List<Comment>();
                 int userId = 0;
                 bool authorized = false;
@@ -32,7 +33,8 @@ namespace SilverScreen.Controllers
                     authorized = true;
                 }
                 comments.AddRange(service.FetchCommentsForMovie(userId, movieId));
-                return Ok(new { authorized=authorized, comments = comments });
+                
+                return Ok(new { authorized=authorized, comments = comments, reportedComments = administrationService.ReportedCommentsForMovie(userId, comments) });
                 
             }
             catch (System.Exception ex)
@@ -129,6 +131,22 @@ namespace SilverScreen.Controllers
                     return BadRequest(ex.Message);
                 }
             }
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("ReportComment")]
+        public IActionResult ReportComment(int commentId)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+            }
+
             return Unauthorized();
         }
 

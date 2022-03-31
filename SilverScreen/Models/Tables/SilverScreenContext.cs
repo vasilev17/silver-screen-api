@@ -32,6 +32,7 @@ namespace SilverScreen.Models.Tables
         public virtual DbSet<MyList> MyLists { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserCommentReport> UserCommentReports { get; set; }
         public virtual DbSet<UserWarning> UserWarnings { get; set; }
         public virtual DbSet<staff> staff { get; set; }
 
@@ -96,6 +97,8 @@ namespace SilverScreen.Models.Tables
 
             modelBuilder.Entity<CommentReport>(entity =>
             {
+                entity.HasIndex(e => e.MovieId, "MovieFKCR");
+
                 entity.HasIndex(e => e.UserId, "UserFKCR");
 
                 entity.HasIndex(e => e.UnderReview, "UserFKRW");
@@ -105,6 +108,12 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Contents)
                     .IsRequired()
                     .HasMaxLength(500);
+
+                entity.HasOne(d => d.Movie)
+                    .WithMany(p => p.CommentReports)
+                    .HasForeignKey(d => d.MovieId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("MovieFKCR");
 
                 entity.HasOne(d => d.UnderReviewNavigation)
                     .WithMany(p => p.CommentReportUnderReviewNavigations)
@@ -409,6 +418,27 @@ namespace SilverScreen.Models.Tables
                 entity.Property(e => e.Username)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<UserCommentReport>(entity =>
+            {
+                entity.HasIndex(e => e.ReportId, "ReportIDFK");
+
+                entity.HasIndex(e => e.UserId, "UserFKCR1");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.HasOne(d => d.Report)
+                    .WithMany(p => p.UserCommentReports)
+                    .HasForeignKey(d => d.ReportId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("ReportIDFK");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserCommentReports)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("UserFKCR1");
             });
 
             modelBuilder.Entity<UserWarning>(entity =>

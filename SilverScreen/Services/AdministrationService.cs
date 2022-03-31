@@ -134,5 +134,17 @@ namespace SilverScreen.Services
                 };
             }
         }
+
+        public List<int> ReportedCommentsForMovie(int userID, List<Comment> comments)
+        {
+            List<int> allReportedComments = new List<int>();
+            var context = new SilverScreenContext();
+            foreach(var comment in comments)
+            {
+                //if(context.UserCommentReports.Where(user => user.Id == userID && user.ReportId == ))
+            }
+
+            return allReportedComments;
+        }
     }
 }

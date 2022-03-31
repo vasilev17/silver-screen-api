@@ -20,6 +20,7 @@ namespace SilverScreen.Models.Tables
             MyLists = new HashSet<MyList>();
             NotificationAuthors = new HashSet<Notification>();
             NotificationUsers = new HashSet<Notification>();
+            UserCommentReports = new HashSet<UserCommentReport>();
             UserWarnings = new HashSet<UserWarning>();
         }
 
@@ -43,6 +44,7 @@ namespace SilverScreen.Models.Tables
         public virtual ICollection<MyList> MyLists { get; set; }
         public virtual ICollection<Notification> NotificationAuthors { get; set; }
         public virtual ICollection<Notification> NotificationUsers { get; set; }
+        public virtual ICollection<UserCommentReport> UserCommentReports { get; set; }
         public virtual ICollection<UserWarning> UserWarnings { get; set; }
     }
 }
