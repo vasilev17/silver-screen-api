@@ -86,5 +86,53 @@ namespace SilverScreen.Services
 
             return adminUsers;
         }
+
+        public void SaveConfig(bool isFakeReportsSelected, bool isThereALimit, int fakeReports, int warningsLimit)
+        {
+            if (fakeReports > 100 || fakeReports < 0 || warningsLimit > 99 || warningsLimit < 1)
+            {
+                throw new Exception("Invalid settings!");
+            }
+
+            var context = new SilverScreenContext();
+            var currentConfig = context.BanConfigs.Find(1);
+            if (currentConfig != null)
+            {
+                currentConfig.FakeReportsLimit = isFakeReportsSelected ? fakeReports : null;
+                currentConfig.WarningsLimit = isThereALimit ? warningsLimit : null;
+                context.SaveChanges();
+                context.Dispose();
+            }
+            else
+            {
+                BanConfig banConfig = new BanConfig()
+                {
+                    Id = 1,
+                    FakeReportsLimit = isFakeReportsSelected ? fakeReports : null,
+                    WarningsLimit = isThereALimit ? warningsLimit : null,
+                };
+                context.Add(banConfig);
+                context.SaveChanges();
+                context.Dispose();
+            }
+        }
+
+        public BanConfig LoadConfig()
+        {
+            var context = new SilverScreenContext();
+            var currentConfig = context.BanConfigs.Find(1);
+            if(currentConfig != null)
+            {
+                return currentConfig;
+            }
+            else
+            {
+                return new BanConfig
+                {
+                    FakeReportsLimit = null,
+                    WarningsLimit = null,
+                };
+            }
+        }
     }
 }

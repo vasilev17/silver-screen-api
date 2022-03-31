@@ -140,5 +140,70 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("SaveConfig")]
+        public IActionResult SaveConfig(bool isFakeReportsSelected, bool isThereALimit, int fakeReports, int warningsLimit)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        adminService.SaveConfig(isFakeReportsSelected, isThereALimit, fakeReports, warningsLimit);
+                        return Ok(new { message = $"Config updated successfully!" });
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Config failed to update!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("LoadConfig")]
+        public IActionResult LoadConfig()
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        return Ok(adminService.LoadConfig());
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Config failed to fetch!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
     }
 }
