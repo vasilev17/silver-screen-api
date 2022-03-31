@@ -213,7 +213,7 @@ namespace SilverScreen.Services
                                 {
                                     if (extractedDescription.genres[i].name.Contains("&"))
                                     {
-                                        char[] genreSeparator = { ' ', '&' };
+                                        string[] genreSeparator = {  " & " };
                                         String[] extractedGenreList = extractedDescription.genres[i].name.Split(genreSeparator, StringSplitOptions.RemoveEmptyEntries);
                                         for (int k = 0; k < extractedGenreList.Length; k++)
                                         {
