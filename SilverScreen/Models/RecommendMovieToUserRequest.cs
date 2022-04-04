@@ -7,7 +7,7 @@ namespace SilverScreen.Models
 {
     public class RecommendMovieToUserRequest
     {
-        public int friendId { get; set; }
+        public List<int> friendIds { get; set; }
         public int movieId { get; set; }
         public string message { get; set; }
     }

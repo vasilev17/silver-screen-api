@@ -135,7 +135,7 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService();
-                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendId, request.movieId, request.message))
+                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendIds, request.movieId, request.message))
                 {
                     case 0:
                         return Json(new { code = 0 });
