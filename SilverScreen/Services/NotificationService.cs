@@ -126,7 +126,7 @@ namespace SilverScreen.Services
 
             var friendId = context.Users.Where(user => user.Username.Equals(friendUsername)).FirstOrDefault().Id;
 
-            if (context.FriendLists.Where(user => user.UserId == userId && user.UserId1 == friendId).Any())
+            if (context.FriendLists.Where(user => user.UserId == userId && user.UserId1 == friendId).Any() || userId == friendId)
                 return -1;
 
             //Check if similar notification already exists. Refuse the request if something like this happens
