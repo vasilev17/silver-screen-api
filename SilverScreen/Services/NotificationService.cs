@@ -126,7 +126,7 @@ namespace SilverScreen.Services
 
             var friendId = context.Users.Where(user => user.Username.Equals(friendUsername)).FirstOrDefault().Id;
 
-            if (context.FriendLists.Where(user => user.UserId == userId || user.UserId1 == friendId).Any())
+            if (context.FriendLists.Where(user => user.UserId == userId && user.UserId1 == friendId).Any())
                 return -1;
 
             //Check if similar notification already exists. Refuse the request if something like this happens
@@ -230,7 +230,7 @@ namespace SilverScreen.Services
                 {
                     MovieNotification movieNotification = new MovieNotification()
                     {
-                        Date = DateTime.UtcNow.AddDays(-10), //Replace with movie's release date
+                        Date = DateTime.Parse(context.Movies.Find(movieID).ReleaseDate),
                         MovieId = movieID,
                         UserId = userId
                     };
