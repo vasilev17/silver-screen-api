@@ -156,5 +156,10 @@ namespace SilverScreen.Services
 
             return allReportedComments;
         }
+
+        public void ReportComment(int userId, int commentId)
+        {
+            
+        }
     }
 }

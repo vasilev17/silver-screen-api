@@ -355,5 +355,11 @@ namespace SilverScreen.Services
             context.Dispose();
             return -1;
         }
+
+        public bool GetSubscribedStatusMovie(int userId, int movieId)
+        {
+            var context = new SilverScreenContext();
+            return context.MovieNotifications.Where(notification => notification.UserId == userId && notification.MovieId == movieId).Any();
+        }
     }
 }
