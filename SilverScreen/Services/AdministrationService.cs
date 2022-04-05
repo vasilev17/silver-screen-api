@@ -1,4 +1,5 @@
-﻿using SilverScreen.Models.Tables;
+﻿using SilverScreen.Models;
+using SilverScreen.Models.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -218,6 +219,66 @@ namespace SilverScreen.Services
                 context.Dispose();
                 return;
             }
+        }
+
+        public ReviewComment LoadCommentForReview(int userId)
+        {
+            ReviewComment commentResult = null;
+            var context = new SilverScreenContext();
+            var commentForReview = context.CommentReports.Where(report => (report.UnderReview == null || report.UnderReview == userId) && report.ReportedForFalsePositive == false).FirstOrDefault();
+
+            if (commentForReview != null)
+            {
+                commentForReview.UnderReview = userId;
+                int reportAmount = context.UserCommentReports.Where(userR => userR.ReportId == commentForReview.Id).Count();
+                commentResult = new ReviewComment()
+                {
+                    ReviewId = commentForReview.Id,
+                    Contents = commentForReview.Contents,
+                    TimesReported = reportAmount
+                };
+                context.SaveChanges();
+                context.Dispose();
+            }
+
+            return commentResult;
+        }
+
+        private bool CheckForViolation(int userId)
+        {
+            var context = new SilverScreenContext();
+            var config = context.BanConfigs.Find(1);
+            if(config != null)
+            {
+                if (config.WarningsLimit != null)
+                {
+                    var userWarnings = context.UserWarnings.Where(userR => userR.UserId == userId).ToList();
+                    if (userWarnings.Count() >= config.WarningsLimit)
+                    {
+                        return true;
+                    }
+                }
+                if (config.FakeReportsLimit != null)
+                {
+                    var userAccountReports = context.AccountReports.Where(userR => userR.UserId == userId).FirstOrDefault();
+                    if (userAccountReports != null)
+                    {
+                        if (userAccountReports.FakeReports < 4) return false;
+                        float calcPercentage = ((userAccountReports.FakeReports - userAccountReports.Reports) / userAccountReports.Reports) * 100;
+                        if(calcPercentage >= config.FakeReportsLimit) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void BanUser(int userId, DateTime duration)
+        {
+            var context = new SilverScreenContext();
+            var targetUser = context.Users.Find(userId);
+            targetUser.Banned = duration;
+            context.SaveChanges();
+            context.Dispose();
         }
     }
 }

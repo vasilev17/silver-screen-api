@@ -205,5 +205,37 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("LoadCommentForReview")]
+        public IActionResult LoadCommentForReview()
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        return Ok(new { commentForReview = adminService.LoadCommentForReview(userId)});
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Failed fetching comment!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
     }
 }
