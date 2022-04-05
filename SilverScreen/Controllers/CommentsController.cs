@@ -144,7 +144,16 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-
+                var service = new AdministrationService();
+                try
+                {
+                    service.ReportComment(userId, commentId);
+                    return Ok();
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
 
             return Unauthorized();

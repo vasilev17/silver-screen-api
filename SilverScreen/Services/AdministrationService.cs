@@ -141,10 +141,25 @@ namespace SilverScreen.Services
             var context = new SilverScreenContext();
             foreach(var comment in comments)
             {
-                //if(context.UserCommentReports.Where(user => user.Id == userID && user.ReportId == ))
+                var commentReportQuery = context.CommentReports.Where(comment => comment.CommentId == comment.Id); //&& (comment.ReportedForFalsePositive == true || comment.ReportIsLegit == true)
+                if (commentReportQuery.Any())
+                {
+                    if(context.UserCommentReports.Where(report => report.ReportId == commentReportQuery.FirstOrDefault().Id && report.UserId == userID).Any())
+                    {
+                        if (commentReportQuery.FirstOrDefault().Contents.Equals(comment.Content))
+                        {
+                            allReportedComments.Add(commentReportQuery.FirstOrDefault().CommentId);
+                        } 
+                    }
+                }
             }
 
             return allReportedComments;
+        }
+
+        public void ReportComment(int userId, int commentId)
+        {
+            
         }
     }
 }
