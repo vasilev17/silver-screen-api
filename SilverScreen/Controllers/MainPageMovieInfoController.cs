@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using SilverScreen.Models;
 using SilverScreen.Models.Tables;
 using SilverScreen.Services;
 using System;
@@ -62,14 +63,14 @@ namespace SilverScreen.Controllers
         /// <returns>Returns a call to "SearchMovieByTitle".</returns>
         [HttpGet]
         [Route("GetMoviesBySearch")]
-        public List<Movie> GetMoviesBySearchForMainPage(string searchString)
+        public List<MovieDisplay> GetMoviesBySearchForMainPage(string searchString)
         {
             MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.SearchMovieByTitle(searchString);
         }
         [HttpGet]
         [Route("GetMoviesByContentAndGenre")]
-        public List<Movie> GetMoviesByContentAndGenreForMainPage(string genre, string content)
+        public List<MovieDisplay> GetMoviesByContentAndGenreForMainPage(string genre, string content)
         {
             MainPageMovieInfoService service = new MainPageMovieInfoService();
             return service.GetMoviesByContentAndGenre(genre, content);
