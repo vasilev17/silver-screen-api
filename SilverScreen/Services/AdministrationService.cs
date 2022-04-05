@@ -141,15 +141,12 @@ namespace SilverScreen.Services
             var context = new SilverScreenContext();
             foreach(var comment in comments)
             {
-                var commentReportQuery = context.CommentReports.Where(comment => comment.CommentId == comment.Id); //&& (comment.ReportedForFalsePositive == true || comment.ReportIsLegit == true)
+                var commentReportQuery = context.CommentReports.Where(commentR => commentR.CommentId == comment.Id && commentR.Contents.Equals(comment.Content)); 
                 if (commentReportQuery.Any())
                 {
                     if(context.UserCommentReports.Where(report => report.ReportId == commentReportQuery.FirstOrDefault().Id && report.UserId == userID).Any())
                     {
-                        if (commentReportQuery.FirstOrDefault().Contents.Equals(comment.Content))
-                        {
-                            allReportedComments.Add(commentReportQuery.FirstOrDefault().CommentId);
-                        } 
+                        allReportedComments.Add(commentReportQuery.FirstOrDefault().CommentId);
                     }
                 }
             }
@@ -159,7 +156,68 @@ namespace SilverScreen.Services
 
         public void ReportComment(int userId, int commentId)
         {
+            var context = new SilverScreenContext();
+            var fetchedComment = context.Comments.Find(commentId);
+
+            if (fetchedComment == null) throw new Exception("Comment doesn't exist!");
+
+            var commentReportQuery = context.CommentReports.Where(comment => comment.CommentId == fetchedComment.Id && comment.Contents.Equals(fetchedComment.Content));
             
+            if(commentReportQuery.Any())
+            {
+                var commentReport = commentReportQuery.FirstOrDefault();
+
+                if (context.UserCommentReports.Where(report => report.ReportId == commentReport.Id && report.UserId == userId).Any())
+                {
+                    //If there is a record, there is no need to create a second one.
+                    throw new Exception("Comment already reported!");
+                }
+                else
+                {
+                    //If comment is marked as false or already marked as reported, the don't count it.
+                    if (commentReport.ReportedForFalsePositive) return;
+
+                    //Insert only UserReports record 
+                    var userReport = new UserCommentReport()
+                    {
+                        UserId = userId,
+                        ReportId = commentReport.Id
+                    };
+
+                    context.Add(userReport);
+                    context.SaveChanges();
+                    context.Dispose();
+                    return;
+                }
+            }
+            else
+            {
+                //Insert new record in CommentReports, get ID and assign it to a new record in UserReports
+
+                var commentReport = new CommentReport
+                {
+                    Id = context.CommentReports.Count() + 1,
+                    UserId = fetchedComment.UserId,
+                    MovieId = fetchedComment.MovieId,
+                    CommentId = fetchedComment.Id,
+                    Contents = fetchedComment.Content,
+                    ReportedForFalsePositive = false,
+                    ReportIsLegit = false
+                };
+
+                context.Add(commentReport);
+
+                var userReport = new UserCommentReport()
+                {
+                    UserId = userId,
+                    ReportId = commentReport.Id
+                };
+
+                context.Add(userReport);
+                context.SaveChanges();
+                context.Dispose();
+                return;
+            }
         }
     }
 }
