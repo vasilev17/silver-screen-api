@@ -237,5 +237,38 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("ReportAsFalsePositive")]
+        public IActionResult ReportAsFalsePositive(int reportId)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        adminService.ReportAsFalsePositive(userId, reportId);
+                        return Ok();
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Something went wrong!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
     }
 }

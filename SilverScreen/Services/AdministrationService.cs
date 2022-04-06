@@ -244,6 +244,59 @@ namespace SilverScreen.Services
             return commentResult;
         }
 
+        public void ReportAsFalsePositive(int userId, int reportId)
+        {
+            var context = new SilverScreenContext();
+            var report = context.CommentReports.Where(rprt => rprt.Id == reportId && rprt.UnderReview == userId).FirstOrDefault();
+            
+            if (report == null) throw new Exception("Report not found!");
+
+            report.ReportedForFalsePositive = true;
+            report.UnderReview = null;
+
+            context.SaveChanges();
+
+            var fakeRUsers = context.UserCommentReports.Where(user => user.ReportId == reportId).ToList();
+
+            foreach(var user in fakeRUsers)
+            {
+                var findUserStats = context.AccountReports.Where(userS => userS.UserId == user.UserId).FirstOrDefault();
+                if(findUserStats != null)
+                {
+                    //modify stats
+                    findUserStats.FakeReports++;
+                    context.SaveChanges();
+
+                    //check for violation - if user passed the limit, then ban will happen
+                    if (CheckForViolation(user.Id))
+                    {
+                        var userBan = new UserWarning()
+                        {
+                            IsItBan = true,
+                            Reason = "Ban by the system for reaching the limits.",
+                            UserId = user.UserId,
+                        };
+                        context.Add(userBan);
+                        context.SaveChanges();
+                        BanUser(userId, DateTime.UtcNow.AddDays(7));
+                    }
+                }
+                else
+                {
+                    //create new stats
+                    var userStat = new AccountReport()
+                    {
+                        UserId = user.UserId,
+                        FakeReports = 1,
+                        Reports = 0,
+                    };
+                    context.Add(userStat);
+                    context.SaveChanges();
+                }
+            }
+            context.Dispose();
+        }
+
         private bool CheckForViolation(int userId)
         {
             var context = new SilverScreenContext();
