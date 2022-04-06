@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using SilverScreen.Models;
 using SilverScreen.Models.Tables;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SilverScreen.Services
 {
@@ -15,10 +13,10 @@ namespace SilverScreen.Services
         /// </summary>
         /// <param name="genre">Take movies based on the genre you have chosen.</param>
         /// <returns>Returns list of movies by genre.</returns>
-        public List<Movie> GetMoviesByGenre(string genre)
+        public List<MovieDisplay> GetMoviesByGenre(string genre)
         {
             SilverScreenContext context = new SilverScreenContext();
-            List<Movie> movies = new List<Movie>();
+            List<MovieDisplay> movies = new List<MovieDisplay>();
 
 
 
@@ -27,7 +25,14 @@ namespace SilverScreen.Services
             SilverScreenContext context1 = new SilverScreenContext();
             foreach (var genreMovie in genreMovies.MovieGenres)
             {
-                movies.Add(context1.Movies.Find(genreMovie.MovieId));
+                
+                movies.Add(context1.Movies.Where(s => s.Id == genreMovie.MovieId).Select(
+                    m => new MovieDisplay()
+                    {
+                        Id = m.Id,
+                        Thumbnail = m.Thumbnail
+                    }).FirstOrDefault());
+
             }
             context1.Dispose();
             movies.Reverse();
@@ -42,18 +47,23 @@ namespace SilverScreen.Services
         /// <param name="userID">Takes a user id.</param>
         /// <param name="watched">Takes by true or false with movie is watched.</param>
         /// <returns>Returns list of movies based on with have been watched or are for watching.</returns>
-        public List<Movie> GetMyListMovies(int userID, bool watched)
+        public List<MovieDisplay> GetMyListMovies(int userID, bool watched)
         {
             SilverScreenContext context = new SilverScreenContext();
             List<MyList> myListMovies = new List<MyList>();
-            List<Movie> movies = new List<Movie>();
+            List<MovieDisplay> movies = new List<MovieDisplay>();
             using (context)
             {
                 myListMovies = context.MyLists.Where(s => s.UserId == userID && s.Watched == watched).ToList();
                 foreach (var myListMovie in myListMovies)
                 {
-                    movies.Add(context.Movies.Where(s => s.Id == myListMovie.MovieId).FirstOrDefault());
-                }                  
+                    movies.Add(context.Movies.Where(s => s.Id == myListMovie.MovieId).Select(
+                    m => new MovieDisplay()
+                    {
+                        Id = m.Id,
+                        Thumbnail = m.Thumbnail
+                    }).FirstOrDefault());
+                }
                 return movies;
 
             }
@@ -64,28 +74,39 @@ namespace SilverScreen.Services
         /// </summary>
         /// <param name="searchString">The string based on which the searh is performed.</param>
         /// <returns>Returns a list that contains all movies with that title.</returns>
-        public List<Movie> SearchMovieByTitle(string searchString)
+        public List<MovieDisplay> SearchMovieByTitle(string searchString)
         {
             SilverScreenContext context = new SilverScreenContext();
-            List<Movie> searchMovies = new List<Movie>();
+            List<MovieDisplay> searchMovies = new List<MovieDisplay>();
             using (context)
             {
-                searchMovies = context.Movies.Where(s => s.Title.Contains(searchString)).ToList();
+                searchMovies = context.Movies.Where(s => s.Title.Contains(searchString))
+                    .Select(
+                    m => new MovieDisplay()
+                    {
+                        Id = m.Id,
+                        Thumbnail = m.Thumbnail
+                    }).ToList();
             }
             searchMovies.Reverse();
             return searchMovies;
         }
-        public List<Movie> GetMoviesByContentAndGenre(string genre, string content)
+        public List<MovieDisplay> GetMoviesByContentAndGenre(string genre, string content)
         {
             SilverScreenContext context = new SilverScreenContext();
-            List<Movie> movies = new List<Movie>();
+            List<MovieDisplay> movies = new List<MovieDisplay>();
 
             var genreMovies = context.Genres.Where(s => s.Genre1.Equals(genre)).Include(s => s.MovieGenres).FirstOrDefault();
             context.Dispose();
             SilverScreenContext context1 = new SilverScreenContext();
             foreach (var genreMovie in genreMovies.MovieGenres)
             {
-                var movie = context1.Movies.Where(x => x.Id == genreMovie.MovieId && x.ContentType.Equals(content));
+                var movie = context1.Movies.Where(x => x.Id == genreMovie.MovieId && x.ContentType.Equals(content)).Select(
+                    m => new MovieDisplay()
+                    {
+                        Id = m.Id,
+                        Thumbnail = m.Thumbnail
+                    });
                 if (movie.Any())
                 {
                     movies.Add(movie.FirstOrDefault());

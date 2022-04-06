@@ -92,6 +92,29 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        [HttpGet]
+        [Route("GetSubscribedFilmStatus")]
+        [Authorize]
+        public IActionResult GetSubscribedFilmStatus(int movieId)
+        {
+            var user = HttpContext.User;
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+                NotificationService notificationService = new NotificationService();
+                try
+                {
+                    return Ok(new { status = notificationService.GetSubscribedStatusMovie(userId, movieId) });
+                }
+                catch (Exception)
+                {
+                    return BadRequest(new { errorMsg = "Something went wrong!" });
+                }
+            }
+            return Unauthorized();
+        }
+
+
         /// <summary>
         /// Accepts friend request by calling the User Service via the Notification Service. Token authentication required. 
         /// </summary>
@@ -135,7 +158,7 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService();
-                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendId, request.movieId, request.message))
+                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendIds, request.movieId, request.message))
                 {
                     case 0:
                         return Json(new { code = 0 });

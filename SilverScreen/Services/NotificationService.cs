@@ -126,6 +126,9 @@ namespace SilverScreen.Services
 
             var friendId = context.Users.Where(user => user.Username.Equals(friendUsername)).FirstOrDefault().Id;
 
+            if (context.FriendLists.Where(user => user.UserId == userId && user.UserId1 == friendId).Any() || userId == friendId)
+                return -1;
+
             //Check if similar notification already exists. Refuse the request if something like this happens
             if((context.Notifications.Where(x => x.UserId == userId && 
                                                  x.AuthorId == friendId).Any())
@@ -157,40 +160,41 @@ namespace SilverScreen.Services
         /// Recommend a movie to a user. There are currently no checks if the user and the another user are friends.
         /// </summary>
         /// <param name="userId">User identifier.</param>
-        /// <param name="friendId">User identifier of the targeted friend.</param>
+        /// <param name="friendIds">User identifier of the targeted friend.</param>
         /// <param name="movieId">Movie identifier.</param>
         /// <param name="message">User stating why he wants the another user to watch the corresponding film.</param>
         /// <returns>Return code, based on outcome. 0 for everything went smooth, -1 for throwing an exception.</returns>
-        public int RecommendMovieToAFriend(int userId, int friendId, int movieId, string message)
+        public int RecommendMovieToAFriend(int userId, List<int> friendIds, int movieId, string message)
         {
             SilverScreenContext context = new SilverScreenContext();
 
             //Check if similar notification already exists. If it exists, replace the notification
             try
             {
-                if (context.Notifications.Where(x => x.AuthorId == userId && x.UserId == friendId && x.MovieId == movieId).Any())
+                foreach(int friendId in friendIds)
                 {
-                    context.Notifications.Where(x => x.UserId == friendId && x.MovieId == movieId && x.AuthorId == userId).FirstOrDefault().Content = message;
-                    context.SaveChanges();
-                    context.Dispose();
-                    return 0;
-                }
-                else
-                {
-                    Notification notification = new Notification()
+                    if (context.Notifications.Where(x => x.AuthorId == userId && x.UserId == friendId && x.MovieId == movieId).Any())
                     {
-                        Active = true,
-                        AuthorId = userId,
-                        UserId = friendId,
-                        Content = message,
-                        MovieId = movieId,
-                        Type = "TextOnly"
-                    };
-                    context.Add(notification);
-                    context.SaveChanges();
-                    context.Dispose();
-                    return 0;
-                }
+                        context.Notifications.Where(x => x.UserId == friendId && x.MovieId == movieId && x.AuthorId == userId).FirstOrDefault().Content = message;
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        Notification notification = new Notification()
+                        {
+                            Active = true,
+                            AuthorId = userId,
+                            UserId = friendId,
+                            Content = message,
+                            MovieId = movieId,
+                            Type = "TextOnly"
+                        };
+                        context.Add(notification);
+                        context.SaveChanges();
+                    }
+                } 
+                context.Dispose();
+                return 0;
             }
             catch (Exception)
             {
@@ -226,7 +230,7 @@ namespace SilverScreen.Services
                 {
                     MovieNotification movieNotification = new MovieNotification()
                     {
-                        Date = DateTime.UtcNow.AddDays(-10), //Replace with movie's release date
+                        Date = DateTime.Parse(context.Movies.Find(movieID).ReleaseDate),
                         MovieId = movieID,
                         UserId = userId
                     };
@@ -350,6 +354,12 @@ namespace SilverScreen.Services
             }
             context.Dispose();
             return -1;
+        }
+
+        public bool GetSubscribedStatusMovie(int userId, int movieId)
+        {
+            var context = new SilverScreenContext();
+            return context.MovieNotifications.Where(notification => notification.UserId == userId && notification.MovieId == movieId).Any();
         }
     }
 }
