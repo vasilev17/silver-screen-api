@@ -58,7 +58,7 @@ namespace SilverScreen.Services
                 throw new Exception("Please enter a valid number");
             }
             int addedMovies = 0;
-            var movieCount = count;
+            int movieCount = count;
             string currentContentType;
             if (contentType == "tv")
             {
