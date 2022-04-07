@@ -106,11 +106,17 @@ namespace SilverScreen.Services
             User user = null;
             SilverScreenContext context = new SilverScreenContext();
             AuthenticationService authentication = new AuthenticationService();
+            var administrationService = new AdministrationService();
             if (context.Users.Where(s => s.Email.Equals(login.Email)).Any())
             {
                 if (context.Users.Where(s => s.Password.Equals(authentication.Encrypt(login.Password))).Any())
                 {
-                    user = context.Users.Where(s => s.Email.Equals(login.Email)).FirstOrDefault();
+                    int userId = context.Users.Where(x => x.Email.Equals(login.Email)).Select(x => x.Id).FirstOrDefault();
+                    if (administrationService.AuthenticateUser(userId))
+                    {
+                        user = context.Users.Find(userId);
+                    }
+                    else throw new Exception("This account has been banned!");
                 }
                 else
                 {
@@ -119,7 +125,7 @@ namespace SilverScreen.Services
             }
             else
             {
-                throw new Exception("This Email doesn't exist");
+                throw new Exception("This Email doesn't exist!");
             }
 
             return user;

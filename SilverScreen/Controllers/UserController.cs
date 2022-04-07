@@ -46,11 +46,14 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 var userService = new UserService();
+                var administrationService = new AdministrationService();
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
 
-                var userObj = userService.GetUserByID(userId);
-                return Json(new { username = userObj.Username, avatar = userObj.Avatar });
-
+                if (administrationService.AuthenticateUser(userId))
+                {
+                    var userObj = userService.GetUserByID(userId);
+                    return Json(new { username = userObj.Username, avatar = userObj.Avatar });
+                }
             }
 
             return Unauthorized();
@@ -204,8 +207,12 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService();
-                notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.username, request.message);
-                return Ok(new { Message = "Sent request" });
+                var administrationService = new AdministrationService();
+                if(administrationService.AuthenticateUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value)))
+                {
+                    notificationService.SendFriendNotification(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.username, request.message);
+                    return Ok(new { Message = "Sent request" });
+                }   
             }
 
 

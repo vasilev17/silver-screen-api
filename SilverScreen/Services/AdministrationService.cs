@@ -503,6 +503,24 @@ namespace SilverScreen.Services
             context.Dispose();
         }
 
+        public bool AuthenticateUser(int userId)
+        {
+            var context = new SilverScreenContext();
+            var user = context.Users.Find(userId);
+
+            if (user == null) throw new Exception("User not found!");
+
+            if (user.Banned == null && user.IsDeleted == false) return true;
+
+            if (user.Banned <= DateTime.UtcNow && user.IsDeleted == false)
+            {
+                FullUnbanUser(userId);
+                return true;
+            }
+
+            return false;
+        }
+
         private bool CheckForViolation(int userId)
         {
             var context = new SilverScreenContext();

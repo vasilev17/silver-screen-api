@@ -158,13 +158,17 @@ namespace SilverScreen.Controllers
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 NotificationService notificationService = new NotificationService();
-                switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendIds, request.movieId, request.message))
+                var adminService = new AdministrationService();
+                if(adminService.AuthenticateUser(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value)))
                 {
-                    case 0:
-                        return Json(new { code = 0 });
-                    default:
-                        return Json(new { code = 500, errorMsg = "Something went wrong!" });
-                }
+                    switch (notificationService.RecommendMovieToAFriend(int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value), request.friendIds, request.movieId, request.message))
+                    {
+                        case 0:
+                            return Json(new { code = 0 });
+                        default:
+                            return Json(new { code = 500, errorMsg = "Something went wrong!" });
+                    }
+                }               
             }
             return Unauthorized();
         }

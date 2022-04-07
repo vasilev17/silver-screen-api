@@ -50,17 +50,21 @@ namespace SilverScreen.Controllers
         {
             var user = HttpContext.User;
             CommentService service = new CommentService();
+            var adminService = new AdministrationService();
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-                try
+                if (adminService.AuthenticateUser(userId))
                 {
-                    return Ok( new { comment = service.GetUserComment(userId, movieId) });
-                }
-                catch(System.Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                    try
+                    {
+                        return Ok(new { comment = service.GetUserComment(userId, movieId) });
+                    }
+                    catch (System.Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }       
             }
             return Unauthorized();
         }
@@ -72,18 +76,22 @@ namespace SilverScreen.Controllers
         {
             var user = HttpContext.User;
             CommentService service = new CommentService();
+            var adminService = new AdministrationService();
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-                try
+                if (adminService.AuthenticateUser(userId))
                 {
-                    service.PostComment(userId, movieId, message, friendsOnly);
-                    return Ok();
-                }
-                catch (System.Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                    try
+                    {
+                        service.PostComment(userId, movieId, message, friendsOnly);
+                        return Ok();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }  
             }
             return Unauthorized();
         }
@@ -95,18 +103,22 @@ namespace SilverScreen.Controllers
         {
             var user = HttpContext.User;
             CommentService service = new CommentService();
+            var adminService = new AdministrationService();
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-                try
+                if (adminService.AuthenticateUser(userId))
                 {
-                    service.UpdateComment(userId, movieId, message, friendsOnly);
-                    return Ok();
-                }
-                catch (System.Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                    try
+                    {
+                        service.UpdateComment(userId, movieId, message, friendsOnly);
+                        return Ok();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }             
             }
             return Unauthorized();
         }
@@ -118,18 +130,22 @@ namespace SilverScreen.Controllers
         {
             var user = HttpContext.User;
             CommentService service = new CommentService();
+            var adminService = new AdministrationService();
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
-                try
+                if (adminService.AuthenticateUser(userId))
                 {
-                    service.DeleteComment(userId, movieId);
-                    return Ok();
-                }
-                catch (System.Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                    try
+                    {
+                        service.DeleteComment(userId, movieId);
+                        return Ok();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }               
             }
             return Unauthorized();
         }
@@ -140,20 +156,24 @@ namespace SilverScreen.Controllers
         public IActionResult ReportComment(int commentId)
         {
             var user = HttpContext.User;
+            var adminService = new AdministrationService();
 
             if (user.HasClaim(x => x.Type == "userID"))
             {
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
                 var service = new AdministrationService();
-                try
+                if (adminService.AuthenticateUser(userId))
                 {
-                    service.ReportComment(userId, commentId);
-                    return Ok();
-                }
-                catch(Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                    try
+                    {
+                        service.ReportComment(userId, commentId);
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }             
             }
 
             return Unauthorized();
