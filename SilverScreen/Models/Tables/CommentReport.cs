@@ -19,9 +19,7 @@ namespace SilverScreen.Models.Tables
         public int? UnderReview { get; set; }
         public bool ReportedForFalsePositive { get; set; }
         public bool ReportIsLegit { get; set; }
-        public int MovieId { get; set; }
 
-        public virtual Movie Movie { get; set; }
         public virtual User UnderReviewNavigation { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<UserCommentReport> UserCommentReports { get; set; }

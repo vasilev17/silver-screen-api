@@ -97,7 +97,6 @@ namespace SilverScreen.Models.Tables
 
             modelBuilder.Entity<CommentReport>(entity =>
             {
-                entity.HasIndex(e => e.MovieId, "MovieFKCR");
 
                 entity.HasIndex(e => e.UserId, "UserFKCR");
 
@@ -109,11 +108,6 @@ namespace SilverScreen.Models.Tables
                     .IsRequired()
                     .HasMaxLength(500);
 
-                entity.HasOne(d => d.Movie)
-                    .WithMany(p => p.CommentReports)
-                    .HasForeignKey(d => d.MovieId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("MovieFKCR");
 
                 entity.HasOne(d => d.UnderReviewNavigation)
                     .WithMany(p => p.CommentReportUnderReviewNavigations)

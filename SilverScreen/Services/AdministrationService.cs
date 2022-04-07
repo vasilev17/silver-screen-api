@@ -199,7 +199,6 @@ namespace SilverScreen.Services
                 {
                     Id = context.CommentReports.Count() + 1,
                     UserId = fetchedComment.UserId,
-                    MovieId = fetchedComment.MovieId,
                     CommentId = fetchedComment.Id,
                     Contents = fetchedComment.Content,
                     ReportedForFalsePositive = false,
