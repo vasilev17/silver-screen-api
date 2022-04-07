@@ -313,6 +313,7 @@ namespace SilverScreen.Controllers
             {
                 var adminService = new AdministrationService();
                 int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+                reason = reason != null ? reason : "";
 
                 if (adminService.isUserAdministrator(userId))
                 {
