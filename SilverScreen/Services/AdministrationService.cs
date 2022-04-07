@@ -235,7 +235,9 @@ namespace SilverScreen.Services
                 {
                     ReviewId = commentForReview.Id,
                     Contents = commentForReview.Contents,
-                    TimesReported = reportAmount
+                    TimesReported = reportAmount,
+                    UserId = commentForReview.UserId,
+                    Username = context.Users.Where(user => user.Id == commentForReview.UserId).Select(user => user.Username).FirstOrDefault()
                 };
                 context.SaveChanges();
                 context.Dispose();
@@ -273,12 +275,12 @@ namespace SilverScreen.Services
                         var userBan = new UserWarning()
                         {
                             IsItBan = true,
-                            Reason = "Ban by the system for reaching the limits.",
+                            Reason = "Banned by the system for reaching the limits.",
                             UserId = user.UserId,
                         };
                         context.Add(userBan);
                         context.SaveChanges();
-                        BanUser(userId, DateTime.UtcNow.AddDays(7));
+                        BanUser(user.UserId, DateTime.UtcNow.AddDays(7));
                     }
                 }
                 else
@@ -294,6 +296,210 @@ namespace SilverScreen.Services
                     context.SaveChanges();
                 }
             }
+            context.Dispose();
+        }
+
+        public List<UserWBRHistory> LoadHistoryForUser(int targetId)
+        {
+            var userHistoryReturn = new List<UserWBRHistory>();
+            var context = new SilverScreenContext();
+            var userHistory = context.UserWarnings.Where(user => user.UserId == targetId).ToList();
+
+            foreach(var userH in userHistory)
+            {
+                var user = context.Users.Find(targetId);
+                if(user != null)
+                {
+                    var userReturn = new UserWBRHistory()
+                    {
+                        BanDate = userH.IsItBan ? user.Banned : null,
+                        Content = userH.Reason,
+                        Severity = userH.IsItBan ? "ban" : "warn",
+                    };
+                    userHistoryReturn.Add(userReturn);
+                }
+            }
+
+            return userHistoryReturn;
+        }
+
+        public void PenalizeUser(int userId, int targetId, string reason, bool isItBan, int reportId)
+        {
+            var context = new SilverScreenContext();
+            var targetedUser = context.Users.Find(targetId);
+            
+            if (targetedUser == null) throw new Exception("User not found!");
+
+            if (isItBan)
+            {
+                var banWrn = new UserWarning()
+                {
+                    IsItBan = true,
+                    Reason = reason,
+                    UserId = targetId
+                };
+                context.Add(banWrn);
+                context.SaveChanges();
+                BanUser(targetId, DateTime.UtcNow.AddDays(7));
+            }
+            else
+            {
+                var warning = new UserWarning()
+                {
+                    IsItBan = false,
+                    Reason = reason,
+                    UserId = targetId
+                };
+                context.Add(warning);
+                context.SaveChanges();
+                if (CheckForViolation(targetId))
+                {
+                    var banWrn = new UserWarning()
+                    {
+                        Reason = "Banned by the system for reaching the limits.",
+                        IsItBan = true,
+                        UserId = targetId
+                    };
+                    context.Add(banWrn);
+                    context.SaveChanges();
+                    BanUser(targetId, DateTime.UtcNow.AddDays(7));
+                }
+            }
+
+            if(reportId != -1)
+            {
+                var commentReport = context.CommentReports.Find(reportId);
+                if (commentReport != null && commentReport.UnderReview == userId)
+                {
+                    var harmComment = context.Comments.Find(commentReport.CommentId);
+                    if (harmComment != null) context.Remove(harmComment);
+                    context.SaveChanges();
+
+                    var goodUsers = context.UserCommentReports.Where(user => user.ReportId == reportId).ToList();
+                    foreach(var userR in goodUsers)
+                    {
+                        var userRR = context.AccountReports.Where(user => user.UserId == userR.UserId).FirstOrDefault();
+                        if(userRR != null)
+                        {
+                            userRR.Reports++;
+                            context.SaveChanges();
+                        }
+                        else
+                        {
+                            userRR = new AccountReport()
+                            {
+                                Reports = 1,
+                                UserId = userR.UserId,
+                                FakeReports = 0
+                            };
+                            context.Add(userRR);
+                            context.SaveChanges();
+                        }
+                    }
+                    context.RemoveRange(goodUsers);
+                    context.Remove(commentReport);
+                    context.SaveChanges();
+                }
+                else throw new Exception("Comment report not found!");
+            }
+
+        }
+
+        public List<UserStat> LoadAllBannedUsers()
+        {
+            var userStatReturn = new List<UserStat>();
+            var context = new SilverScreenContext();
+
+            var bannedUsers = context.Users.Where(user => user.Banned > System.DateTime.UtcNow).ToList();
+
+            foreach(var user in bannedUsers)
+            {
+                var fetchStats = context.AccountReports.Where(userR => userR.UserId == user.Id).FirstOrDefault();
+                int fr = 0, rp = 0;
+
+                if(fetchStats != null)
+                {
+                    fr = fetchStats.FakeReports;
+                    rp = fetchStats.Reports;
+                }
+
+                var userStat = new UserStat()
+                {
+                    UserId = user.Id,
+                    FakeReports = fr,
+                    Username = user.Username,
+                    Reports = rp,
+                    Warnings = context.UserWarnings.Where(userR => userR.UserId == user.Id && userR.IsItBan == false).ToList().Count,
+                };
+                userStatReturn.Add(userStat);
+            }
+
+            return userStatReturn;
+        }
+
+        public List<UserStat> LoadAllUsers(int userId)
+        {
+            var userStatReturn = new List<UserStat>();
+            var context = new SilverScreenContext();
+
+            var allUsers = context.Users.Where(user => (user.Banned <= System.DateTime.UtcNow || user.Banned == null) && user.Id != userId).ToList();
+
+            foreach (var user in allUsers)
+            {
+                var fetchStats = context.AccountReports.Where(userR => userR.UserId == user.Id).FirstOrDefault();
+                int fr = 0, rp = 0;
+                int warnCount = context.UserWarnings.Where(userR => userR.UserId == user.Id && userR.IsItBan == false).ToList().Count;
+
+                if (fetchStats != null)
+                {
+                    fr = fetchStats.FakeReports;
+                    rp = fetchStats.Reports;
+                }
+
+                if(!(fetchStats == null && warnCount == 0))
+                {
+                    var userStat = new UserStat()
+                    {
+                        UserId = user.Id,
+                        FakeReports = fr,
+                        Username = user.Username,
+                        Reports = rp,
+                        Warnings = warnCount,
+                    };
+                    userStatReturn.Add(userStat);
+                }         
+            }
+
+            return userStatReturn;
+        }
+
+        public void FullUnbanUser(int userId)
+        {
+            var context = new SilverScreenContext();
+            var userForUnban = context.Users.Find(userId);
+            
+            if (userForUnban == null) throw new Exception("User not found!");
+
+            if (userForUnban.Banned != null)
+            {
+                userForUnban.Banned = null;
+                context.SaveChanges();
+                context.Dispose();
+                ClearStatsForUser(userId);
+            }
+            else throw new Exception("The targeted user is not banned to get unbanned.");
+        }
+
+        public void ClearStatsForUser(int userId)
+        {
+            var context = new SilverScreenContext();
+            var userToClear = context.Users.Find(userId);
+
+            if (userToClear == null) throw new Exception("User not found!");
+
+            context.RemoveRange(context.UserWarnings.Where(user => user.IsItBan == false && user.UserId == userId));
+            context.RemoveRange(context.AccountReports.Where(user => user.UserId == userId));
+            context.SaveChanges();
             context.Dispose();
         }
 

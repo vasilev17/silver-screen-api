@@ -270,5 +270,200 @@ namespace SilverScreen.Controllers
             return Unauthorized();
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("LoadHistoryForUser")]
+        public IActionResult LoadHistoryForUser(int targetId)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        return Ok(new { userHistory = adminService.LoadHistoryForUser(targetId) });
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Failed fetching comment!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("PenalizeUser")]
+        public IActionResult PenalizeUser(int targetId, string reason, bool isItBan, int reportId = -1)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        adminService.PenalizeUser(userId, targetId, reason, isItBan, reportId);
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { message = ex.Message });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("LoadAllBannedUsers")]
+        public IActionResult LoadAllBannedUsers()
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        return Ok(new { bannedUsers = adminService.LoadAllBannedUsers() });
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Something went wrong!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("LoadAllUsers")]
+        public IActionResult LoadAllUsers()
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        return Ok(new { allUsers = adminService.LoadAllUsers(userId) });
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = $"Something went wrong!" });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("FullUnbanUser")]
+        public IActionResult FullUnbanUser(int targetId)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        adminService.FullUnbanUser(targetId);
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { message = ex.Message });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("ClearStatsForUser")]
+        public IActionResult ClearStatsForUser(int targetId)
+        {
+            var user = HttpContext.User;
+
+            if (user.HasClaim(x => x.Type == "userID"))
+            {
+                var adminService = new AdministrationService();
+                int userId = int.Parse(user.Claims.FirstOrDefault(x => x.Type == "userID").Value);
+
+                if (adminService.isUserAdministrator(userId))
+                {
+                    try
+                    {
+                        adminService.ClearStatsForUser(targetId);
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { message = ex.Message });
+                    }
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+
+            return Unauthorized();
+        }
+
     }
 }
