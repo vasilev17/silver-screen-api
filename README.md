@@ -38,3 +38,8 @@ After doing all this steps or you have updated the entitied directly, open the P
 
 **If you did followed these steps correctly, you have successfully updated the database!**
 
+## API Models Diagram
+
+<p align="center">
+  <img src="https://i.ibb.co/TRqwyGB/models-Diagram.png">
+</p>
