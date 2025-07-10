@@ -16,7 +16,8 @@ There are multiple ways to modify a specific table:
 * Use [MySQL Workbench](https://www.mysql.com/products/workbench/) and write a query that adds, modifies or deletes the table. 
 * Modify the EF entities in the Models/Tables folder that corresponds to the table in the database.
 
-**NOTE: You need to update the database, otherwise it's not going to work.**
+> [!NOTE]
+> *NOTE: You need to update the database, otherwise it's not going to work.*
 
 ### How to update the database? ###
 This is a necessary task to complete if you modified the database in some way.
@@ -36,10 +37,10 @@ Here what to do in case of scaffolding:
 
 After doing all this steps or you have updated the entitied directly, open the Package Manager console in Visual Studio and run this command: `Add-Migration NameOfTheMigraion`.
 
-**If you did followed these steps correctly, you have successfully updated the database!**
+**Following these steps should result in a successfully updated database!**
 
 ## API Models Diagram
 
 <p align="center">
-  <img src="https://i.ibb.co/TRqwyGB/models-Diagram.png">
+  <img src="https://github.com/user-attachments/assets/4dd38a4c-b486-4cf1-8526-48af3c5d4319">
 </p>
